@@ -8,28 +8,39 @@
  * 
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  */
-namespace \stories\Resource;
+
+namespace stories\Resource;
+
+if (!defined('STORIES_CONTENT_TAGS')) {
+    require_once PHPWS_SOURCE_DIR . 'mod/stories/config/defines.dist.php';
+}
 
 class EntryResource extends BaseResource
 {
 
     /**
-     * Pulled from users table. Not saved in storiesEntry
+     * Pulled from author table. Not saved in storiesEntry
      * @var phpws2\Variable\Email
      */
     protected $authorEmail;
 
     /**
-     * User id of author
+     * Profile id of author
      * @var phpws2\Variable\IntegerVar 
      */
     protected $authorId;
 
     /**
-     * Pulled from users table. Not saved in storiesEntry
+     * Pulled from author table. Not saved in storiesEntry
      * @var phpws2\Variable\StringVar 
      */
     protected $authorName;
+
+    /**
+     * Pulled from author table. Not saved in storiesEntry
+     * @var phpws2\Variable\FileVar
+     */
+    protected $authorPic;
 
     /**
      * Main body content of story.
@@ -90,7 +101,7 @@ class EntryResource extends BaseResource
      * @var phpws2\Variable\TextOnly
      */
     protected $title;
-    
+
     /**
      * @var string
      */
@@ -104,6 +115,8 @@ class EntryResource extends BaseResource
         $this->authorId = new \phpws2\Variable\IntegerVar(0, 'authorId');
         $this->authorName = new \phpws2\Variable\StringVar(null, 'authorName');
         $this->authorName->allowEmpty(true);
+        $this->authorPic = new \phpws2\Variable\FileVar(null, 'authorPic');
+        $this->authorPic->allowEmpty(true);
         $this->content = new \phpws2\Variable\StringVar(null, 'content');
         $this->content->addAllowedTags(STORIES_CONTENT_TAGS);
         $this->createDate = new \phpws2\Variable\DateTime(0, 'createDate');
@@ -118,7 +131,7 @@ class EntryResource extends BaseResource
         $this->thumbnail->allowNull(true);
         $this->title = new \phpws2\Variable\TextOnly(null, 'title', 255);
 
-        $this->doNotSave(array('authorName', 'authorEmail'));
+        $this->doNotSave(array('authorName', 'authorEmail', 'authorPic'));
     }
 
 }

@@ -11,6 +11,7 @@
  */
 
 namespace stories\Controller;
+
 use Canopy\Request;
 
 class BaseController extends \phpws2\Http\Controller
@@ -46,11 +47,7 @@ class BaseController extends \phpws2\Http\Controller
                 FILTER_SANITIZE_STRING);
 
         if (empty($major_controller)) {
-            \Canopy\Server::forward('./stories/');
-        }
-
-        if (empty($major_controller)) {
-            throw new \stories\Exception\BadCommand;
+            $major_controller = 'Listing';
         }
 
         $role_name = substr(strrchr(get_class($this->role), '\\'), 1);
@@ -111,15 +108,6 @@ class BaseController extends \phpws2\Http\Controller
             $result = $this->controller->getHtml($request);
         }
         return $result;
-    }
-
-    public function friendlyError(Request $request, $message = null)
-    {
-        $fe = new FriendlyError($this->getModule());
-        if ($message) {
-            $fe->setMessage($message);
-        }
-        return $fe->execute($request);
     }
 
 }

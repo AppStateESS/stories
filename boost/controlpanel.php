@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Copyright (C) 2017 Matthew McNaney <mcnaneym@appstate.edu>.
  *
@@ -18,19 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-
-namespace stories\Exception;
-
-class ResourceNotFound extends \Exception
-{
-
-    public function __construct($id = null)
-    {
-        if ($id) {
-            parent::__construct('Resource not found: ' . $id);
-        } else {
-            parent::__construct('Resource not found');
-        }
-    }
-
-}
+$link[] = array(
+    'label' => 'Stories',
+    'restricted' => TRUE,
+    'url' => 'stories/',
+    'description' => 'Stories', 'Blog module for Canopy.',
+    'image' => 'stories.png',
+    'tab' => 'content');

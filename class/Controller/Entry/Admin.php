@@ -19,18 +19,28 @@
  * MA 02110-1301  USA
  */
 
-namespace stories\Exception;
+namespace stories\Controller\Entry;
 
-class ResourceNotFound extends \Exception
+use Canopy\Request;
+use stories\Factory\EntryFactory as Factory;
+
+class Admin extends User
 {
 
-    public function __construct($id = null)
+    /**
+     *
+     * @var \stories\Factory\EntryFactory factory
+     */
+    protected $factory;
+
+    protected function editHtmlCommand(Request $request)
     {
-        if ($id) {
-            parent::__construct('Resource not found: ' . $id);
-        } else {
-            parent::__construct('Resource not found');
-        }
+        return $this->factory->form();
+    }
+
+    protected function editPostCommand(Request $request)
+    {
+
     }
 
 }

@@ -19,18 +19,28 @@
  * MA 02110-1301  USA
  */
 
-namespace stories\Exception;
+namespace stories\Controller\Listing;
 
-class ResourceNotFound extends \Exception
+use Canopy\Request;
+use stories\Factory\EntryFactory as Factory;
+use stories\Controller\RoleController;
+
+class User extends RoleController
 {
 
-    public function __construct($id = null)
+    /**
+     * @var stories\Factory\EntryFactory Factory
+     */
+    protected $factory;
+
+    protected function loadFactory()
     {
-        if ($id) {
-            parent::__construct('Resource not found: ' . $id);
-        } else {
-            parent::__construct('Resource not found');
-        }
+        $this->factory = new Factory;
+    }
+    
+    protected function listHtmlCommand(Request $request)
+    {
+        return $this->factory->listing($request);
     }
 
 }

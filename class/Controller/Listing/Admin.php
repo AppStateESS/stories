@@ -19,18 +19,16 @@
  * MA 02110-1301  USA
  */
 
-namespace stories\Exception;
+namespace stories\Controller\Listing;
 
-class ResourceNotFound extends \Exception
+use Canopy\Request;
+use stories\Factory\EntryFactory as Factory;
+
+class Admin extends User
 {
-
-    public function __construct($id = null)
+    public function getHtml(Request $request)
     {
-        if ($id) {
-            parent::__construct('Resource not found: ' . $id);
-        } else {
-            parent::__construct('Resource not found');
-        }
+        $this->addStoryLink();
+        return parent::getHtml($request);
     }
-
 }

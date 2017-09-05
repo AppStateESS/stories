@@ -9,10 +9,10 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-
 namespace stories\Controller;
 
 use stories\Exception\BadCommand;
+use stories\Exception\PrivilegeMissing;
 use phpws2\Database;
 use Canopy\Request;
 
@@ -236,6 +236,12 @@ abstract class RoleController
     protected function deleteCommand(Request $request)
     {
         throw new PrivilegeMissing;
+    }
+
+    protected function addStoryLink()
+    {
+        $link = '<a href="./stories/Entry/create"><i class="fa fa-book"></i> Add story</a>';
+        \MiniAdmin::add('stories', $link);
     }
 
 }

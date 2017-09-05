@@ -19,18 +19,7 @@
  * MA 02110-1301  USA
  */
 
-namespace stories\Exception;
-
-class ResourceNotFound extends \Exception
+function stories_uninstall(&$content)
 {
-
-    public function __construct($id = null)
-    {
-        if ($id) {
-            parent::__construct('Resource not found: ' . $id);
-        } else {
-            parent::__construct('Resource not found');
-        }
-    }
-
+    return TRUE;
 }

@@ -18,19 +18,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-
-namespace stories\Exception;
-
-class ResourceNotFound extends \Exception
+function stories_install(&$content)
 {
+    $db = \phpws2\Database::getDB();
+    $db->begin();
 
-    public function __construct($id = null)
-    {
-        if ($id) {
-            parent::__construct('Resource not found: ' . $id);
-        } else {
-            parent::__construct('Resource not found');
-        }
+    try {
+        $entry = new \stories\Resource\EntryResource;
+        $entry->createTable($db);
+        
+    } catch (\Exception $e) {
+        \phpws2\Error::log($e);
+        $db->rollback();
+        throw $e;
     }
+    $db->commit();
 
+    $content[] = 'Tables created';
+    return true;
 }

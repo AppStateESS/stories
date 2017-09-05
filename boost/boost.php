@@ -18,19 +18,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-
-namespace stories\Exception;
-
-class ResourceNotFound extends \Exception
-{
-
-    public function __construct($id = null)
-    {
-        if ($id) {
-            parent::__construct('Resource not found: ' . $id);
-        } else {
-            parent::__construct('Resource not found');
-        }
-    }
-
-}
+$proper_name = 'Stories';
+$version = '1.0.0';
+$register = false;
+$unregister = false;
+$import_sql = false;
+$version_http = '';
+$about = false;
+$priority = 50;
+$dependency = false;
+$image_dir = true;

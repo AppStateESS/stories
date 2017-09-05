@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dependency>
+	<module>
+		<title>core</title>
+		<properName>phpWebSite Core</properName>
+		<version>2.10.1</version>
+		<url>http://github.com/AppStateESS/phpwebsite/</url>
+	</module>
+</dependency>
