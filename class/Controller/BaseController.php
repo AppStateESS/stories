@@ -47,7 +47,7 @@ class BaseController extends \phpws2\Http\Controller
                 FILTER_SANITIZE_STRING);
 
         if (empty($major_controller)) {
-            $major_controller = 'Listing';
+            throw new \stories\Exception\BadCommand('Missing controller name');
         }
 
         $role_name = substr(strrchr(get_class($this->role), '\\'), 1);
@@ -79,25 +79,25 @@ class BaseController extends \phpws2\Http\Controller
             throw $e;
         }
     }
-
+    
     public function post(Request $request)
     {
-        return $this->controller->post($request);
+        return $this->controller->changeResponse($request);
     }
 
     public function patch(Request $request)
     {
-        return $this->controller->patch($request);
+        return $this->controller->changeResponse($request);
     }
 
     public function delete(Request $request)
     {
-        return $this->controller->delete($request);
+        return $this->controller->changeResponse($request);
     }
 
     public function put(Request $request)
     {
-        return $this->controller->put($request);
+        return $this->controller->changeResponse($request);
     }
 
     public function get(Request $request)

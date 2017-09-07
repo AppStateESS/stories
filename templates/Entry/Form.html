@@ -1,26 +1,35 @@
 <style>
-    .entry {
-        margin: 0 4em;
-        padding: 4px 8px;
-    }
+  .entry {
+    margin: 0 4em;
+    padding: 4px 8px;
+  }
 
-    .entry-title {
-        margin-bottom : 1em;
-    }
+  .entry-title {
+    margin-bottom: 1em;
+  }
 
-    .entry-title input {
-        font-size : 30px;
-    }
+  .entry-title input {
+    font-size: 30px;
+  }
+
+  .status-bar {
+    margin-bottom: 1em;
+  }
+
 </style>
 <script src="<?=$home?>mod/stories/node_modules/jquery-sortable/source/js/jquery-sortable-min.js"></script>
 <div class="entry">
-    <div class="entry-title">
-        <input type="text" class="form-control" name="title" value="<?=$title?>" placeholder="Your story title"/>
-    </div>
-    <div class="entry-form"></div>
-    <?=$required?>
-    <?=$editor?>
-    <script>
-    editor.setContent('<?=$content?>')
-    </script>
+  <div class="status-bar">Status: <span id="story-status">Draft</span></div>
+  <div class="entry-title">
+    <input type="text" id="entry-title" class="form-control" name="title" value="<?=$title?>" placeholder="Your story title"
+    />
+  </div>
+  <div class="entry-form"></div>
+  <?=$entryId?>
+  <?=$MediumEditorPack?>
+  <?=$EntryForm?>
+  <?=$insert?>
+      <script>
+        editor.setContent('<?=$content?>')
+      </script>
 </div>

@@ -9,6 +9,7 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
+
 namespace stories\Controller;
 
 use stories\Exception\BadCommand;
@@ -56,28 +57,6 @@ abstract class RoleController
         return $command;
     }
 
-    public function post(Request $request)
-    {
-        $command = $request->shiftCommand();
-
-        if (empty($command)) {
-            $command = 'create';
-        }
-
-        $method_name = $command . 'PostCommand';
-        if (!method_exists($this, $method_name)) {
-            throw new BadCommand($method_name);
-        }
-
-        $content = $this->$method_name($request);
-
-        if ($request->isAjax()) {
-            return $this->jsonResponse($content);
-        } else {
-            return $this->htmlResponse($content);
-        }
-    }
-
     /**
      * Loads the EXPECTED id from the url into the object.
      * If the id is not there, the command fails
@@ -89,29 +68,6 @@ abstract class RoleController
             throw new \stories\Exception\MissingRequestId($id);
         }
         $this->id = $id;
-    }
-
-    public function put(Request $request)
-    {
-        $this->loadRequestId($request);
-
-        $command = $request->shiftCommand();
-        if (empty($command)) {
-            $command = 'update';
-        }
-
-        $method_name = $command . 'PutCommand';
-        if (!method_exists($this, $method_name)) {
-            throw new BadCommand($method_name);
-        }
-
-        $content = $this->$method_name($request);
-
-        if ($request->isAjax()) {
-            return $this->jsonResponse($content);
-        } else {
-            return $this->htmlResponse($content);
-        }
     }
 
     public function getHtml(Request $request)
@@ -171,37 +127,117 @@ abstract class RoleController
         return $response;
     }
 
-    public function patch(Request $request)
+    /**
+     * For delete, post, patch, and put commands
+     * @param Request $request
+     */
+    public function changeResponse(Request $request)
     {
-        $this->loadRequestId($request);
+        $method = $request->getMethod();
+        if ($method !== 'POST') {
+            $this->loadRequestId($request);
+        }
 
-        $patch_command = $request->shiftCommand();
-        if (empty($patch_command)) {
-            $patch_command = 'patchCommand';
+        $getCommand = $request->shiftCommand();
+
+        if (empty($getCommand)) {
+            $restCommand = $method . 'Command';
         } else {
-            $patch_command .= 'PatchCommand';
+            $restCommand = $getCommand . $method . 'Command';
         }
 
-        if (!method_exists($this, $patch_command)) {
-            throw new BadCommand($patch_command);
+        if (!method_exists($this, $restCommand)) {
+            throw new BadCommand($restCommand);
         }
 
-        $json = $this->$patch_command($request);
-        return $this->jsonResponse($json);
+        $content = $this->$restCommand($request);
+
+        if ($request->isAjax()) {
+            return $this->jsonResponse($content);
+        } else {
+            return $this->htmlResponse($content);
+        }
     }
 
-    public function delete(Request $request)
-    {
-        $this->loadRequestId($request);
+    /*
+     *     public function post(Request $request)
+      {
+      $command = $request->shiftCommand();
 
-        if (!method_exists($this, 'deleteCommand')) {
-            throw new BadCommand('deleteCommand');
-        }
+      if (empty($command)) {
+      $command = 'create';
+      }
 
-        $content = $this->deleteCommand($request);
+      $method_name = $command . 'PostCommand';
+      if (!method_exists($this, $method_name)) {
+      throw new BadCommand($method_name);
+      }
 
-        return $this->jsonResponse($content);
-    }
+      $content = $this->$method_name($request);
+
+      if ($request->isAjax()) {
+      return $this->jsonResponse($content);
+      } else {
+      return $this->htmlResponse($content);
+      }
+      }
+     * public function put(Request $request)
+      {
+      $this->loadRequestId($request);
+
+      $command = $request->shiftCommand();
+
+      if (empty($command)) {
+      $methodName = 'putCommand';
+      } else {
+      $methodName = $command . 'PutCommand';
+      }
+
+      if (!method_exists($this, $methodName)) {
+      throw new BadCommand($methodName);
+      }
+
+      $content = $this->$methodName($request);
+
+      if ($request->isAjax()) {
+      return $this->jsonResponse($content);
+      } else {
+      return $this->htmlResponse($content);
+      }
+      }
+
+      public function patch(Request $request)
+      {
+      $this->loadRequestId($request);
+
+      $patch_command = $request->shiftCommand();
+      if (empty($patch_command)) {
+      $patch_command = 'patchCommand';
+      } else {
+      $patch_command .= 'PatchCommand';
+      }
+
+      if (!method_exists($this, $patch_command)) {
+      throw new BadCommand($patch_command);
+      }
+
+      $json = $this->$patch_command($request);
+      return $this->jsonResponse($json);
+      }
+
+      public function delete(Request $request)
+      {
+      $this->loadRequestId($request);
+
+      if (!method_exists($this, 'deleteCommand')) {
+      throw new BadCommand('deleteCommand');
+      }
+
+      $content = $this->deleteCommand($request);
+
+      return $this->jsonResponse($content);
+      }
+     */
 
     public function getResponse($content, Request $request)
     {
@@ -220,22 +256,22 @@ abstract class RoleController
 
     protected function createPostCommand(Request $request)
     {
-        throw new PrivilegeMissing;
+        throw new PrivilegeMissing(__FUNCTION__);
     }
 
-    protected function updatePutCommand(Request $request)
+    protected function putCommand(Request $request)
     {
-        throw new PrivilegeMissing;
+        throw new PrivilegeMissing(__FUNCTION__);
     }
 
     protected function patchCommand(Request $request)
     {
-        throw new PrivilegeMissing;
+        throw new PrivilegeMissing(__FUNCTION__);
     }
 
     protected function deleteCommand(Request $request)
     {
-        throw new PrivilegeMissing;
+        throw new PrivilegeMissing(__FUNCTION__);
     }
 
     protected function addStoryLink()

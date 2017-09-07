@@ -13,5 +13,14 @@ namespace stories\Exception;
 
 class PrivilegeMissing extends \Exception
 {
-    protected $message = 'You do not have permissions for this action.';
+    protected $defaultMessage = 'You do not have permissions for this action';
+    
+    public function __construct($className = null)
+    {
+        $message = $this->defaultMessage;
+        if ($className) {
+            $message .= ': ' . $className;
+        }
+        parent::__construct($message);
+    }
 }

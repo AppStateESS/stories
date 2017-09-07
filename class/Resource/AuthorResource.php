@@ -17,12 +17,18 @@ class AuthorResource extends BaseResource
     protected $name;
     protected $pic;
     protected $email;
+    protected $userId;
+    
+    protected $table = 'storiesAuthor';
     
     public function __construct()
     {
         parent::__construct();
         $this->name = new \phpws2\Variable\TextOnly(null, 'name');
+        $this->name->setLimit('100');
         $this->pic = new \phpws2\Variable\FileVar(null, 'pic');
+        $this->pic->allowNull(true);
         $this->email = new \phpws2\Variable\Email(null, 'email');
+        $this->userId = new \phpws2\Variable\IntegerVar(0, 'userId');
     }
 }

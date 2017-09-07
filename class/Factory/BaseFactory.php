@@ -24,7 +24,7 @@ use Canopy\Request;
 abstract class BaseFactory extends \phpws2\ResourceFactory
 {
 
-    abstract protected function build();
+    abstract public function build();
 
     public function load($id)
     {
@@ -39,7 +39,7 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         return $resource;
     }
 
-    public function reactView($view_name)
+    public function scriptView($view_name, $add_anchor = true)
     {
         static $vendor_included = false;
         if (!$vendor_included) {
@@ -48,11 +48,15 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         }
         $script[] = $this->getScript($view_name);
         $react = implode("\n", $script);
-        $content = <<<EOF
+        if ($add_anchor) {
+            $content = <<<EOF
 <div id="$view_name"></div>
 $react
 EOF;
-        return $content;
+            return $content;
+        } else {
+            return $react;
+        }
     }
 
     protected function walkingCase($name)

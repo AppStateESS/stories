@@ -26,7 +26,6 @@ use stories\Factory\EntryFactory as Factory;
 
 class Admin extends User
 {
-
     /**
      *
      * @var \stories\Factory\EntryFactory factory
@@ -35,12 +34,27 @@ class Admin extends User
 
     protected function editHtmlCommand(Request $request)
     {
-        return $this->factory->form();
+        if ($this->id) {
+            $entry = $this->factory->load($this->id);
+        } else {
+            $entry = $this->factory->build();
+        }
+        return $this->factory->form($entry);
     }
 
-    protected function editPostCommand(Request $request)
+    protected function postCommand(Request $request)
     {
+        return array('entryId' => $this->factory->post($request));
+    }
 
+    protected function putCommand(Request $request)
+    {
+        return array('entryId'=> $this->factory->put($this->id, $request));
+    }
+    
+    protected function viewJsonCommand(Request $request)
+    {
+        return array('entry'=>$this->factory->view($this->id));
     }
 
 }

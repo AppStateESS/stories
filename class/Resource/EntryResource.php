@@ -112,18 +112,24 @@ class EntryResource extends BaseResource
         parent::__construct();
         $this->authorEmail = new \phpws2\Variable\Email(null, 'authorEmail');
         $this->authorEmail->allowEmpty(true);
+        $this->authorEmail->setIsTableColumn(false);
         $this->authorId = new \phpws2\Variable\IntegerVar(0, 'authorId');
         $this->authorName = new \phpws2\Variable\StringVar(null, 'authorName');
         $this->authorName->allowEmpty(true);
+        $this->authorName->setIsTableColumn(false);
         $this->authorPic = new \phpws2\Variable\FileVar(null, 'authorPic');
-        $this->authorPic->allowEmpty(true);
+        $this->authorPic->allowNull(true);
+        $this->authorPic->setIsTableColumn(false);
         $this->content = new \phpws2\Variable\StringVar(null, 'content');
         $this->content->addAllowedTags(STORIES_CONTENT_TAGS);
         $this->createDate = new \phpws2\Variable\DateTime(0, 'createDate');
+        $this->createDate->stamp();
         $this->deleted = new \phpws2\Variable\BooleanVar(false, 'deleted');
         $this->expirationDate = new \phpws2\Variable\DateTime(0,
                 'expirationDate');
+        $this->expirationDate->setPrintEmpty(false);
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
+        $this->publishDate->setPrintEmpty(false);
         $this->published = new \phpws2\Variable\BooleanVar(false, 'published');
         $this->summary = new \phpws2\Variable\StringVar(null, 'summary');
         $this->summary->addAllowedTags(STORIES_SUMMARY_TAGS);
@@ -132,6 +138,27 @@ class EntryResource extends BaseResource
         $this->title = new \phpws2\Variable\TextOnly(null, 'title', 255);
 
         $this->doNotSave(array('authorName', 'authorEmail', 'authorPic'));
+    }
+
+    /**
+     * Runs the filter before setting the content.
+     * @param string $content
+     */
+    public function setContent($content)
+    {
+        $this->content->set($this->filterContent($content));
+    }
+
+    /**
+     * Cleans up the content string that is imported from Medium Editor.
+     * Medium editor content contains remnants of its controls.
+     * @param string $content
+     */
+    public function filterContent($content)
+    {
+        $noControls = trim(preg_replace('/(.*)<(div|p) class="medium-insert-buttons"[\s\w=":;><\-+\/]+/', '\\1', $content));
+        $noExtraParagraphs = preg_replace('/((<p class="[\w\-]*"><\/p>)|(<p class="[\w\-]*"><br><\/p>)){1,}$/', '', $noControls);
+        return $noExtraParagraphs;
     }
 
 }

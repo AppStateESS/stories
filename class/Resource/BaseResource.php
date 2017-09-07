@@ -17,7 +17,6 @@ use stories\Exception\MissingInput;
 
 class BaseResource extends \phpws2\Resource
 {
-
     public function __set($name, $value)
     {
         if ((!$this->$name->allowNull() &&
@@ -26,7 +25,12 @@ class BaseResource extends \phpws2\Resource
             throw new MissingInput("$name may not be empty");
         }
 
-        $this->$name->set($value);
+        $method_name = self::walkingCase($name, 'set');
+        if (method_exists($this, $method_name)) {
+            return $this->$method_name($value);
+        } else {
+            return $this->$name->set($value);
+        }
     }
 
     public function __get($name)
