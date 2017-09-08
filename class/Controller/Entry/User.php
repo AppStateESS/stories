@@ -37,6 +37,5 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
-    
 
 }

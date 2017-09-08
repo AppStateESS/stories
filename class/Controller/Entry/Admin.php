@@ -26,19 +26,22 @@ use stories\Factory\EntryFactory as Factory;
 
 class Admin extends User
 {
+
     /**
      *
      * @var \stories\Factory\EntryFactory factory
      */
     protected $factory;
 
+    protected function createHtmlCommand(Request $request)
+    {
+        $entry = $this->factory->create();
+        \Canopy\Server::forward('./stories/Entry/'. $entry->id . '/edit');
+    }
+
     protected function editHtmlCommand(Request $request)
     {
-        if ($this->id) {
-            $entry = $this->factory->load($this->id);
-        } else {
-            $entry = $this->factory->build();
-        }
+        $entry = $this->factory->load($this->id);
         return $this->factory->form($entry);
     }
 
@@ -49,12 +52,12 @@ class Admin extends User
 
     protected function putCommand(Request $request)
     {
-        return array('entryId'=> $this->factory->put($this->id, $request));
+        return array('entryId' => $this->factory->put($this->id, $request));
     }
-    
+
     protected function viewJsonCommand(Request $request)
     {
-        return array('entry'=>$this->factory->view($this->id));
+        return array('entry' => $this->factory->view($this->id));
     }
 
 }

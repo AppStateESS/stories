@@ -26,7 +26,7 @@ class EntryFactory extends BaseFactory
     {
         return new Resource;
     }
-    
+
     /**
      * 
      * @param type $id
@@ -48,11 +48,11 @@ class EntryFactory extends BaseFactory
      * @param string $title
      * @return \stories\Resource\Entry
      */
-    public function create($content = null, $title = null)
+    public function create()
     {
         $entry = $this->build();
-        $entry->title = $title;
-        $entry->setContent($content);
+        $entry->title = '';
+        $entry->content= '';
         $authorFactory = new AuthorFactory;
         $this->loadAuthor($entry, $authorFactory->getByCurrentUser(true));
         return self::saveResource($entry);
@@ -66,7 +66,7 @@ class EntryFactory extends BaseFactory
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
         $vars['title'] = $entry->title;
-        $vars['content'] = $entry->content;
+        $vars['content'] = str_replace("\n", ' ', $entry->content);
         $vars['insert'] = "<script src='$insertSource'></script>";
         $vars['entryId'] = "<script>let entryId=$entryId</script>";
         $template = new \phpws2\Template($vars);
@@ -91,7 +91,6 @@ class EntryFactory extends BaseFactory
         return $entry->id;
     }
 
-
     public function patch($entryId, Request $request)
     {
         $entry = $this->load($entryId);
@@ -104,21 +103,8 @@ class EntryFactory extends BaseFactory
         return $entry->id;
     }
 
-    public function post(Request $request)
+    public function view($id)
     {
-        $title = $request->pullPostString('title', true);
-        $content = $request->postVarIsset('content') ? $request->pullPostVar('content') : null;
-
-        // If we got here somehow without a title or content,
-        // we don't create a new entry and return 0 for the entry id.
-        if (empty($title) && empty($content)) {
-            return 0;
-        }
-        $entry = $this->create($content, $title);
-        return $entry->id;
-    }
-    
-    public function view($id) {
         $entry = $this->load($id);
         return $entry->getStringVars(true);
     }

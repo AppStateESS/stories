@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2017 Matthew McNaney <mcnaneym@appstate.edu>.
  *
@@ -17,10 +18,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-$link[] = array(
-    'label' => 'Stories',
-    'restricted' => TRUE,
-    'url' => 'stories/Entry/create',
-    'description' => 'Stories', 'Blog module for Canopy.',
-    'image' => 'stories.png',
-    'tab' => 'content');
+
+namespace stories\Controller\EntryPhoto;
+
+use Canopy\Request;
+use stories\Factory\EntryPhotoFactory as Factory;
+use stories\Controller\RoleController;
+
+class Admin extends RoleController
+{
+
+    /**
+     *
+     * @var \stories\Factory\EntryFactory factory
+     */
+    protected $factory;
+
+    protected function loadFactory()
+    {
+        $this->factory = new Factory;
+    }
+
+    protected function postCommand(Request $request)
+    {
+        return $this->factory->save($request);
+    }
+
+}

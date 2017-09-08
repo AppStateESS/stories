@@ -133,8 +133,8 @@ abstract class RoleController
      */
     public function changeResponse(Request $request)
     {
-        $method = $request->getMethod();
-        if ($method !== 'POST') {
+        $method = strtolower($request->getMethod());
+        if ($method !== 'post') {
             $this->loadRequestId($request);
         }
 
