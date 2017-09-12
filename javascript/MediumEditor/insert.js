@@ -70,16 +70,6 @@ const triggerAutoSave = function (event, editable) {
   saveContent(editor)
   delaySave = true
 }
-const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 5000);
+const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 3000);
 editor.subscribe('editableInput', throttledAutoSave);
 editor.subscribe('blur', blurContentSave);
-
-/*
-let firstSave = false
-if (firstSave === false) {
-editor.subscribe('editableInput', function(event, editable) {
-  saveContent(editor)
-  firstSave = true
-  editor.unsubscribe('editableInput')
-}.bind(editor))
-*/
