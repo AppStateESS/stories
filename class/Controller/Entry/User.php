@@ -37,5 +37,14 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
+    
+    protected function viewHtmlCommand(Request $request)
+    {
+        $homeHttp = PHPWS_HOME_HTTP;
+        $style = <<<EOF
+<link type="text/css" rel="stylesheet" href="{$homeHttp}mod/stories/css/medium-editor-insert-plugin-frontend.min.css" />
+EOF;
+        return $style . $this->factory->view($this->id);
+    }
 
 }
