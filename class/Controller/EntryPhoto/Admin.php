@@ -27,10 +27,9 @@ use stories\Controller\RoleController;
 
 class Admin extends RoleController
 {
-
     /**
      *
-     * @var \stories\Factory\EntryFactory factory
+     * @var \stories\Factory\EntryPhotoFactory factory
      */
     protected $factory;
 
@@ -43,5 +42,9 @@ class Admin extends RoleController
     {
         return $this->factory->save($request);
     }
-
+    
+    protected function deleteCommand(Request $request)
+    {
+        return $this->factory->delete($request);
+    }
 }
