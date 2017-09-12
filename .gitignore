@@ -1,7 +1,7 @@
 *~
 /nbproject/
 /node_modules/
-/conf/defines.php
+/config/defines.php
 /javascript/build/
 /javascript/dev/
 /assets.json
