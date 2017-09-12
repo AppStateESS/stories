@@ -11,7 +11,7 @@
  * http://www.opensource.org/licenses/MIT
  * 
  * This script has been updated from its original version. Error suppression
- * using ampersand has been removed.
+ * using at (@) has been removed and the reprecusions worked around.
  */
 
 class UploadHandler
@@ -194,7 +194,7 @@ class UploadHandler
                 strcasecmp($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') === 0;
         return
                 ($https ? 'https://' : 'http://') .
-                (!empty($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'] . '@' : '') .
+                (!empty($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'] . '' : '') .
                 (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'] .
                 ($https && $_SERVER['SERVER_PORT'] === 443 ||
                 $_SERVER['SERVER_PORT'] === 80 ? '' : ':' . $_SERVER['SERVER_PORT']))) .
@@ -204,7 +204,7 @@ class UploadHandler
 
     protected function get_user_id()
     {
-        @session_start();
+        session_start();
         return session_id();
     }
 
@@ -417,10 +417,10 @@ class UploadHandler
             $file->error = $this->get_error_message('max_number_of_files');
             return false;
         }
-        $max_width = @$this->options['max_width'];
-        $max_height = @$this->options['max_height'];
-        $min_width = @$this->options['min_width'];
-        $min_height = @$this->options['min_height'];
+        $max_width = $this->options['max_width'];
+        $max_height = $this->options['max_height'];
+        $min_width = $this->options['min_width'];
+        $min_height = $this->options['min_height'];
         if (($max_width || $max_height || $min_width || $min_height) && preg_match($this->options['image_file_types'],
                         $file->name)) {
             list($img_width, $img_height) = $this->get_image_size($uploaded_file);
@@ -489,7 +489,7 @@ class UploadHandler
         }
         if ($this->options['correct_image_extensions'] &&
                 function_exists('exif_imagetype')) {
-            switch (@exif_imagetype($file_path)) {
+            switch (exif_imagetype($file_path)) {
                 case IMAGETYPE_JPEG:
                     $extensions = array('jpg', 'jpeg');
                     break;
@@ -504,7 +504,7 @@ class UploadHandler
             if (!empty($extensions)) {
                 $parts = explode('.', $name);
                 $extIndex = count($parts) - 1;
-                $ext = strtolower(@$parts[$extIndex]);
+                $ext = strtolower($parts[$extIndex]);
                 if (!in_array($ext, $extensions)) {
                     $parts[$extIndex] = $extensions[0];
                     $name = implode('.', $parts);
@@ -622,11 +622,17 @@ class UploadHandler
         if (!function_exists('exif_read_data')) {
             return false;
         }
-        $exif = @exif_read_data($file_path);
+        if (exif_imagetype($file_path) != IMAGETYPE_JPEG) {
+            return false;
+        }
+        $exif = exif_read_data($file_path);
         if ($exif === false) {
             return false;
         }
-        $orientation = intval(@$exif['Orientation']);
+        if (!isset($exif['Orientation'])) {
+            return false;
+        }
+        $orientation = intval($exif['Orientation']);
         if ($orientation < 2 || $orientation > 8) {
             return false;
         }
@@ -920,7 +926,7 @@ class UploadHandler
     {
         list($file_path, $new_file_path) = $this->get_scaled_image_file_paths($file_name,
                 $version);
-        $resize = @$options['max_width']
+        $resize = $options['max_width']
                 . (empty($options['max_height']) ? '' : 'X' . $options['max_height']);
         if (!$resize && empty($options['auto_orient'])) {
             if ($file_path !== $new_file_path) {
@@ -944,7 +950,6 @@ class UploadHandler
             } else {
                 $cmd .= ' -resize ' . escapeshellarg($resize . '^');
                 $cmd .= ' -gravity center';
-                $cmd .= ' -crop ' . escapeshellarg($resize . '+0+0');
             }
             // Make sure the page dimensions are correct (fixes offsets of animated GIFs):
             $cmd .= ' +repage';
@@ -967,7 +972,7 @@ class UploadHandler
             if (extension_loaded('imagick')) {
                 $image = new \Imagick();
                 try {
-                    if (@$image->pingImage($file_path)) {
+                    if ($image->pingImage($file_path)) {
                         $dimensions = array($image->getImageWidth(), $image->getImageHeight());
                         $image->destroy();
                         return $dimensions;
@@ -994,7 +999,7 @@ class UploadHandler
             error_log('Function not found: getimagesize');
             return false;
         }
-        return @getimagesize($file_path);
+        return getimagesize($file_path);
     }
 
     protected function create_scaled_image($file_name, $version, $options)
@@ -1023,7 +1028,7 @@ class UploadHandler
             return false;
         }
         if (function_exists('exif_imagetype')) {
-            return @exif_imagetype($file_path);
+            return exif_imagetype($file_path);
         }
         $image_info = $this->get_image_size($file_path);
         return $image_info && $image_info[0] && $image_info[1];
@@ -1112,8 +1117,8 @@ class UploadHandler
             $handle = fopen($file_path, 'rb');
             while (!feof($handle)) {
                 echo fread($handle, $chunk_size);
-                @ob_flush();
-                @flush();
+                ob_flush();
+                flush();
             }
             fclose($handle);
             return $file_size;
