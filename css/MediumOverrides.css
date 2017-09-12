@@ -3,3 +3,10 @@ div.entry-form .medium-insert-images figure figcaption,div.entry-form .mediumIns
   color : #4e4e4e;
   font-size : 14px;
 }
+
+div.story-entry .medium-insert-images figure figcaption,div.story-entry .mediumInsert figure figcaption, div.story-entry .medium-insert-embeds figure figcaption, div.story-entry .mediumInsert-embeds figure figcaption
+{
+  color : #4e4e4e;
+  font-size : 14px;
+}
+
