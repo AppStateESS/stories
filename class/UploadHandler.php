@@ -11,7 +11,19 @@
  * http://www.opensource.org/licenses/MIT
  * 
  * This script has been updated from its original version. Error suppression
- * using at (@) has been removed and the reprecusions worked around.
+ * using at (@) has been removed and the reprecusions worked around. Most of the
+ * suppression occurs with exif functions. Unfortunately, that is just how PHP
+ * handles them. There is no way to test for failure, you have to fail and deal.
+ * For us though, failure is a thrown exception, so I added new code to test prior
+ * to reading.
+ * 
+ * Premature image dimension errors are ignored because they prevent image
+ * resizing. Maybe the version control is supposed to go around this. Not sure
+ * how it is supposed to work.
+ * 
+ * Added code to incorporate default options into the default image creation.
+ * Otherwise, the resize ignores your options with which you construct the object.
+ * 
  */
 
 class UploadHandler
@@ -136,7 +148,8 @@ class UploadHandler
                   'max_width' => 800,
                   'max_height' => 600
                   ),
-                 */
+                */
+                /*
                 'thumbnail' => array(
                     // Uncomment the following to use a defined directory for the thumbnails
                     // instead of a subdirectory based on the version identifier.
@@ -147,10 +160,12 @@ class UploadHandler
                     //'upload_url' => $this->get_full_url().'/thumb/',
                     // Uncomment the following to force the max
                     // dimensions and e.g. create square thumbnails:
-                    //'crop' => true,
+                    'crop' => true,
                     'max_width' => 80,
                     'max_height' => 80
                 )
+                 * 
+                 */
             )
         );
         if ($options) {
@@ -426,6 +441,11 @@ class UploadHandler
             list($img_width, $img_height) = $this->get_image_size($uploaded_file);
         }
         if (!empty($img_width)) {
+            // This script returns errors on the max_width and max_height. HOWEVER,
+            // it also resizes based on the max_width and max_height. So if the 
+            // dimension error occurs, we never get to resize code. I am
+            // just commenting this all out.
+            /*
             if ($max_width && $img_width > $max_width) {
                 $file->error = $this->get_error_message('max_width');
                 return false;
@@ -434,6 +454,8 @@ class UploadHandler
                 $file->error = $this->get_error_message('max_height');
                 return false;
             }
+             * 
+             */
             if ($min_width && $img_width < $min_width) {
                 $file->error = $this->get_error_message('min_width');
                 return false;
@@ -617,12 +639,23 @@ class UploadHandler
         return $new_img;
     }
 
+    protected function testExif($file_path)
+    {
+        if (exif_imagetype($file_path) != IMAGETYPE_JPEG) {
+            return false;
+        }
+        getimagesize($file_path, $info);
+        if (!isset($info['APP1']) || preg_match('/^exif/i', $info['APP1'])) {
+            return false;
+        }
+    }
+    
     protected function gd_orient_image($file_path, $src_img)
     {
         if (!function_exists('exif_read_data')) {
             return false;
         }
-        if (exif_imagetype($file_path) != IMAGETYPE_JPEG) {
+        if (!$this->testExif($file_path)) {
             return false;
         }
         $exif = exif_read_data($file_path);
@@ -1038,6 +1071,12 @@ class UploadHandler
     {
         $failed_versions = array();
         foreach ($this->options['image_versions'] as $version => $options) {
+            // not sure how this version component is supposed to work outside
+            // of the thumbnail. Forcing in the options makes the default image
+            // resize work.
+            if ($version == "") {
+                $options = array_merge($options, $this->options);
+            }
             if ($this->create_scaled_image($file->name, $version, $options)) {
                 if (!empty($version)) {
                     $file->{$version . 'Url'} = $this->get_download_url(
