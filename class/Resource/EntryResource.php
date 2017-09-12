@@ -156,8 +156,8 @@ class EntryResource extends BaseResource
      */
     public function filterContent($content)
     {
-        $noControls = trim(preg_replace('/(.*)<(div|p) class="medium-insert-buttons"[\s\w=":;><\-+\/]+/', '\\1', $content));
-        $noExtraParagraphs = preg_replace('/(<p><\/p>|<p class="([^"]*)?">(\s+)?<\/p>)/', '', $noControls);
+        $noControls = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s', '', $content));
+        $noExtraParagraphs = preg_replace('/(<p class=""><\/p>){2,}(<p class="medium-insert-active"><\/p>)$/s', '<p class="medium-insert-active"></p>', $noControls);
         return $noExtraParagraphs;
     }
 
