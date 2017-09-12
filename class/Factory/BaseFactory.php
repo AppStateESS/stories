@@ -29,7 +29,7 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
     public function load($id)
     {
         if (empty($id)) {
-            throw new \stories\Exception\ResourceNotFound;
+            throw new ResourceNotFound;
         }
         $resource = $this->build();
         $resource->setId($id);
