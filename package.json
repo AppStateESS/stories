@@ -28,7 +28,6 @@
     "imports-loader": "^0.7.1",
     "jquery": "^3.2.1",
     "jquery-file-upload": "^4.0.5",
-    "jquery-sortable": "^0.9.13",
     "jquery-ui": "^1.12.1",
     "medium-editor": "^5.23.2",
     "medium-editor-insert-plugin": "^2.4.1",
@@ -48,5 +47,8 @@
   "scripts": {
     "dev": "webpack --config webpack.config.js -d --watch",
     "prod": "webpack --config webpack.production.config.js -p"
+  },
+  "dependencies": {
+    "jquery-sortable": "^0.9.13"
   }
 }
