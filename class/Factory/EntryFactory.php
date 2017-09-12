@@ -16,6 +16,7 @@ use stories\Resource\EntryResource as Resource;
 use stories\Factory\AuthorFactory;
 use stories\Resource\AuthorResource;
 use stories\Exception\MissingInput;
+use stories\Exception\ResourceNotFound;
 use phpws2\Database;
 use Canopy\Request;
 
@@ -52,7 +53,7 @@ class EntryFactory extends BaseFactory
     {
         $entry = $this->build();
         $entry->title = '';
-        $entry->content= '';
+        $entry->content = '';
         $authorFactory = new AuthorFactory;
         $this->loadAuthor($entry, $authorFactory->getByCurrentUser(true));
         return self::saveResource($entry);
@@ -62,9 +63,7 @@ class EntryFactory extends BaseFactory
     {
         $sourceHttp = PHPWS_SOURCE_HTTP;
         $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
-        $vars['cssOverride'] = <<<EOF
-<link rel="stylesheet" type="text/css" href="{$sourceHttp}mod/stories/css/MediumOverrides.css" />
-EOF;
+        $vars['cssOverride'] = $this->mediumCSSOverride();
         $entryId = $entry->id;
         $vars['home'] = $sourceHttp;
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
@@ -78,16 +77,26 @@ EOF;
         return $template->get();
     }
 
+    public function mediumCSSOverride()
+    {
+        $homeHttp = PHPWS_SOURCE_HTTP;
+        return <<<EOF
+<link rel="stylesheet" type="text/css" href="{$homeHttp}mod/stories/css/MediumOverrides.css" />
+EOF;
+    }
+
     private function prepareFormContent($content)
     {
         $content = str_replace("\n", '\\n', $content);
         $suffix = '<p class="medium-insert-active"><br></p>';
         return $content . $suffix;
         $figure = '<figure contenteditable="false">';
-        $content2 = preg_replace("/$figure/", '<div class="medium-insert-images medium-insert-active">' . $figure, $content);
+        $content2 = preg_replace("/$figure/",
+                '<div class="medium-insert-images medium-insert-active">' . $figure,
+                $content);
         return preg_replace("/<\/figure>/", '</figure></div>', $content2) . $suffix;
     }
-    
+
     protected function loadAuthor(Resource $entry, AuthorResource $author)
     {
         $entry->authorEmail = $author->email;
@@ -117,10 +126,30 @@ EOF;
         return $entry->id;
     }
 
-    public function view($id)
+    public function data($id)
     {
         $entry = $this->load($id);
         return $entry->getStringVars(true);
+    }
+
+    public function view($id)
+    {
+        try {
+            $data = $this->data($id);
+            $data['cssOverride'] = $this->mediumCSSOverride();
+            $template = new \phpws2\Template($data);
+            $template->setModuleTemplate('stories', 'Entry/View.html');
+            return $template->get();
+        } catch (ResourceNotFound $e) {
+            return $this->notFound();
+        }
+    }
+
+    public function notFound()
+    {
+        $template = new \phpws2\Template();
+        $template->setModuleTemplate('stories', 'Entry/NotFound.html');
+        return $template->get();
     }
 
 }
