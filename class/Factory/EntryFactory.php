@@ -60,13 +60,17 @@ class EntryFactory extends BaseFactory
 
     public function form(Resource $entry)
     {
+        $sourceHttp = PHPWS_SOURCE_HTTP;
         $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
+        $vars['cssOverride'] = <<<EOF
+<link rel="stylesheet" type="text/css" href="{$sourceHttp}mod/stories/css/MediumOverrides.css" />
+EOF;
         $entryId = $entry->id;
-        $vars['home'] = PHPWS_SOURCE_HTTP;
+        $vars['home'] = $sourceHttp;
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
         $vars['title'] = $entry->title;
-        $vars['content'] = str_replace("\n", ' ', $entry->content);
+        $vars['content'] = $this->prepareFormContent($entry->content);
         $vars['insert'] = "<script src='$insertSource'></script>";
         $vars['entryId'] = "<script>let entryId=$entryId</script>";
         $template = new \phpws2\Template($vars);
@@ -74,6 +78,16 @@ class EntryFactory extends BaseFactory
         return $template->get();
     }
 
+    private function prepareFormContent($content)
+    {
+        $content = str_replace("\n", '\\n', $content);
+        $suffix = '<p class="medium-insert-active"><br></p>';
+        return $content . $suffix;
+        $figure = '<figure contenteditable="false">';
+        $content2 = preg_replace("/$figure/", '<div class="medium-insert-images medium-insert-active">' . $figure, $content);
+        return preg_replace("/<\/figure>/", '</figure></div>', $content2) . $suffix;
+    }
+    
     protected function loadAuthor(Resource $entry, AuthorResource $author)
     {
         $entry->authorEmail = $author->email;
