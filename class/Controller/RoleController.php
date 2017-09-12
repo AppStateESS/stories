@@ -159,86 +159,6 @@ abstract class RoleController
         }
     }
 
-    /*
-     *     public function post(Request $request)
-      {
-      $command = $request->shiftCommand();
-
-      if (empty($command)) {
-      $command = 'create';
-      }
-
-      $method_name = $command . 'PostCommand';
-      if (!method_exists($this, $method_name)) {
-      throw new BadCommand($method_name);
-      }
-
-      $content = $this->$method_name($request);
-
-      if ($request->isAjax()) {
-      return $this->jsonResponse($content);
-      } else {
-      return $this->htmlResponse($content);
-      }
-      }
-     * public function put(Request $request)
-      {
-      $this->loadRequestId($request);
-
-      $command = $request->shiftCommand();
-
-      if (empty($command)) {
-      $methodName = 'putCommand';
-      } else {
-      $methodName = $command . 'PutCommand';
-      }
-
-      if (!method_exists($this, $methodName)) {
-      throw new BadCommand($methodName);
-      }
-
-      $content = $this->$methodName($request);
-
-      if ($request->isAjax()) {
-      return $this->jsonResponse($content);
-      } else {
-      return $this->htmlResponse($content);
-      }
-      }
-
-      public function patch(Request $request)
-      {
-      $this->loadRequestId($request);
-
-      $patch_command = $request->shiftCommand();
-      if (empty($patch_command)) {
-      $patch_command = 'patchCommand';
-      } else {
-      $patch_command .= 'PatchCommand';
-      }
-
-      if (!method_exists($this, $patch_command)) {
-      throw new BadCommand($patch_command);
-      }
-
-      $json = $this->$patch_command($request);
-      return $this->jsonResponse($json);
-      }
-
-      public function delete(Request $request)
-      {
-      $this->loadRequestId($request);
-
-      if (!method_exists($this, 'deleteCommand')) {
-      throw new BadCommand('deleteCommand');
-      }
-
-      $content = $this->deleteCommand($request);
-
-      return $this->jsonResponse($content);
-      }
-     */
-
     public function getResponse($content, Request $request)
     {
         return $request->isAjax() ? $this->jsonResponse($content) : $this->htmlResponse($content);
@@ -276,7 +196,19 @@ abstract class RoleController
 
     protected function addStoryLink()
     {
-        $link = '<a href="./stories/Entry/create"><i class="fa fa-book"></i> Add story</a>';
+        $link = '<a href="./stories/Entry/create"><i class="fa fa-pencil"></i> Add story</a>';
+        \MiniAdmin::add('stories', $link);
+    }
+
+    protected function editStoryLink($entryId)
+    {
+        $link = '<a href="./stories/Entry/'. $entryId .'/edit"><i class="fa fa-edit"></i> Edit story</a>';
+        \MiniAdmin::add('stories', $link);
+    }
+
+    protected function viewStoryLink($entryId)
+    {
+        $link = '<a href="./stories/Entry/'. $entryId .'"><i class="fa fa-book"></i> View story</a>';
         \MiniAdmin::add('stories', $link);
     }
 
