@@ -32,7 +32,12 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
 
     public function getSettingDefaults()
     {
-        $settings = array();
+        $settings = array(
+            'image_max_width' => 1920,
+            'image_max_height' => 1080,
+            'thumb_max_width' => 400,
+            'thumb_max_height' => 400
+        );
         return $settings;
     }
 
