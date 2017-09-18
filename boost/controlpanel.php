@@ -20,7 +20,7 @@
 $link[] = array(
     'label' => 'Stories',
     'restricted' => TRUE,
-    'url' => 'stories/Entry/create',
+    'url' => 'stories/Entry/Listing',
     'description' => 'Stories', 'Blog module for Canopy.',
     'image' => 'stories.png',
     'tab' => 'content');
