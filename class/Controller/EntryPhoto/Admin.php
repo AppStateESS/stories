@@ -45,6 +45,6 @@ class Admin extends RoleController
     
     protected function deleteCommand(Request $request)
     {
-        return $this->factory->delete($request);
+        return $this->factory->delete($this->id, $request);
     }
 }
