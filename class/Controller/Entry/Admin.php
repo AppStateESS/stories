@@ -36,14 +36,14 @@ class Admin extends User
     protected function createHtmlCommand(Request $request)
     {
         $entry = $this->factory->create();
-        \Canopy\Server::forward('./stories/Entry/' . $entry->id . '/edit');
+        \Canopy\Server::forward('./stories/Entry/' . $entry->id . '/edit/?new=1');
     }
 
     protected function editHtmlCommand(Request $request)
     {
         $this->viewStoryLink($this->id);
         $entry = $this->factory->load($this->id);
-        return $this->factory->form($entry);
+        return $this->factory->form($entry, $request->pullGetBoolean('new', true));
     }
 
     protected function postCommand(Request $request)
@@ -54,6 +54,11 @@ class Admin extends User
     protected function putCommand(Request $request)
     {
         return array('entryId' => $this->factory->put($this->id, $request));
+    }
+
+    protected function patchCommand(Request $request)
+    {
+        return array('entryId' => $this->factory->patch($this->id, $request));
     }
 
     protected function viewJsonCommand(Request $request)
