@@ -42,5 +42,9 @@ class BaseResource extends \phpws2\Resource
             return $this->$name->get();
         }
     }
+    
+    public function isEmpty($name) {
+        return $this->$name->isEmpty();
+    }
 
 }
