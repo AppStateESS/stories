@@ -2,17 +2,23 @@ sudo: false
 language: php
 php:
 - 7
-
 install:
 - nvm install 6
 - npm install
-
 script:
 - ".travis-build/phplint ."
-#- phpunit
-
 after_success:
 - npm run prod
 - rm -rf node_modules
 - tar -czf stories.tar.gz *
-
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: ZzqJw62tPTBg3cuRSMfsGclh4c38sR2PgcW4FzyDcMs90N1skKm+lQkjFy12yHaVyT8IxHzT1IZ2FWL0M22aYgNKyhk5/LOww3dV1yo1SueIZ+6A8EyFu6Us88fJhk+6BAhTjF/5Rc0a7fN1rk01oYnXDIJ81OA6c3RnrBdw7Wjht+Or9FbEx7GiA0ydIKzy0cOTKyNSdnschL9xgTWCFUkFgdNjY3/DknSxdDfx4PjurEdkQRijJEz1nWK6Dl6QwgccFtg3+OOAqad+8m2HJSVTU/9FvE4ABb+p3GLiw5NmFAUHmWTf+Q9W3fHu/cyq+wfdIO+V2t4TX3AMfbCSae34IzVUPghVoRWtGl/poQMCLxrEuXkxi23fwj+WdKCGSxus6BNY00Kk/M7ZVdgUmpdvQqHz+MbZKAn+ygXH1HqLXATlPv65ZeQ7uwdvoWyMK5fwJ/s8VbPjeNP0vMjaqg91L3MNP0SqkUGsQbQQsiT9wkisnWnU7k+L9rZ3f9Snaa3IPpkjzzPklu2gzZJUSsGAAgJ4xcMLkSy29w4HpJCxZP0qZ/WRbmi1ZKJ/uLlfXefsfu/L4ANIRNxGbXMm2dcoS3CnhVPCoXNXvfg5unnkfKN2z+nB/R2Puso5mhRoNvUva31GncGjADx6rSfhoeBQ/YIAhf1bcVJvkd3MqZ4=
+  file: stories.tar.gz
+  overwrite: true
+  on:
+    repo: AppStateESS/stories
+    branch: master
+    tags: true
