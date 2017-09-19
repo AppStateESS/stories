@@ -23,12 +23,35 @@ namespace stories\Controller\Listing;
 
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
+use stories\Controller\RoleController;
 
-class Admin extends User
+class Admin extends RoleController
 {
+
+    /**
+     * @var stories\Factory\EntryFactory Factory
+     */
+    protected $factory;
+
+    protected function loadFactory()
+    {
+        $this->factory = new Factory;
+    }
+
     public function getHtml(Request $request)
     {
         $this->addStoryLink();
         return parent::getHtml($request);
     }
+
+    protected function listHtmlCommand(Request $request)
+    {
+        return $this->factory->scriptView('EntryList');
+    }
+    
+    protected function listJsonCommand(Request $request)
+    {
+        return array('listing'=>$this->factory->pullList(array('includeContent'=>false)));
+    }
+
 }
