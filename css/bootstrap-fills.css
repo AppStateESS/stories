@@ -1,0 +1,13 @@
+/* A poor substitute but preparing for the future*/
+.mt-1 {
+  margin-top : .8em;
+}
+.mb-1 {
+  margin-bottom : .8em;
+}
+.ml-1 {
+  margin-left : .8em;
+}
+.mr-1 {
+  margin-right : .8em;
+}
