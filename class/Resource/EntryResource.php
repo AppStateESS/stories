@@ -67,6 +67,12 @@ class EntryResource extends BaseResource
     protected $expirationDate;
 
     /**
+     * Give precedence to this entry on feature block
+     * @var phpws2\Variable\BooleanVar
+     */
+    protected $forceFeature;
+    
+    /**
      * Time after the story may be published.
      * @var phpws2\Variable\IntegerVar 
      */
@@ -91,17 +97,17 @@ class EntryResource extends BaseResource
     protected $thumbnail;
 
     /**
-     * Give precedence to this entry on feature block
-     * @var phpws2\Variable\BooleanVar
-     */
-    protected $forceFeature;
-
-    /**
      * Title of story.
      * @var phpws2\Variable\TextOnly
      */
     protected $title;
 
+    /**
+     * Last updated
+     * @var phpws2\Variable\DateTime
+     */
+    protected $updateDate;
+    
     /**
      * @var string
      */
@@ -124,6 +130,8 @@ class EntryResource extends BaseResource
         $this->content->addAllowedTags(STORIES_CONTENT_TAGS);
         $this->createDate = new \phpws2\Variable\DateTime(0, 'createDate');
         $this->createDate->stamp();
+        $this->updateDate = new \phpws2\Variable\DateTime(0, 'updateDate');
+        $this->updateDate->stamp();
         $this->deleted = new \phpws2\Variable\BooleanVar(false, 'deleted');
         $this->expirationDate = new \phpws2\Variable\DateTime(0,
                 'expirationDate');
@@ -157,8 +165,37 @@ class EntryResource extends BaseResource
     public function filterContent($content)
     {
         $noControls = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s', '', $content));
-        $noExtraParagraphs = preg_replace('/(<p class=""><\/p>){2,}(<p class="medium-insert-active"><\/p>)$/s', '<p class="medium-insert-active"></p>', $noControls);
+        $noExtraParagraphs = preg_replace('/(<p class=""><\/p>){2,}|(<p class="medium-insert-active"><\/p>)$/s', '<p class="medium-insert-active"></p>', $noControls);
         return $noExtraParagraphs;
+    }
+    
+    public function getStringVars($return_null = false, $hide = null)
+    {
+        $vars = parent::getStringVars($return_null, $hide);
+        $vars['createDate'] = $this->relativeTime($this->createDate->get());
+        return $vars;
+    }
+    
+    private function relativeTime($date) {
+        $timepassed = time() - $date;
+        
+        if (strftime('%Y', $date) != strftime('%Y')) {
+            return strftime('%b %e, %g', $date);
+        } elseif ($timepassed < (86400 * STORIES_DAY_THRESHOLD)) {
+            $days = floor($timepassed / 86400);
+            if ($days == 0) {
+                return 'Today';
+            } else {
+                return $days > 1 ? "$days days ago" : "$days day ago";
+            }
+        } else {
+            return strftime('%b %e', $date);
+        }
+    }
+    
+    public function stamp()
+    {
+        $this->updateDate->stamp();
     }
 
 }
