@@ -28,8 +28,9 @@ namespace stories\Factory;
 
 use phpws2\Database;
 use Canopy\Request;
+use phpws2\Settings;
 
-require_once PHPWS_SOURCE_DIR . 'mod/stories/lib/UploadHandler.php';
+require_once PHPWS_SOURCE_DIR . 'mod/stories/class/UploadHandler.php';
 
 /**
  * @author Matthew McNaney <mcnaneym@appstate.edu>
@@ -47,20 +48,48 @@ class EntryPhotoFactory
         $entryId = $request->pullPostInteger('entryId');
         $imageDirectory = "images/stories/$entryId/";
         $imagePath = PHPWS_HOME_DIR . $imageDirectory;
-        /*
-        if (!is_dir($imagePath)) {
-            mkdir($imagePath);
-        }
-        */
+
         $options = array(
-            'max_width' => 1920,
-            'max_height' => 1080,
+            'max_width' => Settings::get('stories', 'image_max_width'),
+            'max_height' => Settings::get('stories', 'image_max_height'),
             'corrent_image_extensions' => true,
             'upload_dir' => $imagePath,
-            'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory
+            'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory,
+            'image_versions' => array('thumbnail' => array('max_width' => Settings::get('stories',
+                            'thumb_max_width'), 'max_height' => Settings::get('stories',
+                            'thumb_max_height')))
         );
         $upload_handler = new \UploadHandler($options, false);
         return $upload_handler->post(false);
+    }
+
+    public function delete($entryId, Request $request)
+    {
+        $file = $request->pullDeleteString('file');
+        $path = \Canopy\Server::getSiteUrl(true) . 'images/stories/' . $entryId . '/';
+        $filenameOnly = urldecode(preg_replace("@$path@", '', $file));
+        $cleanName = "images/stories/$entryId/$filenameOnly";
+        if (is_file($cleanName)) {
+            unlink($cleanName);
+        }
+        $this->deleteThumbnail($entryId, $filenameOnly);;
+        return true;
+    }
+
+    private function deleteThumbnail($entryId, $filename)
+    {
+        $thumbnailPath = 'images/stories/' . $entryId . '/thumbnail/' . $filename;
+        $thumbnailUrl = \Canopy\Server::getSiteUrl(true) . $thumbnailPath;
+        if (is_file($thumbnailPath)) {
+            unlink($thumbnailPath);
+        }
+        
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntry');
+        $tbl->addFieldConditional('id', $entryId);
+        $tbl->addFieldConditional('thumbnail', $thumbnailUrl);
+        $tbl->addValue('thumbnail', null);
+        $db->update();
     }
 
 }
