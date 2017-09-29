@@ -61,6 +61,12 @@ class Admin extends User
         return array('entryId' => $this->factory->patch($this->id, $request));
     }
 
+    protected function deleteCommand(Request $request)
+    {
+        $this->factory->delete($this->id);
+        return array('success'=>true);
+    }
+    
     protected function viewJsonCommand(Request $request)
     {
         return array('entry' => $this->factory->data($this->id));
