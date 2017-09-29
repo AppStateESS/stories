@@ -51,7 +51,7 @@ class Admin extends RoleController
     
     protected function listJsonCommand(Request $request)
     {
-        return array('listing'=>$this->factory->pullList(array('includeContent'=>false)));
+        return array('listing'=>$this->factory->adminListView($request));
     }
 
 }
