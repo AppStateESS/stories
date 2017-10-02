@@ -39,25 +39,27 @@ class EntryFactory extends BaseFactory
         return parent::load($id);
     }
 
-    public function listView(Request $request)
+    public function adminListView(Request $request)
     {
         $segmentSize = \phpws2\Settings::get('stories', 'segmentSize');
         // if offset not set, default 0
         $offset = (int) $request->pullGetString('offset', true);
         $offsetSize = $segmentSize * $offset;
 
-        $options = array('orderBy' => array('column' => 'publishDate', 'direction' => 'desc'),
-            'publishedOnly' => true,
+        $orderBy = $request->pullGetString('sortBy', true);
+        if (!in_array($orderBy, array('publishDate', 'title', 'updateDate'))) {
+            $orderBy = 'publishDate';
+        }
+
+        $options = array(
+            'orderBy' => $orderBy,
+            'publishedOnly' => false,
             'hideExpired' => true,
             'limit' => $segmentSize,
             'offset' => $offsetSize
         );
 
-        $vars['cssOverride'] = $this->mediumCSSOverride();
-        $vars['listing'] = $this->pullList($options);
-        $template = new Template($vars);
-        $template->setModuleTemplate('stories', 'Entry/ListView.html');
-        return $template->get();
+        return $this->pullList($options);
     }
 
     public function pullList(array $options = null)
@@ -67,7 +69,7 @@ class EntryFactory extends BaseFactory
 
         $defaultOptions = array('publishedOnly' => false,
             'hideExpired' => false,
-            'orderBy' => array('column' => 'publishDate', 'direction' => 'desc'),
+            'orderBy' => 'publishDate',
             'limit' => 30,
             'includeContent' => true,
             'offset' => 0);
@@ -114,8 +116,8 @@ class EntryFactory extends BaseFactory
                 $db->createConditional($tbl->getField('authorId'),
                         $tbl2->getField('id')), 'left');
         if (isset($options['orderBy'])) {
-            extract($options['orderBy']);
-            $tbl->addOrderBy($column, $direction);
+            $tbl->addOrderBy($options['orderBy'],
+                    $options['orderBy'] === 'title' ? 'asc' : 'desc');
         }
 
         if (isset($options['limit'])) {
@@ -126,6 +128,9 @@ class EntryFactory extends BaseFactory
             }
         }
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
+        if (empty($objectList)) {
+            return null;
+        }
         foreach ($objectList as $entry) {
             $listing[] = $entry->getStringVars();
         }
@@ -148,7 +153,7 @@ class EntryFactory extends BaseFactory
         return self::saveResource($entry);
     }
 
-    public function form(Resource $entry, $new=false)
+    public function form(Resource $entry, $new = false)
     {
         $sourceHttp = PHPWS_SOURCE_HTTP;
         $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
@@ -276,24 +281,52 @@ EOF;
 
     public function patch($entryId, Request $request)
     {
+        $param = null;
+        $value = null;
+
         $entry = $this->load($entryId);
-        switch ($request->pullPatchString('param')) {
-            case 'published':
-                $entry->published = $request->pullPatchBoolean('value');
-                break;
-            
-            default:
-                throw new MissingInput;
+        if ($request->patchVarIsset('values')) {
+            $values = $request->pullPatchArray('values');
+            foreach ($values as $val) {
+                extract($val);
+                $this->patchEntry($entry, $param, $value);
+            }
+        } else {
+            $this->patchEntry($request->pullPatchString('param'),
+                    $request->pullPatchVar('value'));
         }
 
         self::saveResource($entry);
         return $entry->id;
     }
 
+    private function patchEntry(Resource $entry, $param, $value)
+    {
+        switch ($param) {
+            default:
+                $entry->$param = $value;
+        }
+    }
+
     public function data($id)
     {
         $entry = $this->load($id);
         return $entry->getStringVars(true);
+    }
+
+    public function delete($id)
+    {
+        $entry = $this->load($id);
+        $entry->deleted = true;
+        self::saveResource($entry);
+    }
+
+    public function purge($id)
+    {
+        $entry = $this->load($id);
+        if (!$entry->deleted) {
+            throw new \stories\Exception\CannotPurge;
+        }
     }
 
     public function view($id)
