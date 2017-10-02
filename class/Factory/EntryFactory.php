@@ -51,7 +51,10 @@ class EntryFactory extends BaseFactory
             $orderBy = 'publishDate';
         }
 
+        $search = $request->pullGetString('search', true);
+        
         $options = array(
+            'search' => $search,
             'orderBy' => $orderBy,
             'publishedOnly' => false,
             'hideExpired' => true,
@@ -101,6 +104,11 @@ class EntryFactory extends BaseFactory
             $tbl->addFieldConditional('publishDate', $now, '<');
         }
 
+        if (isset($options['search']) && strlen($options['search']) >= 3) {
+            $s1 = $db->createConditional($tbl->getField('title'), '%' . $options['search'] . '%', 'like');
+            $db->addConditional($s1);
+        }
+        
         if (!$options['hideExpired']) {
             $expire1 = $db->createConditional($tbl->getField('expirationDate'),
                     0);
@@ -127,6 +135,7 @@ class EntryFactory extends BaseFactory
                 $db->setLimit($options['limit']);
             }
         }
+        
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
         if (empty($objectList)) {
             return null;

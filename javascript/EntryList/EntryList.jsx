@@ -17,20 +17,23 @@ export default class EntryList extends Component {
     this.state = {
       listing: [],
       selected: null,
+      search: '',
       loading: true,
       currentEntry: null,
-      search: '',
       sortBy: 'published',
       publishOverlay: false,
-      tags: ''
+      tags: '',
     }
+    this.delay
     this.currentKey = null
     this.publish = this.publish.bind(this)
-    this.deleteStory = this.deleteStory.bind(this)
     this.updateSort = this.updateSort.bind(this)
+    this.updateTags = this.updateTags.bind(this)
+    this.clearSearch = this.clearSearch.bind(this)
+    this.deleteStory = this.deleteStory.bind(this)
     this.publishStory = this.publishStory.bind(this)
     this.closeOverlay = this.closeOverlay.bind(this)
-    this.updateTags = this.updateTags.bind(this)
+    this.searchChange = this.searchChange.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
   }
 
@@ -64,19 +67,30 @@ export default class EntryList extends Component {
   load() {
     $.getJSON('./stories/Listing', {
       search: this.state.search,
-      sortBy: this.state.sortBy,
+      sortBy: this.state.sortBy
     }).done(function (data) {
       if (data.listing == null) {
-        this.setState({listing: false, loading: false})
+        this.setState({listing: false, loading: false,})
       } else {
-        this.setState({listing: data.listing, loading: false,})
+        this.setState({listing: data.listing, loading: false})
       }
     }.bind(this))
   }
 
   searchChange(e) {
+    clearTimeout(this.delay)
     const search = e.target.value
     this.setState({search: search})
+    if (search.length < 3 && search.length > 0) {
+      return
+    }
+    this.delay = setTimeout(function () {
+      this.load()
+    }.bind(this, search), 500)
+  }
+
+  clearSearch() {
+    this.setState({search: ''}, this.load)
   }
 
   setCurrentEntry(key) {
@@ -91,10 +105,10 @@ export default class EntryList extends Component {
         values: [
           {
             param: 'published',
-            value: 1
+            value: 1,
           }, {
             param: 'publishDate',
-            value: this.state.currentEntry.publishDate
+            value: this.state.currentEntry.publishDate,
           },
         ]
       },
@@ -106,7 +120,7 @@ export default class EntryList extends Component {
         currentEntry.published = 1
         this.updateListing(this.currentKey, currentEntry)
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -116,7 +130,7 @@ export default class EntryList extends Component {
   }
 
   closeOverlay() {
-    this.setState({publishOverlay: false, currentEntry: null,})
+    this.setState({publishOverlay: false, currentEntry: null})
     this.currentKey = null
   }
 
@@ -132,26 +146,28 @@ export default class EntryList extends Component {
           listing.splice(key, 1)
           this.setState({listing: listing})
         }.bind(this),
-        error: function () {}.bind(this)
+        error: function () {}.bind(this),
       })
     }
   }
 
   render() {
+    let listing
+
     if (this.state.loading) {
       return <Waiting label="stories"/>
     } else if (this.state.listing === false) {
-      return <NoEntries/>
+      listing = <NoEntries/>
+    } else {
+      listing = this.state.listing.map(function (entry, key) {
+        return <EntryRow
+          deleteStory={this.deleteStory.bind(this, key)}
+          entry={entry}
+          publishStory={this.publishStory.bind(this, key)}
+          key={key}
+          publish={this.publish.bind(this, key)}/>
+      }.bind(this))
     }
-
-    let listing = this.state.listing.map(function (entry, key) {
-      return <EntryRow
-        deleteStory={this.deleteStory.bind(this, key)}
-        entry={entry}
-        publishStory={this.publishStory.bind(this, key)}
-        key={key}
-        publish={this.publish.bind(this, key)}/>
-    }.bind(this))
 
     const fadeIn = {
       animation: "fadeIn"
@@ -177,6 +193,7 @@ export default class EntryList extends Component {
         <ListControls
           sortBy={this.state.sortBy}
           search={this.state.search}
+          clearSearch={this.clearSearch}
           handleChange={this.searchChange}
           updateSort={this.updateSort}/>
         <div>{listing}</div>
@@ -186,7 +203,7 @@ export default class EntryList extends Component {
 }
 
 const NoEntries = () => {
-  return <p>No stories found.
+  return <p>No stories found.&nbsp;
     <a href="./stories/Entry/create">Create your first story!</a>
   </p>
 }

@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const ListControls = (props) => {
-  const {search, handleChange, updateSort, sortBy} = props
+  const {search, handleChange, clearSearch,} = props
   return (
     <div className="mb-1 row">
       <div className="col-sm-3">
@@ -14,12 +14,17 @@ const ListControls = (props) => {
         <SortBy {...props}/>
       </div>
       <div className="col-sm-6">
-        <input
-          className="form-control"
-          type="text"
-          value={search}
-          onChange={handleChange}
-          placeholder="Search..."/>
+        <div className="input-group">
+          <input
+            className="form-control"
+            value={search}
+            type="text"
+            placeholder="Search for stories..."
+            onChange={handleChange}/>
+          <span className="input-group-btn">
+            <button className="btn btn-default" type="button" onClick={clearSearch}>Clear</button>
+          </span>
+        </div>
       </div>
     </div>
   )
@@ -27,12 +32,13 @@ const ListControls = (props) => {
 
 ListControls.propTypes = {
   search: PropTypes.string,
+  clearSearch: PropTypes.func,
   handleChange: PropTypes.func,
   updateSort: PropTypes.func,
-  sortBy: PropTypes.string,
+  sortBy: PropTypes.string
 }
 
-const SortBy = ({sortBy, updateSort}) => {
+const SortBy = ({sortBy, updateSort,}) => {
   let sortStr
   switch (sortBy) {
 
@@ -71,7 +77,7 @@ const SortBy = ({sortBy, updateSort}) => {
 
 SortBy.propTypes = {
   sortBy: PropTypes.string,
-  updateSort: PropTypes.func,
+  updateSort: PropTypes.func
 }
 
 export default ListControls
