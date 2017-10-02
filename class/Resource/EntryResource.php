@@ -137,6 +137,8 @@ class EntryResource extends BaseResource
                 'expirationDate');
         $this->expirationDate->setPrintEmpty(false);
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
+        $this->publishDate->stamp();
+        $this->publishDate->setFormat(null);
         $this->publishDate->setPrintEmpty(false);
         $this->published = new \phpws2\Variable\BooleanVar(false, 'published');
         $this->summary = new \phpws2\Variable\StringVar(null, 'summary');
@@ -172,25 +174,9 @@ class EntryResource extends BaseResource
     public function getStringVars($return_null = false, $hide = null)
     {
         $vars = parent::getStringVars($return_null, $hide);
-        $vars['createDate'] = $this->relativeTime($this->createDate->get());
+        $vars['createDateRelative'] = $this->relativeTime($this->createDate->get());
+        $vars['publishDateRelative'] = $this->relativeTime($this->publishDate->get());
         return $vars;
-    }
-    
-    private function relativeTime($date) {
-        $timepassed = time() - $date;
-        
-        if (strftime('%Y', $date) != strftime('%Y')) {
-            return strftime('%b %e, %g', $date);
-        } elseif ($timepassed < (86400 * STORIES_DAY_THRESHOLD)) {
-            $days = floor($timepassed / 86400);
-            if ($days == 0) {
-                return 'Today';
-            } else {
-                return $days > 1 ? "$days days ago" : "$days day ago";
-            }
-        } else {
-            return strftime('%b %e', $date);
-        }
     }
     
     public function stamp()
