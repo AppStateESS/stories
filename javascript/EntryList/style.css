@@ -2,23 +2,23 @@
   background-color: #d2d2d2;
 }
 
-#EntryList .entry-toolbar {
-  background-color :#D4FECE;
-  border : 1px solid #89F879;
-  border-radius : 6px;
-  margin-bottom : 1em;
-  padding : 6px;
-  width : 80%;
-  position : fixed;
-  z-index: 100;
+#EntryList .entry-row {
+  border-bottom : 1px dotted #A9A9A9;
+  padding : 1em 0;
 }
 
-#EntryList .entry-row:hover {
-  cursor: pointer;
+.entry-row a.admin {
+  color : #B9B9B9;
+  padding : 4px;
+  border : 1px solid #c1c1c1;
+  border-radius : 4px;
+  font-size : 14px;
 }
-#EntryList .entry-row {
-  border : 1px solid #A9A9A9;
-  border-radius : 6px;
+
+.entry-row a.admin:hover {
+  color : #000;
+  text-decoration: none;
+  border : 1px solid #000;
 }
 
 #EntryList .entry-row h3 {
@@ -43,6 +43,28 @@
   margin-top : 2em;
 }
 
-.toolbar-buffer {
-  height : 60px;
+ul.sortby {
+  padding : 8px;
+}
+
+ul.sortby li {
+  font-size : 14px;
+  font-family : sans-serif;
+}
+
+.relative  {
+  position : relative;
+}
+
+.popup {
+  border : 1px solid #c9c9c9;
+  border-radius : 6px;
+  padding: 5px;
+  width: 300px;
+  height: 200px;
+  background-color : white;
+  position : absolute;
+  z-index: 50;
+  top : 30px;
+  left : 30px;
 }
