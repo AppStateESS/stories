@@ -9,6 +9,9 @@ export default class EntryForm {
       title: '',
       content: '<p class="medium-insert-active"><p>',
     }
+    window.onunload = function() {
+      this.save()
+    }.bind(this)
     // status is the jquery node/object for the status text
     this.status = status
   }
