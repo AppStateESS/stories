@@ -52,7 +52,7 @@ class EntryFactory extends BaseFactory
         }
 
         $search = $request->pullGetString('search', true);
-        
+
         $options = array(
             'search' => $search,
             'orderBy' => $orderBy,
@@ -105,10 +105,11 @@ class EntryFactory extends BaseFactory
         }
 
         if (isset($options['search']) && strlen($options['search']) >= 3) {
-            $s1 = $db->createConditional($tbl->getField('title'), '%' . $options['search'] . '%', 'like');
+            $s1 = $db->createConditional($tbl->getField('title'),
+                    '%' . $options['search'] . '%', 'like');
             $db->addConditional($s1);
         }
-        
+
         if (!$options['hideExpired']) {
             $expire1 = $db->createConditional($tbl->getField('expirationDate'),
                     0);
@@ -135,7 +136,7 @@ class EntryFactory extends BaseFactory
                 $db->setLimit($options['limit']);
             }
         }
-        
+
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
         if (empty($objectList)) {
             return null;
@@ -169,12 +170,16 @@ class EntryFactory extends BaseFactory
         $vars['cssOverride'] = $this->mediumCSSOverride();
         $entryId = $entry->id;
         $vars['home'] = $sourceHttp;
+        $vars['publishBar'] = $this->scriptView('PublishBar');
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
         $vars['content'] = $this->prepareFormContent($entry->content);
         $vars['insert'] = "<script src='$insertSource'></script>";
-        $vars['entryId'] = "<script>let entryId=$entryId</script>";
-        $vars['status'] = $new ? 'Draft' : 'Saved';
+        $vars['published'] = $entry->published ? 1 : 0;
+        $vars['publishDate'] = $entry->publishDate;
+        $vars['entryId'] = $entryId;
+        $vars['title'] = $entry->title;
+        $vars['status'] = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
         $template = new \phpws2\Template($vars);
         $template->setModuleTemplate('stories', 'Entry/Form.html');
         return $template->get();
@@ -301,7 +306,7 @@ EOF;
                 $this->patchEntry($entry, $param, $value);
             }
         } else {
-            $this->patchEntry($request->pullPatchString('param'),
+            $this->patchEntry($entry, $request->pullPatchString('param'),
                     $request->pullPatchVar('value'));
         }
 
