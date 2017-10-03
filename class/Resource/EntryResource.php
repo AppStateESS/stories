@@ -173,15 +173,20 @@ class EntryResource extends BaseResource
     
     public function getStringVars($return_null = false, $hide = null)
     {
+        $factory = new \stories\Factory\EntryFactory;
         $vars = parent::getStringVars($return_null, $hide);
-        $vars['createDateRelative'] = $this->relativeTime($this->createDate->get());
-        $vars['publishDateRelative'] = $this->relativeTime($this->publishDate->get());
+        $vars['createDateRelative'] = $factory->relativeTime($this->createDate->get());
+        $vars['publishDateRelative'] = $factory->relativeTime($this->publishDate->get());
         return $vars;
     }
     
     public function stamp()
     {
         $this->updateDate->stamp();
+    }
+    
+    public function getPublishDate($format = null) {
+        return $this->publishDate->get($format);
     }
 
 }
