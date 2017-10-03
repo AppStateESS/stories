@@ -5,5 +5,6 @@ exports.entry = {
   MediumEditorPack: exports.APP_DIR + '/EntryForm/MediumEditorPack.js',
   EntryList: exports.APP_DIR + '/EntryList/index.jsx',
   EntryForm: exports.APP_DIR + '/EntryForm/EntryForm.js',
+  PublishBar: exports.APP_DIR + '/PublishBar/index.jsx',
   vendor: ['react', 'react-dom']
 }
