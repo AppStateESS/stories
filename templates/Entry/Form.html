@@ -1,31 +1,37 @@
 <style>
-  .entry {
-    margin: 0 4em;
-    padding: 4px 8px;
-  }
+    .entry {
+        margin: 0 4em;
+        padding: 4px 8px;
+    }
 
-  .entry-title {
-    margin-bottom: 1em;
-  }
+    .entry-title {
+        margin-bottom: 1em;
+    }
 
-  .entry-title input {
-    font-size: 30px;
-  }
+    .entry-title input {
+        font-size: 30px;
+    }
 
-  .status-bar {
-    margin-bottom: 1em;
-  }
+    .status-bar {
+        margin-bottom: 1em;
+    }
 
 </style>
 <script src="<?=$home?>mod/stories/node_modules/jquery-sortable/source/js/jquery-sortable-min.js"></script>
+<script>const entryId = '<?=$entryId?>'; const title = '<?=$title?>'; const published = '<?=$published?>'; const publishDate = '<?=$publishDate?>';</script>
 <div class="entry">
-  <div class="status-bar">
-      Status: <span id="story-status"><?=$status?></span>
-  </div>
-  <div class="entry-form"></div>
-  <?=$entryId,$MediumEditorPack,$EntryForm,$insert,$cssOverride?>
-      <script>
+    <div class="status-bar row">
+        <div class="col-sm-6">
+            Status: <span id="story-status"><?=$status?></span>
+        </div>
+        <div class="col-sm-6">
+            <?=$publishBar?>
+        </div>
+    </div>
+    <div class="entry-form"></div>
+    <?=$MediumEditorPack,$EntryForm,$insert,$cssOverride?>
+    <script>
         editor.setContent('<?=$content?>')
-      </script>
-      <hr />
+    </script>
+    <hr />
 </div>
