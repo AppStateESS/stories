@@ -1,7 +1,7 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import moment from  'moment'
+import moment from 'moment'
 
 const EntryRow = (props) => {
   const noImage = () => {
@@ -43,16 +43,22 @@ const EntryRow = (props) => {
     expire = 'Never'
   }
 
-  let publish = publishDate
-  let publishLabel = 'Published on'
-
-  if (!published) {
-    publish = 'Unpublished'
+  let publishLabel
+  let publishInfo
+  if (published == 0) {
+    publishInfo = 'Unpublished'
   } else {
     if (publishDate >= moment().format('X')) {
       publishLabel = 'Publish on'
+    } else {
+      publishLabel = 'Published on'
     }
-    publish = <abbr title={moment.unix(publishDate).format('LLLL')}>{publishDateRelative}</abbr>
+    publishInfo = (
+      <div>
+        {publishLabel}&nbsp;
+        <abbr title={moment.unix(publishDate).format('LLLL')}>{publishDateRelative}</abbr>
+      </div>
+    )
   }
 
   return (
@@ -72,8 +78,8 @@ const EntryRow = (props) => {
           <strong>Author:</strong>&nbsp;
           <a href={mailto}>{authorName}</a><br/>
           <strong>Created:</strong>&nbsp;
-          <abbr title={createDate}>{createDateRelative}</abbr><br/>
-          <strong>{publishLabel}</strong>&nbsp;{publish}
+          <abbr title={createDate}>{createDateRelative}</abbr><br/> {publishInfo}
+
           <br/>
           <strong>Expires:</strong>&nbsp; {expire}
         </div>
