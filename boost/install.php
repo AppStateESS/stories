@@ -26,6 +26,20 @@ function stories_install(&$content)
     try {
         $entry = new \stories\Resource\EntryResource;
         $entry->createTable($db);
+        $db->clearTables();
+
+        $author = new \stories\Resource\AuthorResource;
+        $author->createTable($db);
+        $db->clearTables();
+
+        $tag = new \stories\Resource\TagResource;
+        $tag->createTable($db);
+        $db->clearTables();
+        
+        $tagToEntry = $db->buildTable('storiesTagToEntry');
+        $tagToEntry->addDataType('entryId', 'int');
+        $tagToEntry->addDataType('tagId', 'int');
+        $tagToEntry->create();
         
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
