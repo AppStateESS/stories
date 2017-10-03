@@ -12,7 +12,14 @@
 
 namespace stories\Resource;
 
-class Tag
+class TagResource extends BaseResource
 {
+    protected $title;
     
+    protected $table = 'storiesTag';
+    
+    public function __construct() {
+        parent::__construct();
+        $this->title = new \phpws2\Variable\TextOnly(null, 'title');
+    }
 }
