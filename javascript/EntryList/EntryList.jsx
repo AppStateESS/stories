@@ -6,7 +6,7 @@ import './style.css'
 import EntryRow from './EntryRow'
 //import SearchBar from './SearchBar'
 import ListControls from './Listcontrols'
-import PublishOverlay from './PublishOverlay'
+import PublishOverlay from '../AddOn/PublishOverlay'
 import {VelocityTransitionGroup} from 'velocity-react'
 import moment from 'moment'
 /* global $ */
@@ -35,6 +35,7 @@ export default class EntryList extends Component {
     this.closeOverlay = this.closeOverlay.bind(this)
     this.searchChange = this.searchChange.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
+    this.savePublish = this.savePublish.bind(this)
   }
 
   componentDidMount() {
@@ -151,6 +152,24 @@ export default class EntryList extends Component {
     }
   }
 
+  savePublish() {
+    console.log(this.currentKey)
+    $.ajax({
+      url: `./stories/Entry/${this.state.currentEntry.id}`,
+      data: {
+        param: 'publishDate',
+        value : this.state.currentEntry.publishDate
+      },
+      dataType: 'json',
+      type: 'patch',
+      success: function () {
+        this.setState({publishOverlay: false})
+        this.updateListing(this.currentKey, this.state.currentEntry)
+      }.bind(this),
+      error: function () {}.bind(this),
+    })
+  }
+
   render() {
     let listing
 
@@ -177,6 +196,7 @@ export default class EntryList extends Component {
       animation: "fadeOut"
     }
 
+
     return (
       <div>
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
@@ -185,7 +205,10 @@ export default class EntryList extends Component {
                 updateTags={this.updateTags}
                 tags={this.state.tags}
                 close={this.closeOverlay}
-                entry={this.state.currentEntry}
+                save={this.savePublish}
+                title={this.state.currentEntry.title}
+                published={this.state.currentEntry.published}
+                publishDate={this.state.currentEntry.publishDate}
                 setPublishDate={this.setPublishDate}
                 publishStory={this.publish}/>
             : null}
