@@ -99,4 +99,37 @@ EOF;
         return $json[$scriptName]['js'];
     }
 
+    public function relativeTime($date)
+    {
+        $timepassed = time() - mktime(0, 0, 0, strftime('%m', $date),
+                        strftime('%d', $date), strftime('%Y', $date));
+
+        $rawday = ($timepassed / 86400);
+        $days = floor($rawday);
+
+        switch ($days) {
+            case 0:
+                return 'Today at ' . strftime('%l:%M%P', $date);
+
+            case 1:
+                return 'Yesterday at ' . strftime('%l:%M%P', $date);
+
+            case -1:
+                return 'Tomorrow at ' . strftime('%l:%M%P', $date);
+
+            case ($days > 0 && $days < STORIES_DAY_THRESHOLD):
+                return "$days days ago";
+
+            case ($days < 0 && abs($days) < STORIES_DAY_THRESHOLD):
+                return 'in ' . abs($days) . ' days';
+
+            default:
+                if (strftime('%Y', $date) != strftime('%Y')) {
+                    return strftime('%b %e, %g', $date);
+                } else {
+                    return strftime('%b %e', $date);
+                }
+        }
+    }
+
 }
