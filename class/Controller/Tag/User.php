@@ -48,5 +48,10 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
-
+    
+    protected function entryJsonCommand(Request $request)
+    {
+        return $this->factory->getTagsByEntryId($request->pullGetInteger('entryId'), true);
+    }
+    
 }
