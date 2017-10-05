@@ -57,7 +57,9 @@ class TagFactory extends BaseFactory
         // save new tags and apply to entry
         foreach ($tagArray as $tag) {
             $tagId = $this->saveTag($tag);
-            $this->applyTagToEntry($entryId, $tagId);
+            if ($tagId) {
+                $this->applyTagToEntry($entryId, $tagId);
+            }
         }
     }
 
@@ -80,30 +82,45 @@ class TagFactory extends BaseFactory
      * @param string $tag
      * @return integer Id of tag
      */
-    public function saveTag($tag)
+    public function saveTag($tagTitle)
     {
-        $tag = $this->prepareTag($tag);
-        $tag = $this->getTagByTitle($tag);
+        $tagTitle = $this->prepareTag($tagTitle);
+        if (empty($tagTitle)) {
+            return;
+        }
+        $tag = $this->getTagByTitle($tagTitle);
         if (empty($tag)) {
             $tag = $this->build();
-            $tag->title = $tag;
+            $tag->title = $tagTitle;
             self::saveResource($tag);
         }
 
         return $tag->id;
     }
 
-    public function getTagsByEntryId($entryId)
+    public function getTagsByEntryId($entryId, $selectValues = false)
     {
         $db = Database::getDB();
         $tagTbl = $db->addTable('storiesTag');
-        $tteTbl = $db->addTable('storiesTagToEntry');
-        $tagTbl->addField('title');
+        $tteTbl = $db->addTable('storiesTagToEntry', null, false);
+        //$tagTbl->addField('title');
         $cond = $db->createConditional($tteTbl->getField('tagId'),
                 $tagTbl->getField('id'), '=');
         $db->joinResources($tagTbl, $tteTbl, $cond);
         $tteTbl->addFieldConditional('entryId', $entryId);
-        $db->select();
+        $tags = $db->select();
+
+        if (empty($tags)) {
+            return array();
+        }
+        if ($selectValues) {
+            foreach ($tags as $row) {
+                $newTagList[] = $this->selectValuesFromArray($row);
+            }
+            return $newTagList;
+        } else {
+            return $tags;
+        }
     }
 
     public function clearEntryTags($entryId)
@@ -143,6 +160,30 @@ class TagFactory extends BaseFactory
         $tbl = $db->addTable('storiesTagToEntry');
         $tbl->addFieldConditional('tagId', $id);
         $db->delete();
+    }
+
+    private function selectValuesFromArray($val)
+    {
+        return array('value' => $val['id'], 'label' => $val['title']);
+    }
+
+    public function listTags($selectValues = false)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesTag');
+        $tbl->addOrderBy('title');
+        $result = $db->select();
+        if (empty($result)) {
+            return;
+        }
+        if (!$selectValues) {
+            return $result;
+        } else {
+            foreach ($result as $row) {
+                $newResult[] = $this->selectValuesFromArray($row);
+            }
+            return $newResult;
+        }
     }
 
 }
