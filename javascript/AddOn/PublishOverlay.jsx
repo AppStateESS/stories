@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Overlay from './Overlay'
 import moment from 'moment'
+import Tags from './Tags'
+import 'react-select/dist/react-select.min.css'
 
 const PublishOverlay = ({
   publishDate,
@@ -11,10 +13,11 @@ const PublishOverlay = ({
   close,
   publishStory,
   setPublishDate,
-  updateTags,
   tags,
+  entryTags,
+  tagChange,
+  newOptionClick
 }) => {
-
   let formattedDate = moment().format('YYYY-MM-DDThh:mm')
   if (publishDate.length !== 0) {
     formattedDate = moment.unix(publishDate).format('YYYY-MM-DDTkk:mm')
@@ -35,7 +38,9 @@ const PublishOverlay = ({
   }
 
   let publishButton
-  const closeButton = (<button className="btn btn-default btn-block" onClick={saveClose}>Close</button>)
+  const closeButton = (
+    <button className="btn btn-default btn-block" onClick={saveClose}>Close</button>
+  )
 
   if (published == 0) {
     publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publishClose}>Publish</button>
@@ -49,11 +54,11 @@ const PublishOverlay = ({
       title={`Publish story: ${title}`}>
       <div className="mb-1">
         Before publishing you may choose to add a few tags:
-        <textarea
-          className="form-control"
-          onChange={updateTags}
-          value={tags}
-          placeholder="Add tags here separated by commas"/>
+        <Tags
+          tags={tags}
+          entryTags={entryTags}
+          newOptionClick={newOptionClick}
+          tagChange={tagChange}/>
       </div>
       <div className="text-center mb-1">
         Show story after:&nbsp;
@@ -72,7 +77,7 @@ const PublishOverlay = ({
 }
 
 PublishOverlay.propTypes = {
-  tags: PropTypes.string,
+  tags: PropTypes.array,
   save: PropTypes.func,
   published: PropTypes.string,
   publishDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
@@ -80,7 +85,8 @@ PublishOverlay.propTypes = {
   close: PropTypes.func,
   publishStory: PropTypes.func,
   setPublishDate: PropTypes.func,
-  updateTags: PropTypes.func
+  tagChange: PropTypes.func,
+  updateTags: PropTypes.func,
 }
 
 export default PublishOverlay
