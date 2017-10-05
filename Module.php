@@ -49,7 +49,8 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         } catch (\Exception $e) {
             if (STORIES_FRIENDLY_ERROR) {
                 \phpws2\Error::log($e);
-                echo \Layout::wrap('<div class="jumbotron"><h1>Uh oh...</h1><p>An error occurred with Stories.</p></div>', 'Stories Error', true);
+                echo \Layout::wrap('<div class="jumbotron"><h1>Uh oh...</h1><p>An error occurred with Stories.</p></div>',
+                        'Stories Error', true);
                 exit();
             } else {
                 throw $e;
@@ -65,6 +66,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
 
     public function afterRun(Request $request, Response $response)
     {
+        
     }
 
     private function loadDefines()
@@ -80,6 +82,9 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
 
     public function runTime(Request $request)
     {
+        if (\Current_User::allow('stories')) {
+            \stories\Factory\StoryMenu::listStoryLink();
+        }
     }
 
     public static function autoloader($class_name)
