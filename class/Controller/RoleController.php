@@ -14,6 +14,7 @@ namespace stories\Controller;
 
 use stories\Exception\BadCommand;
 use stories\Exception\PrivilegeMissing;
+use stories\Factory\StoryMenu;
 use phpws2\Database;
 use Canopy\Request;
 
@@ -73,7 +74,6 @@ abstract class RoleController
     public function getHtml(Request $request)
     {
         \Layout::addToStyleList('mod/stories/css/bootstrap-fills.css');
-        $this->listStoryLink();
         $command = $this->pullGetCommand($request);
 
         $method_name = $command . 'HtmlCommand';
@@ -194,37 +194,4 @@ abstract class RoleController
     {
         throw new PrivilegeMissing(__FUNCTION__);
     }
-
-    protected function addStoryLink()
-    {
-        $link = '<a href="./stories/Entry/create"><i class="fa fa-pencil"></i> Add story</a>';
-        \MiniAdmin::add('stories', $link);
-    }
-
-    protected function editStoryLink($entryId)
-    {
-        $link = '<a href="./stories/Entry/' . $entryId . '/edit"><i class="fa fa-edit"></i> Edit story</a>';
-        \MiniAdmin::add('stories', $link);
-    }
-
-    protected function viewStoryLink($entryId)
-    {
-        $link = '<a href="./stories/Entry/' . $entryId . '"><i class="fa fa-book"></i> View story</a>';
-        \MiniAdmin::add('stories', $link);
-    }
-
-    protected function listStoryLink()
-    {
-        $link = '<a href="./stories/Listing/"><i class="fa fa-list"></i> List</a>';
-        \MiniAdmin::add('stories', $link);
-    }
-
-    protected function mediumCSSLink()
-    {
-        $homeHttp = PHPWS_HOME_HTTP;
-        return <<<EOF
-<link type="text/css" rel="stylesheet" href="{$homeHttp}mod/stories/css/medium-editor-insert-plugin.min.css" />
-EOF;
-    }
-
 }
