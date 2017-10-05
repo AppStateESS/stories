@@ -23,6 +23,7 @@ namespace stories\Controller\Entry;
 
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
+use stories\Factory\StoryMenu;
 
 class Admin extends User
 {
@@ -41,7 +42,7 @@ class Admin extends User
 
     protected function editHtmlCommand(Request $request)
     {
-        $this->viewStoryLink($this->id);
+        StoryMenu::viewStoryLink($this->id);
         $entry = $this->factory->load($this->id);
         return $this->factory->form($entry, $request->pullGetBoolean('new', true));
     }
@@ -75,7 +76,7 @@ class Admin extends User
     protected function viewHtmlCommand(Request $request)
     {
         $this->addStoryLink();
-        $this->editStoryLink($this->id);
+        StoryMenu::editStoryLink($this->id);
         return parent::viewHtmlCommand($request);
     }
 
