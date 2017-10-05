@@ -22,20 +22,22 @@ export default class EntryList extends Component {
       currentEntry: null,
       sortBy: 'published',
       publishOverlay: false,
-      tags: '',
+      tags: []
     }
     this.delay
     this.currentKey = null
     this.publish = this.publish.bind(this)
+    this.tagChange = this.tagChange.bind(this)
     this.updateSort = this.updateSort.bind(this)
     this.updateTags = this.updateTags.bind(this)
     this.clearSearch = this.clearSearch.bind(this)
     this.deleteStory = this.deleteStory.bind(this)
+    this.savePublish = this.savePublish.bind(this)
     this.publishStory = this.publishStory.bind(this)
     this.closeOverlay = this.closeOverlay.bind(this)
     this.searchChange = this.searchChange.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
-    this.savePublish = this.savePublish.bind(this)
+    this.newOptionClick = this.newOptionClick.bind(this)
   }
 
   componentDidMount() {
@@ -65,15 +67,21 @@ export default class EntryList extends Component {
     }, this.load)
   }
 
+  tagChange(value) {
+    const entry = this.state.currentEntry
+    entry.tags = value
+    this.setState({currentEntry: entry})
+  }
+
   load() {
     $.getJSON('./stories/Listing', {
       search: this.state.search,
-      sortBy: this.state.sortBy
+      sortBy: this.state.sortBy,
     }).done(function (data) {
       if (data.listing == null) {
-        this.setState({listing: false, loading: false,})
+        this.setState({listing: false, loading: false, tags: data.tags,})
       } else {
-        this.setState({listing: data.listing, loading: false})
+        this.setState({listing: data.listing, loading: false, tags: data.tags,})
       }
     }.bind(this))
   }
@@ -90,13 +98,48 @@ export default class EntryList extends Component {
     }.bind(this, search), 500)
   }
 
+  newOptionClick(newTag) {
+    delete newTag.className
+    console.log(newTag)
+    /*
+    $.ajax({
+      url: './stories/Tag',
+      data: {label: newTag},
+      dataType: 'json',
+      type: 'post',
+      success: function () {}.bind(this),
+      error: function () {}.bind(this),
+    })
+    */
+    let {tags, currentEntry} = this.state
+    tags.push(newTag)
+    currentEntry.tags.push(newTag)
+    this.setState({tags, currentEntry})
+  }
+
+
   clearSearch() {
-    this.setState({search: ''}, this.load)
+    this.setState({
+      search: ''
+    }, this.load)
+  }
+
+  loadTags() {
+    const {currentEntry} = this.state
+    $.getJSON('./stories/Tag/entry', {entryId: currentEntry.id}).done(function (data) {
+      currentEntry.tags = data
+      this.setState({currentEntry: currentEntry})
+    }.bind(this))
   }
 
   setCurrentEntry(key) {
-    this.setState({currentEntry: this.state.listing[key]})
+    const currentEntry = this.state.listing[key]
     this.currentKey = key
+    this.setState({currentEntry: currentEntry}, function() {
+      if (currentEntry.tags == undefined) {
+        this.loadTags()
+      }
+    })
   }
 
   publish() {
@@ -106,10 +149,10 @@ export default class EntryList extends Component {
         values: [
           {
             param: 'published',
-            value: 1,
+            value: 1
           }, {
             param: 'publishDate',
-            value: this.state.currentEntry.publishDate,
+            value: this.state.currentEntry.publishDate
           },
         ]
       },
@@ -121,17 +164,16 @@ export default class EntryList extends Component {
         currentEntry.published = 1
         this.updateListing(this.currentKey, currentEntry)
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
   publishStory(key) {
-    this.setCurrentEntry(key)
-    this.setState({publishOverlay: true})
+    this.setState({publishOverlay: true}, this.setCurrentEntry(key))
   }
 
   closeOverlay() {
-    this.setState({publishOverlay: false, currentEntry: null})
+    this.setState({publishOverlay: false, currentEntry: null,})
     this.currentKey = null
   }
 
@@ -147,18 +189,17 @@ export default class EntryList extends Component {
           listing.splice(key, 1)
           this.setState({listing: listing})
         }.bind(this),
-        error: function () {}.bind(this),
+        error: function () {}.bind(this)
       })
     }
   }
 
   savePublish() {
-    console.log(this.currentKey)
     $.ajax({
       url: `./stories/Entry/${this.state.currentEntry.id}`,
       data: {
         param: 'publishDate',
-        value : this.state.currentEntry.publishDate
+        value: this.state.currentEntry.publishDate,
       },
       dataType: 'json',
       type: 'patch',
@@ -166,7 +207,7 @@ export default class EntryList extends Component {
         this.setState({publishOverlay: false})
         this.updateListing(this.currentKey, this.state.currentEntry)
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -196,13 +237,14 @@ export default class EntryList extends Component {
       animation: "fadeOut"
     }
 
-
     return (
       <div>
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
           {this.state.publishOverlay
             ? <PublishOverlay
                 updateTags={this.updateTags}
+                tagChange={this.tagChange}
+                entryTags={this.state.currentEntry.tags}
                 tags={this.state.tags}
                 close={this.closeOverlay}
                 save={this.savePublish}
@@ -210,6 +252,7 @@ export default class EntryList extends Component {
                 published={this.state.currentEntry.published}
                 publishDate={this.state.currentEntry.publishDate}
                 setPublishDate={this.setPublishDate}
+                newOptionClick={this.newOptionClick}
                 publishStory={this.publish}/>
             : null}
         </VelocityTransitionGroup>
