@@ -23,6 +23,8 @@ namespace stories\Controller\Listing;
 
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
+use stories\Factory\TagFactory;
+use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
 class Admin extends RoleController
@@ -40,7 +42,7 @@ class Admin extends RoleController
 
     public function getHtml(Request $request)
     {
-        $this->addStoryLink();
+        StoryMenu::addStoryLink();
         return parent::getHtml($request);
     }
 
@@ -51,7 +53,8 @@ class Admin extends RoleController
     
     protected function listJsonCommand(Request $request)
     {
-        return array('listing'=>$this->factory->adminListView($request));
+        $tagFactory = new TagFactory;
+        return array('listing'=>$this->factory->adminListView($request), 'tags'=> $tagFactory->listTags(true));
     }
 
 }
