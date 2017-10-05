@@ -109,6 +109,12 @@ class EntryResource extends BaseResource
     protected $updateDate;
     
     /**
+     *
+     * @var phpws2\Variable\StringVar
+     */
+    protected $tags;
+    
+    /**
      * @var string
      */
     protected $table = 'storiesEntry';
@@ -146,8 +152,11 @@ class EntryResource extends BaseResource
         $this->thumbnail = new \phpws2\Variable\FileVar(null, 'thumbnail');
         $this->thumbnail->allowNull(true);
         $this->title = new \phpws2\Variable\TextOnly(null, 'title', 255);
+        $this->tags = new \phpws2\Variable\StringVar(null, 'tags');
+        $this->tags->allowNull(true);
+        $this->tags->setIsTableColumn(false);
 
-        $this->doNotSave(array('authorName', 'authorEmail', 'authorPic'));
+        $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
     }
 
     /**
@@ -177,6 +186,7 @@ class EntryResource extends BaseResource
         $vars = parent::getStringVars($return_null, $hide);
         $vars['createDateRelative'] = $factory->relativeTime($this->createDate->get());
         $vars['publishDateRelative'] = $factory->relativeTime($this->publishDate->get());
+        unset($vars['tags']);
         return $vars;
     }
     
