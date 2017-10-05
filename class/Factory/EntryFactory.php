@@ -14,6 +14,7 @@ namespace stories\Factory;
 
 use stories\Resource\EntryResource as Resource;
 use stories\Factory\AuthorFactory;
+use stories\Factory\TagFactory;
 use stories\Resource\AuthorResource;
 use stories\Exception\MissingInput;
 use stories\Exception\ResourceNotFound;
@@ -34,9 +35,14 @@ class EntryFactory extends BaseFactory
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
-    public function load($id)
+    public function load($id, $withTags=true)
     {
-        return parent::load($id);
+        $entry = parent::load($id);
+        if ($withTags) {
+            $tagFactory = new TagFactory;
+            $entry->tags = $tagFactory->getTagsByEntryId($id);
+        }
+        return $entry;
     }
 
     public function adminListView(Request $request)
@@ -165,6 +171,8 @@ class EntryFactory extends BaseFactory
 
     public function form(Resource $entry, $new = false)
     {
+        $tagFactory = new TagFactory();
+        
         $sourceHttp = PHPWS_SOURCE_HTTP;
         $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
         $vars['cssOverride'] = $this->mediumCSSOverride();
@@ -179,6 +187,8 @@ class EntryFactory extends BaseFactory
         $vars['publishDate'] = $entry->publishDate;
         $vars['entryId'] = $entryId;
         $vars['title'] = $entry->title;
+        $vars['tags'] = $entry->tags;
+        
         $vars['status'] = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
         $template = new \phpws2\Template($vars);
         $template->setModuleTemplate('stories', 'Entry/Form.html');
