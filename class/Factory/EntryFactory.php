@@ -312,6 +312,7 @@ EOF;
         if ($request->patchVarIsset('values')) {
             $values = $request->pullPatchArray('values');
             foreach ($values as $val) {
+                $param = $value = null;
                 extract($val);
                 $this->patchEntry($entry, $param, $value);
             }
@@ -327,6 +328,11 @@ EOF;
     private function patchEntry(Resource $entry, $param, $value)
     {
         switch ($param) {
+            case 'tags':
+                $tagFactory = new TagFactory;
+                $tagFactory->saveToEntry($entry->id, $value);
+                break;
+            
             default:
                 $entry->$param = $value;
         }
