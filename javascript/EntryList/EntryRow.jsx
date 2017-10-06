@@ -13,7 +13,7 @@ const EntryRow = (props) => {
     )
   }
 
-  const {entry, deleteStory, publishStory,} = props
+  const {entry, deleteStory, publishStory} = props
 
   const {
     authorEmail, authorName,
@@ -27,7 +27,8 @@ const EntryRow = (props) => {
     id,
     summary,
     thumbnail,
-    title
+    title,
+    tags,
   } = entry
 
   const mailto = 'mailto:' + authorEmail
@@ -79,16 +80,22 @@ const EntryRow = (props) => {
           <a href={mailto}>{authorName}</a><br/>
           <strong>Created:</strong>&nbsp;
           <abbr title={createDate}>{createDateRelative}</abbr><br/> {publishInfo}
-
           <br/>
           <strong>Expires:</strong>&nbsp; {expire}
         </div>
       </div>
-      <Options
-        entryId={id}
-        deleteStory={deleteStory}
-        published={published}
-        publishStory={publishStory}/>
+      <div className="row mt-1">
+        <div className="col-sm-4">
+          <Options
+            entryId={id}
+            deleteStory={deleteStory}
+            published={published}
+            publishStory={publishStory}/>
+        </div>
+        <div className="col-sm-8">
+          <TagList tags={tags}/>
+        </div>
+      </div>
     </div>
   )
 }
@@ -99,19 +106,19 @@ EntryRow.propTypes = {
   unselect: PropTypes.func,
   selected: PropTypes.bool,
   publishStory: PropTypes.func,
-  deleteStory: PropTypes.func
+  deleteStory: PropTypes.func,
 }
 
 export default EntryRow
 
-const Options = ({entryId, deleteStory, published, publishStory,}) => {
+const Options = ({entryId, deleteStory, published, publishStory}) => {
   return (
-    <div className="mt-1">
-      <a className="admin edit mr-1" href={`./stories/Entry/${entryId}/edit`}>Edit</a>
+    <div>
+      <a className="btn btn-sm btn-default mr-1" href={`./stories/Entry/${entryId}/edit`}>Edit</a>
       {published === '0'
-        ? <a className="admin edit mr-1 pointer" onClick={publishStory}>Publish</a>
+        ? <a className="btn btn-sm btn-default mr-1" onClick={publishStory}>Publish</a>
         : null}
-      <a className="admin delete mr-1 pointer" onClick={deleteStory}>
+      <a className="btn btn-sm btn-default mr-1" onClick={deleteStory}>
         Delete</a>
     </div>
   )
@@ -121,5 +128,20 @@ Options.propTypes = {
   entryId: PropTypes.string,
   deleteStory: PropTypes.func,
   published: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
-  publishStory: PropTypes.func
+  publishStory: PropTypes.func,
+}
+
+const TagList = ({tags}) => {
+  if (tags[0] === undefined) {
+    return <div><strong>Tags:</strong> None applied</div>
+  } else {
+    let buttons = tags.map(function (value, key) {
+      return <button className="btn btn-sm mr-1" key={key}>{value.label}</button>
+    })
+    return <div><strong>Tags: </strong>{buttons}</div>
+  }
+}
+
+TagList.propTypes = {
+  tags: PropTypes.array
 }
