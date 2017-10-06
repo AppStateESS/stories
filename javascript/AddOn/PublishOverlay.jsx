@@ -87,6 +87,8 @@ PublishOverlay.propTypes = {
   setPublishDate: PropTypes.func,
   tagChange: PropTypes.func,
   updateTags: PropTypes.func,
+  entryTags: PropTypes.array,
+  newOptionClick: PropTypes.func,
 }
 
 export default PublishOverlay
