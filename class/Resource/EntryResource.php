@@ -152,7 +152,7 @@ class EntryResource extends BaseResource
         $this->thumbnail = new \phpws2\Variable\FileVar(null, 'thumbnail');
         $this->thumbnail->allowNull(true);
         $this->title = new \phpws2\Variable\TextOnly(null, 'title', 255);
-        $this->tags = new \phpws2\Variable\StringVar(null, 'tags');
+        $this->tags = new \phpws2\Variable\ArrayVar(null, 'tags');
         $this->tags->allowNull(true);
         $this->tags->setIsTableColumn(false);
 
@@ -183,10 +183,11 @@ class EntryResource extends BaseResource
     public function getStringVars($return_null = false, $hide = null)
     {
         $factory = new \stories\Factory\EntryFactory;
+        $tagFactory = new \stories\Factory\TagFactory;
         $vars = parent::getStringVars($return_null, $hide);
         $vars['createDateRelative'] = $factory->relativeTime($this->createDate->get());
         $vars['publishDateRelative'] = $factory->relativeTime($this->publishDate->get());
-        unset($vars['tags']);
+        $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
         return $vars;
     }
     
