@@ -100,23 +100,23 @@ export default class EntryList extends Component {
 
   newOptionClick(newTag) {
     delete newTag.className
-    console.log(newTag)
-    /*
+    let {tags, currentEntry} = this.state
     $.ajax({
       url: './stories/Tag',
-      data: {label: newTag},
+      data: {
+        title: newTag.label
+      },
       dataType: 'json',
       type: 'post',
-      success: function () {}.bind(this),
-      error: function () {}.bind(this),
+      success: function (data) {
+        newTag.value = data
+        tags.push(newTag)
+        currentEntry.tags.push(newTag)
+        this.setState({tags, currentEntry})
+      }.bind(this),
+      error: function () {}.bind(this)
     })
-    */
-    let {tags, currentEntry} = this.state
-    tags.push(newTag)
-    currentEntry.tags.push(newTag)
-    this.setState({tags, currentEntry})
   }
-
 
   clearSearch() {
     this.setState({
@@ -124,21 +124,11 @@ export default class EntryList extends Component {
     }, this.load)
   }
 
-  loadTags() {
-    const {currentEntry} = this.state
-    $.getJSON('./stories/Tag/entry', {entryId: currentEntry.id}).done(function (data) {
-      currentEntry.tags = data
-      this.setState({currentEntry: currentEntry})
-    }.bind(this))
-  }
-
   setCurrentEntry(key) {
     const currentEntry = this.state.listing[key]
     this.currentKey = key
-    this.setState({currentEntry: currentEntry}, function() {
-      if (currentEntry.tags == undefined) {
-        this.loadTags()
-      }
+    this.setState({
+      currentEntry: currentEntry
     })
   }
 
@@ -169,7 +159,9 @@ export default class EntryList extends Component {
   }
 
   publishStory(key) {
-    this.setState({publishOverlay: true}, this.setCurrentEntry(key))
+    this.setState({
+      publishOverlay: true
+    }, this.setCurrentEntry(key))
   }
 
   closeOverlay() {
@@ -198,8 +190,15 @@ export default class EntryList extends Component {
     $.ajax({
       url: `./stories/Entry/${this.state.currentEntry.id}`,
       data: {
-        param: 'publishDate',
-        value: this.state.currentEntry.publishDate,
+        values: [
+          {
+            param: 'publishDate',
+            value: this.state.currentEntry.publishDate
+          }, {
+            param: 'tags',
+            value: this.state.currentEntry.tags
+          },
+        ]
       },
       dataType: 'json',
       type: 'patch',
@@ -207,7 +206,7 @@ export default class EntryList extends Component {
         this.setState({publishOverlay: false})
         this.updateListing(this.currentKey, this.state.currentEntry)
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
