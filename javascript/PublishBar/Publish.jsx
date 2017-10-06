@@ -16,12 +16,23 @@ export default class Publish extends Component {
       overlay: false,
       published: props.published,
       publishDate: props.publishDate,
-      tags: '',
+      tags: props.tags
     }
+    this.allTags = []
     this.publishStory = this.publishStory.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
     this.save = this.save.bind(this)
     this.updateTags = this.updateTags.bind(this)
+  }
+
+  componentDidMount() {
+    this.loadAllTags()
+  }
+
+  loadAllTags() {
+    $.getJSON('./stories/Tag/').done(function (data) {
+      this.setState({allTags: data})
+    }.bind(this))
   }
 
   updateTags(e) {
@@ -48,23 +59,23 @@ export default class Publish extends Component {
       url: './stories/Tag',
       data: {
         entryId: this.state.entryId,
-        tags: this.state.tags,
+        tags: this.state.tags
       },
       dataType: 'json',
       type: 'post',
       success: function () {}.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
     $.ajax({
       url: `./stories/Entry/${this.state.entryId}`,
       data: {
         param: 'publishDate',
-        value: this.state.publishDate
+        value: this.state.publishDate,
       },
       dataType: 'json',
       type: 'patch',
       success: function () {}.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -89,6 +100,7 @@ export default class Publish extends Component {
         setPublishDate={this.setPublishDate}
         updateTags={this.updateTags}
         tags={this.state.tags}
+        allTags={this.allTags}
         publishStory={this.publishStory}/>
     }
 
@@ -117,5 +129,6 @@ Publish.propTypes = {
   entryId: PropTypes.string,
   publishDate: PropTypes.string,
   title: PropTypes.string,
-  published: PropTypes.string
+  published: PropTypes.string,
+  tags: PropTypes.string
 }
