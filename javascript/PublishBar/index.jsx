@@ -2,6 +2,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Publish from './Publish.jsx'
-/* global entryId, published, publishDate, title */
-const props = {entryId, published, publishDate, title}
+/* global entryId, published, publishDate, title, tags */
+const props = {entryId, published, publishDate, title, tags}
 ReactDOM.render(<Publish {...props}/>, document.getElementById('PublishBar'))
