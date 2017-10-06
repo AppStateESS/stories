@@ -43,7 +43,7 @@ class TagFactory extends BaseFactory
         return new Resource;
     }
 
-    public function save($entryId, $tags)
+    public function saveToEntry($entryId, $tags)
     {
         if (!is_array($tags)) {
             $tagArray = explode(',', $tags);
@@ -51,15 +51,16 @@ class TagFactory extends BaseFactory
             $tagArray = $tags;
         }
 
+        
+        
         // remove current tags for entry
         $this->clearEntryTags($entryId);
-
+        if (empty($tagArray) || empty($tagArray[0])) {
+            return;
+        }
         // save new tags and apply to entry
         foreach ($tagArray as $tag) {
-            $tagId = $this->saveTag($tag);
-            if ($tagId) {
-                $this->applyTagToEntry($entryId, $tagId);
-            }
+            $this->applyTagToEntry($entryId, $tag['value']);
         }
     }
 
@@ -70,6 +71,9 @@ class TagFactory extends BaseFactory
 
     private function applyTagToEntry($entryId, $tagId)
     {
+        if (!is_numeric($tagId)) {
+            throw new \Exception('Bad tag id');
+        }
         $db = Database::getDB();
         $tbl = $db->addTable('storiesTagToEntry');
         $tbl->addValue('entryId', $entryId);
