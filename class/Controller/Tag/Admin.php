@@ -45,8 +45,7 @@ class Admin extends User
     
     protected function postCommand(Request $request)
     {
-        $this->factory->save($request->pullPostInteger('entryId'), $request->pullPostString('tags'));
-        return true;
+        return $this->factory->saveTag($request->pullPostString('title'));
     }
     
 }
