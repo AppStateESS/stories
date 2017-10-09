@@ -13,7 +13,7 @@ const EntryRow = (props) => {
     )
   }
 
-  const {entry, deleteStory, publishStory, showTags} = props
+  const {entry, deleteStory, publishStory, showTags, sortByTag} = props
 
   const {
     authorEmail, authorName,
@@ -94,7 +94,7 @@ const EntryRow = (props) => {
             publishStory={publishStory}/>
         </div>
         <div className="col-sm-8">
-          <TagList tags={tags} showTags={showTags}/>
+          <TagList tags={tags} showTags={showTags} sortByTag={sortByTag}/>
         </div>
       </div>
     </div>
@@ -108,6 +108,8 @@ EntryRow.propTypes = {
   selected: PropTypes.bool,
   publishStory: PropTypes.func,
   deleteStory: PropTypes.func,
+  sortByTag: PropTypes.func,
+  showTags: PropTypes.func,
 }
 
 export default EntryRow
@@ -132,18 +134,19 @@ Options.propTypes = {
   publishStory: PropTypes.func,
 }
 
-const TagList = ({tags, showTags}) => {
+const TagList = ({tags, showTags, sortByTag}) => {
   let tagList
-  const tagButton = <button className="btn btn-primary mr-1 btn-sm" onClick={showTags}>Tags</button>
+  const tagButton = <button className="btn btn-primary mr-1 btn-sm" onClick={showTags}><i className="fa fa-tags"></i>&nbsp;Tags</button>
   if (tags[0] !== undefined) {
     tagList = tags.map(function (value, key) {
-      return <li className="" key={key}>{value.label}</li>
+      return <button className="btn btn-sm mr-1" key={key} onClick={sortByTag.bind(null, value.value)}>{value.label}</button>
     })
   }
-  return <div><strong>{tagButton} </strong> <ul className="tag-list">{tagList}</ul></div>
+  return <div><strong>{tagButton} </strong> {tagList}</div>
 }
 
 TagList.propTypes = {
   tags: PropTypes.array,
   showTags: PropTypes.func,
+  sortByTag: PropTypes.func,
 }
