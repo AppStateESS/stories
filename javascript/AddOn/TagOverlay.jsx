@@ -40,7 +40,6 @@ TagOverlay.propTypes = {  tags: PropTypes.array,
   saveTags: PropTypes.func,
   title: PropTypes.string,
   tagChange: PropTypes.func,
-  updateTags: PropTypes.func,
   entryTags: PropTypes.array,
   newOptionClick: PropTypes.func,}
 
