@@ -78,6 +78,13 @@ abstract class RoleController
 
         $method_name = $command . 'HtmlCommand';
         if (!method_exists($this, $method_name)) {
+            $entryFactory = new \stories\Factory\EntryFactory;
+            $entry = $entryFactory->getByUrlTitle($command);
+            if (!empty($entry)) {
+                $this->id = $entry->id;
+                $content = $this->viewHtmlCommand($request);
+                return $this->htmlResponse($content);
+            }
             /**
              * Although view will be returned by pullGetCommand if the command
              * is empty, we force a view for any other unrecognized command.
@@ -194,4 +201,5 @@ abstract class RoleController
     {
         throw new PrivilegeMissing(__FUNCTION__);
     }
+
 }
