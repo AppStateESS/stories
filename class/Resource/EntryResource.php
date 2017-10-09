@@ -115,6 +115,11 @@ class EntryResource extends BaseResource
     protected $tags;
     
     /**
+     * @var phpws2\Variable\TextOnly
+     */
+    protected $urlTitle;
+    
+    /**
      * @var string
      */
     protected $table = 'storiesEntry';
@@ -155,6 +160,7 @@ class EntryResource extends BaseResource
         $this->tags = new \phpws2\Variable\ArrayVar(null, 'tags');
         $this->tags->allowNull(true);
         $this->tags->setIsTableColumn(false);
+        $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle');
 
         $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
     }
@@ -167,6 +173,11 @@ class EntryResource extends BaseResource
     {
         $this->content->set($this->filterContent($content));
     }
+    
+    public function setTitle($title) {
+        $this->title->set($title);
+        $this->urlTitle = $this->processTitle($title);
+    }
 
     /**
      * Cleans up the content string that is imported from Medium Editor.
@@ -177,7 +188,8 @@ class EntryResource extends BaseResource
     {
         $noControls = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s', '', $content));
         $noExtraParagraphs = preg_replace('/(<p class=""><\/p>){2,}|(<p class="medium-insert-active"><\/p>)$/s', '<p class="medium-insert-active"></p>', $noControls);
-        return $noExtraParagraphs;
+        $noEmptyHeaders = preg_replace('/<h[34]><\/h[34]>/', '', $noExtraParagraphs);
+        return $noEmptyHeaders;
     }
     
     public function getStringVars($return_null = false, $hide = null)
@@ -198,6 +210,12 @@ class EntryResource extends BaseResource
     
     public function getPublishDate($format = null) {
         return $this->publishDate->get($format);
+    }
+    
+    private function processTitle($title)
+    {
+        $title = preg_replace('/\s/', '-', strtolower(str_replace('-', ' ', trim($title))));
+        return preg_replace('/[\.;,\(\)]/', '', $title);
     }
 
 }
