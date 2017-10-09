@@ -24,6 +24,7 @@ export default class EntryList extends Component {
       sortBy: 'published',
       publishOverlay: false,
       tagOverlay: false,
+      sortByTagId: 0,
       tags: []
     }
     this.delay
@@ -31,9 +32,10 @@ export default class EntryList extends Component {
     this.publish = this.publish.bind(this)
     this.saveTags = this.saveTags.bind(this)
     this.showTags = this.showTags.bind(this)
+    this.showMore = this.showMore.bind(this)
     this.tagChange = this.tagChange.bind(this)
+    this.sortByTag = this.sortByTag.bind(this)
     this.updateSort = this.updateSort.bind(this)
-    this.updateTags = this.updateTags.bind(this)
     this.clearSearch = this.clearSearch.bind(this)
     this.deleteStory = this.deleteStory.bind(this)
     this.publishStory = this.publishStory.bind(this)
@@ -48,8 +50,8 @@ export default class EntryList extends Component {
     this.load()
   }
 
-  updateTags(e) {
-    this.setState({tags: e.target.value})
+  sortByTag(sortByTagId) {
+    this.setState({sortByTagId: sortByTagId}, this.load)
   }
 
   setPublishDate(e) {
@@ -77,10 +79,15 @@ export default class EntryList extends Component {
     this.setState({currentEntry: entry})
   }
 
+  showMore() {
+
+  }
+
   load() {
     $.getJSON('./stories/Listing', {
       search: this.state.search,
       sortBy: this.state.sortBy,
+      sortByTagId: this.state.sortByTagId,
     }).done(function (data) {
       if (data.listing == null) {
         this.setState({listing: false, loading: false, tags: data.tags,})
@@ -241,6 +248,7 @@ export default class EntryList extends Component {
         return <EntryRow
           deleteStory={this.deleteStory.bind(this, key)}
           entry={entry}
+          sortByTag={this.sortByTag}
           showTags={this.showTags.bind(this, key)}
           publishStory={this.publishStory.bind(this, key)}
           key={key}
@@ -272,7 +280,6 @@ export default class EntryList extends Component {
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
           {this.state.tagOverlay
             ? <TagOverlay
-                updateTags={this.updateTags}
                 tagChange={this.tagChange}
                 entryTags={this.state.currentEntry.tags}
                 tags={this.state.tags}
@@ -288,6 +295,7 @@ export default class EntryList extends Component {
           handleChange={this.searchChange}
           updateSort={this.updateSort}/>
         <div>{listing}</div>
+        <div><button className="btn btn-primary" onClick={this.showMore}>Show more rows</button></div>
       </div>
     )
   }
