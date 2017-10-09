@@ -42,8 +42,8 @@ class Admin extends User
 
     protected function editHtmlCommand(Request $request)
     {
-        StoryMenu::viewStoryLink($this->id);
         $entry = $this->factory->load($this->id);
+        StoryMenu::viewStoryLink($entry);
         return $this->factory->form($entry, $request->pullGetBoolean('new', true));
     }
 
@@ -75,7 +75,7 @@ class Admin extends User
 
     protected function viewHtmlCommand(Request $request)
     {
-        $this->addStoryLink();
+        StoryMenu::addStoryLink();
         StoryMenu::editStoryLink($this->id);
         return parent::viewHtmlCommand($request);
     }
