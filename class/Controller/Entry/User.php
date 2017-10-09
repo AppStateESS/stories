@@ -23,7 +23,7 @@ namespace stories\Controller\Entry;
 
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
-use stories\Factory\StoryFactory;
+use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
 class User extends RoleController
@@ -41,7 +41,7 @@ class User extends RoleController
 
     protected function viewHtmlCommand(Request $request)
     {
-        $style = StoryFactory::mediumCSSLink();
+        $style = StoryMenu::mediumCSSLink();
         return $style . $this->factory->view($this->id);
     }
 
