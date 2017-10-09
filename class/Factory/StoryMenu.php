@@ -25,6 +25,7 @@
  */
 
 namespace stories\Factory;
+use stories\Resource\EntryResource;
 
 /**
  * Description of Menu
@@ -46,9 +47,12 @@ class StoryMenu
         \MiniAdmin::add('stories', $link);
     }
 
-    public static function viewStoryLink($entryId)
+    public static function viewStoryLink(EntryResource $entry)
     {
-        $link = '<a href="./stories/Entry/' . $entryId . '"><i class="fa fa-book"></i> View story</a>';
+        
+        $link = <<<EOF
+<a href="./stories/Entry/{$entry->id}/{$entry->urlTitle}"><i class="fa fa-book"></i> View story</a>
+EOF;
         \MiniAdmin::add('stories', $link);
     }
 
