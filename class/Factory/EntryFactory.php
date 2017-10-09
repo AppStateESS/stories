@@ -187,12 +187,26 @@ class EntryFactory extends BaseFactory
         $vars['publishDate'] = $entry->publishDate;
         $vars['entryId'] = $entryId;
         $vars['title'] = $entry->title;
-        $vars['tags'] = $entry->tags;
+        $vars['tags'] = json_encode($entry->tags);
 
         $vars['status'] = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
         $template = new \phpws2\Template($vars);
         $template->setModuleTemplate('stories', 'Entry/Form.html');
         return $template->get();
+    }
+
+    public function getByUrlTitle($title)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntry');
+        $tbl->addFieldConditional('urlTitle', $title);
+        $data = $db->selectOneRow();
+        if (empty($data)) {
+            return null;
+        }
+        $entry = $this->build();
+        $entry->setVars($data);
+        return $entry;
     }
 
     public function mediumCSSOverride()
@@ -229,13 +243,7 @@ EOF;
         $entry->stamp();
         $content = $request->pullPutVar('content');
         $entry->setContent($content);
-
-        $updateSummary = $entry->isEmpty('summary');
-        $updateThumbnail = $entry->isEmpty('thumbnail');
-
-        if (!$entry->isEmpty('content')) {
-            $this->siftContent($entry, $updateSummary, $updateThumbnail);
-        }
+        $this->siftContent($entry);
 
         self::saveResource($entry);
         return $entry->id;
@@ -247,11 +255,8 @@ EOF;
      * may be switched on or off by parameters.
      * 
      * @param Resource $entry
-     * @param bool $updateSummary
-     * @param bool $updateThumbnail
      */
-    private function siftContent(Resource $entry, $updateSummary = true,
-            $updateThumbnail = true)
+    private function siftContent(Resource $entry)
     {
         $photoFactory = new EntryPhotoFactory();
         $content = $entry->content;
@@ -269,7 +274,7 @@ EOF;
             }
             switch ($dom->tagName) {
                 case 'img':
-                    if (!$updateThumbnail || $imageFound) {
+                    if ($imageFound) {
                         break;
                     }
                     $entry->thumbnail = $this->createThumbnailUrl($dom->getAttribute('src'));
@@ -277,18 +282,20 @@ EOF;
                     break;
 
                 case 'h3':
-                    if (!$titleFound) {
+                    if (!$titleFound && !empty($dom->textContent)) {
                         $entry->title = $dom->textContent;
                         $titleFound = true;
                     }
                     break;
 
                 case 'p':
-                    if (!$titleFound) {
+                    if (!$titleFound && !empty($dom->textContent)) {
                         $entry->title = $dom->textContent;
                         $titleFound = true;
-                    } elseif ($updateSummary && !$summaryFound) {
-                        $entry->summary = $dom->textContent;
+                    } elseif (!$summaryFound) {
+                        if (preg_match('/[\.\?\!]/', $dom->textContent) || strlen($dom->textContent) > 10) {
+                            $entry->summary = $dom->textContent;
+                        }
                         $summaryFound = true;
                     }
                     break;
