@@ -7,6 +7,7 @@ import EntryRow from './EntryRow'
 //import SearchBar from './SearchBar'
 import ListControls from './Listcontrols'
 import PublishOverlay from '../AddOn/PublishOverlay'
+import TagOverlay from '../AddOn/TagOverlay'
 import {VelocityTransitionGroup} from 'velocity-react'
 import moment from 'moment'
 /* global $ */
@@ -22,21 +23,24 @@ export default class EntryList extends Component {
       currentEntry: null,
       sortBy: 'published',
       publishOverlay: false,
+      tagOverlay: false,
       tags: []
     }
     this.delay
     this.currentKey = null
     this.publish = this.publish.bind(this)
+    this.saveTags = this.saveTags.bind(this)
+    this.showTags = this.showTags.bind(this)
     this.tagChange = this.tagChange.bind(this)
     this.updateSort = this.updateSort.bind(this)
     this.updateTags = this.updateTags.bind(this)
     this.clearSearch = this.clearSearch.bind(this)
     this.deleteStory = this.deleteStory.bind(this)
-    this.savePublish = this.savePublish.bind(this)
     this.publishStory = this.publishStory.bind(this)
     this.closeOverlay = this.closeOverlay.bind(this)
     this.searchChange = this.searchChange.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
+    this.savePublishDate = this.savePublishDate.bind(this)
     this.newOptionClick = this.newOptionClick.bind(this)
   }
 
@@ -127,9 +131,7 @@ export default class EntryList extends Component {
   setCurrentEntry(key) {
     const currentEntry = this.state.listing[key]
     this.currentKey = key
-    this.setState({
-      currentEntry: currentEntry
-    })
+    this.setState({currentEntry: currentEntry})
   }
 
   publish() {
@@ -164,8 +166,14 @@ export default class EntryList extends Component {
     }, this.setCurrentEntry(key))
   }
 
+  showTags(key) {
+    this.setState({
+      tagOverlay: true
+    }, this.setCurrentEntry(key))
+  }
+
   closeOverlay() {
-    this.setState({publishOverlay: false, currentEntry: null,})
+    this.setState({publishOverlay: false, tagOverlay: false, currentEntry: null})
     this.currentKey = null
   }
 
@@ -186,28 +194,39 @@ export default class EntryList extends Component {
     }
   }
 
-  savePublish() {
+  savePublishDate() {
     $.ajax({
       url: `./stories/Entry/${this.state.currentEntry.id}`,
       data: {
-        values: [
-          {
-            param: 'publishDate',
-            value: this.state.currentEntry.publishDate
-          }, {
-            param: 'tags',
-            value: this.state.currentEntry.tags
-          },
-        ]
+        param: 'publishDate',
+        value: this.state.currentEntry.publishDate
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
-        this.setState({publishOverlay: false})
+        this.closeOverlay()
         this.updateListing(this.currentKey, this.state.currentEntry)
       }.bind(this),
       error: function () {}.bind(this),
     })
+  }
+
+  saveTags() {
+    $.ajax({
+      url: './stories/Tag/attach',
+      data: {
+        entryId : this.state.currentEntry.id,
+        tags: this.state.currentEntry.tags
+      },
+      dataType: 'json',
+      type: 'post',
+      success: function () {
+        this.updateListing(this.currentKey, this.state.currentEntry)
+        this.closeOverlay()
+      }.bind(this),
+      error: function () {}.bind(this),
+    })
+
   }
 
   render() {
@@ -222,6 +241,7 @@ export default class EntryList extends Component {
         return <EntryRow
           deleteStory={this.deleteStory.bind(this, key)}
           entry={entry}
+          showTags={this.showTags.bind(this, key)}
           publishStory={this.publishStory.bind(this, key)}
           key={key}
           publish={this.publish.bind(this, key)}/>
@@ -241,18 +261,24 @@ export default class EntryList extends Component {
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
           {this.state.publishOverlay
             ? <PublishOverlay
+                savePublishDate={this.savePublishDate}
+                title={this.state.currentEntry.title}
+                isPublished={this.state.currentEntry.published}
+                publishDate={this.state.currentEntry.publishDate}
+                setPublishDate={this.setPublishDate}
+                publishStory={this.publish}/>
+            : null}
+        </VelocityTransitionGroup>
+        <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
+          {this.state.tagOverlay
+            ? <TagOverlay
                 updateTags={this.updateTags}
                 tagChange={this.tagChange}
                 entryTags={this.state.currentEntry.tags}
                 tags={this.state.tags}
-                close={this.closeOverlay}
-                save={this.savePublish}
+                saveTags={this.saveTags}
                 title={this.state.currentEntry.title}
-                published={this.state.currentEntry.published}
-                publishDate={this.state.currentEntry.publishDate}
-                setPublishDate={this.setPublishDate}
-                newOptionClick={this.newOptionClick}
-                publishStory={this.publish}/>
+                newOptionClick={this.newOptionClick}/>
             : null}
         </VelocityTransitionGroup>
         <ListControls

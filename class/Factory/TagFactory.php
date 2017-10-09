@@ -51,8 +51,6 @@ class TagFactory extends BaseFactory
             $tagArray = $tags;
         }
 
-        
-        
         // remove current tags for entry
         $this->clearEntryTags($entryId);
         if (empty($tagArray) || empty($tagArray[0])) {

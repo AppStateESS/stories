@@ -2,21 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Overlay from './Overlay'
 import moment from 'moment'
-import Tags from './Tags'
-import 'react-select/dist/react-select.min.css'
 
 const PublishOverlay = ({
   publishDate,
-  published,
-  save,
+  isPublished,
+  savePublishDate,
   title,
-  close,
   publishStory,
   setPublishDate,
-  tags,
-  entryTags,
-  tagChange,
-  newOptionClick
 }) => {
   let formattedDate = moment().format('YYYY-MM-DDThh:mm')
   if (publishDate.length !== 0) {
@@ -27,39 +20,21 @@ const PublishOverlay = ({
     height: '32px'
   }
 
-  const saveClose = () => {
-    save()
-    close()
-  }
-
-  const publishClose = () => {
-    publishStory()
-    close()
-  }
-
   let publishButton
   const closeButton = (
-    <button className="btn btn-default btn-block" onClick={saveClose}>Close</button>
+    <button className="btn btn-default btn-block" onClick={savePublishDate}>Close</button>
   )
 
-  if (published == 0) {
-    publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publishClose}>Publish</button>
+  if (isPublished == 0) {
+    publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publishStory}>Publish</button>
   }
 
   return (
     <Overlay
-      close={saveClose}
+      close={savePublishDate}
       width="500px"
-      height="350px"
+      height="300px"
       title={`Publish story: ${title}`}>
-      <div className="mb-1">
-        Before publishing you may choose to add a few tags:
-        <Tags
-          tags={tags}
-          entryTags={entryTags}
-          newOptionClick={newOptionClick}
-          tagChange={tagChange}/>
-      </div>
       <div className="text-center mb-1">
         Show story after:&nbsp;
         <input
@@ -77,18 +52,12 @@ const PublishOverlay = ({
 }
 
 PublishOverlay.propTypes = {
-  tags: PropTypes.array,
-  save: PropTypes.func,
-  published: PropTypes.string,
-  publishDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
+  savePublishDate: PropTypes.func,
   title: PropTypes.string,
-  close: PropTypes.func,
-  publishStory: PropTypes.func,
+  isPublished: PropTypes.string,
+  publishDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
   setPublishDate: PropTypes.func,
-  tagChange: PropTypes.func,
-  updateTags: PropTypes.func,
-  entryTags: PropTypes.array,
-  newOptionClick: PropTypes.func,
+  publishStory: PropTypes.func,
 }
 
 export default PublishOverlay

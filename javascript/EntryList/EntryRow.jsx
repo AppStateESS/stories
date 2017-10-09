@@ -13,7 +13,7 @@ const EntryRow = (props) => {
     )
   }
 
-  const {entry, deleteStory, publishStory} = props
+  const {entry, deleteStory, publishStory, showTags} = props
 
   const {
     authorEmail, authorName,
@@ -84,16 +84,17 @@ const EntryRow = (props) => {
           <strong>Expires:</strong>&nbsp; {expire}
         </div>
       </div>
+      <hr />
       <div className="row mt-1">
         <div className="col-sm-4">
           <Options
             entryId={id}
             deleteStory={deleteStory}
-            published={published}
+            isPublished={published}
             publishStory={publishStory}/>
         </div>
         <div className="col-sm-8">
-          <TagList tags={tags}/>
+          <TagList tags={tags} showTags={showTags}/>
         </div>
       </div>
     </div>
@@ -111,11 +112,11 @@ EntryRow.propTypes = {
 
 export default EntryRow
 
-const Options = ({entryId, deleteStory, published, publishStory}) => {
+const Options = ({entryId, deleteStory, isPublished, publishStory}) => {
   return (
     <div>
       <a className="btn btn-sm btn-default mr-1" href={`./stories/Entry/${entryId}/edit`}>Edit</a>
-      {published === '0'
+      {isPublished === '0'
         ? <a className="btn btn-sm btn-default mr-1" onClick={publishStory}>Publish</a>
         : null}
       <a className="btn btn-sm btn-default mr-1" onClick={deleteStory}>
@@ -127,21 +128,22 @@ const Options = ({entryId, deleteStory, published, publishStory}) => {
 Options.propTypes = {
   entryId: PropTypes.string,
   deleteStory: PropTypes.func,
-  published: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
+  isPublished: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
   publishStory: PropTypes.func,
 }
 
-const TagList = ({tags}) => {
-  if (tags[0] === undefined) {
-    return <div><strong>Tags:</strong> None applied</div>
-  } else {
-    let buttons = tags.map(function (value, key) {
-      return <button className="btn btn-sm mr-1" key={key}>{value.label}</button>
+const TagList = ({tags, showTags}) => {
+  let tagList
+  const tagButton = <button className="btn btn-primary mr-1 btn-sm" onClick={showTags}>Tags</button>
+  if (tags[0] !== undefined) {
+    tagList = tags.map(function (value, key) {
+      return <li className="" key={key}>{value.label}</li>
     })
-    return <div><strong>Tags: </strong>{buttons}</div>
   }
+  return <div><strong>{tagButton} </strong> <ul className="tag-list">{tagList}</ul></div>
 }
 
 TagList.propTypes = {
-  tags: PropTypes.array
+  tags: PropTypes.array,
+  showTags: PropTypes.func,
 }

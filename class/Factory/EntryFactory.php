@@ -35,7 +35,7 @@ class EntryFactory extends BaseFactory
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
-    public function load($id, $withTags=true)
+    public function load($id, $withTags = true)
     {
         $entry = parent::load($id);
         if ($withTags) {
@@ -172,7 +172,7 @@ class EntryFactory extends BaseFactory
     public function form(Resource $entry, $new = false)
     {
         $tagFactory = new TagFactory();
-        
+
         $sourceHttp = PHPWS_SOURCE_HTTP;
         $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
         $vars['cssOverride'] = $this->mediumCSSOverride();
@@ -188,7 +188,7 @@ class EntryFactory extends BaseFactory
         $vars['entryId'] = $entryId;
         $vars['title'] = $entry->title;
         $vars['tags'] = $entry->tags;
-        
+
         $vars['status'] = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
         $template = new \phpws2\Template($vars);
         $template->setModuleTemplate('stories', 'Entry/Form.html');
@@ -317,8 +317,9 @@ EOF;
                 $this->patchEntry($entry, $param, $value);
             }
         } else {
-            $this->patchEntry($entry, $request->pullPatchString('param'),
-                    $request->pullPatchVar('value'));
+            $param = $request->pullPatchString('param');
+            $value = $request->pullPatchVar('value');
+            $this->patchEntry($entry, $param, $value);
         }
 
         self::saveResource($entry);
@@ -328,11 +329,6 @@ EOF;
     private function patchEntry(Resource $entry, $param, $value)
     {
         switch ($param) {
-            case 'tags':
-                $tagFactory = new TagFactory;
-                $tagFactory->saveToEntry($entry->id, $value);
-                break;
-            
             default:
                 $entry->$param = $value;
         }

@@ -48,4 +48,8 @@ class Admin extends User
         return $this->factory->saveTag($request->pullPostString('title'));
     }
     
+    protected function attachPostCommand(Request $request) {
+        return $this->factory->saveToEntry($request->pullPostInteger('entryId'), $request->pullPostArray('tags', true));
+    }
+    
 }
