@@ -13,31 +13,13 @@ export default class Publish extends Component {
     this.state = {
       entryId: props.entryId,
       title: props.title,
-      overlay: false,
+      publishOverlay: false,
       published: props.published,
       publishDate: props.publishDate,
-      tags: props.tags
     }
-    this.allTags = []
     this.publishStory = this.publishStory.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
-    this.save = this.save.bind(this)
-    this.updateTags = this.updateTags.bind(this)
-  }
-
-  componentDidMount() {
-    this.loadAllTags()
-  }
-
-  loadAllTags() {
-    $.getJSON('./stories/Tag/').done(function (data) {
-      this.setState({allTags: data})
-    }.bind(this))
-  }
-
-  updateTags(e) {
-    const value = e.target.value
-    this.setState({tags: value})
+    this.savePublishDate = this.savePublishDate.bind(this)
   }
 
   setPublishDate(e) {
@@ -47,25 +29,33 @@ export default class Publish extends Component {
   }
 
   publishStory() {
-    console.log('publish story and save values')
+    $.ajax({
+      url: `./stories/Entry/${this.state.entryId}`,
+      data: {
+        values: [
+          {
+            param: 'published',
+            value: 1
+          }, {
+            param: 'publishDate',
+            value: this.state.publishDate
+          },
+        ]
+      },
+      dataType: 'json',
+      type: 'patch',
+      success: function () {
+        this.setState({published: 1, publishOverlay: false})
+      }.bind(this),
+      error: function () {}.bind(this)
+    })
   }
 
   setOverlay(set) {
-    this.setState({'overlay': set})
+    this.setState({'publishOverlay': set})
   }
 
-  save() {
-    $.ajax({
-      url: './stories/Tag',
-      data: {
-        entryId: this.state.entryId,
-        tags: this.state.tags
-      },
-      dataType: 'json',
-      type: 'post',
-      success: function () {}.bind(this),
-      error: function () {}.bind(this)
-    })
+  savePublishDate() {
     $.ajax({
       url: `./stories/Entry/${this.state.entryId}`,
       data: {
@@ -74,7 +64,9 @@ export default class Publish extends Component {
       },
       dataType: 'json',
       type: 'patch',
-      success: function () {}.bind(this),
+      success: function () {
+        this.setOverlay(false)
+      }.bind(this),
       error: function () {}.bind(this)
     })
   }
@@ -90,17 +82,13 @@ export default class Publish extends Component {
     }
 
     let publishOverlay
-    if (this.state.overlay) {
+    if (this.state.publishOverlay) {
       publishOverlay = <PublishOverlay
         title={this.state.title}
-        save={this.save}
-        published={this.state.published}
+        savePublishDate={this.savePublishDate}
+        isPublished={this.state.published}
         publishDate={this.state.publishDate}
-        close={this.setOverlay.bind(this, false)}
         setPublishDate={this.setPublishDate}
-        updateTags={this.updateTags}
-        tags={this.state.tags}
-        allTags={this.allTags}
         publishStory={this.publishStory}/>
     }
 
@@ -111,7 +99,8 @@ export default class Publish extends Component {
     } else if (this.state.publishDate < now) {
       publishLink = 'Published'
     } else {
-      publishLink = `Publish on ${this.state.publishDate}`
+      const relative = moment(this.state.publishDate*1000).format('LLL')
+      publishLink = `Publish after ${relative}`
     }
 
     return (
@@ -119,7 +108,7 @@ export default class Publish extends Component {
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
           {publishOverlay}
         </VelocityTransitionGroup>
-        <a className="pointer" onClick={this.setOverlay.bind(this, true)}>{publishLink}</a>
+        <a className="btn btn-default btn-sm" onClick={this.setOverlay.bind(this, true)}>{publishLink}</a>
       </div>
     )
   }
