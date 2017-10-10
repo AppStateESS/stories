@@ -119,5 +119,4 @@ Publish.propTypes = {
   publishDate: PropTypes.string,
   title: PropTypes.string,
   published: PropTypes.string,
-  tags: PropTypes.string
 }
