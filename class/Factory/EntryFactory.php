@@ -35,13 +35,14 @@ class EntryFactory extends BaseFactory
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
-    public function load($id, $withTags = true)
+    public function load($id)
     {
         $entry = parent::load($id);
-        if ($withTags) {
-            $tagFactory = new TagFactory;
-            $entry->tags = $tagFactory->getTagsByEntryId($id);
+        if ($entry->deleted) {
+            throw new ResourceNotFound;
         }
+        $tagFactory = new TagFactory;
+        $entry->tags = $tagFactory->getTagsByEntryId($id);
         return $entry;
     }
 
@@ -244,9 +245,22 @@ EOF;
         $content = $request->pullPutVar('content');
         $entry->setContent($content);
         $this->siftContent($entry);
+        $this->checkUrlTitle($entry);
 
         self::saveResource($entry);
         return $entry->id;
+    }
+    
+    private function checkUrlTitle(Resource $entry)
+    {
+        $duplicate = $this->getByUrlTitle($entry->urlTitle);
+        // no duplicate found or duplicate is current entry
+        if (empty($duplicate) || $duplicate->id === $entry->id) {
+            return;
+        } else {
+            // duplicate found, update title with timestamp
+            $entry->urlTitle = $entry->urlTitle . '-' . time();
+        }
     }
 
     /**
@@ -341,9 +355,12 @@ EOF;
         }
     }
 
-    public function data($id)
+    public function data($id, $publishOnly = true)
     {
         $entry = $this->load($id);
+        if ($publishOnly && (!$entry->published && $entry->publishDate < time())) {
+            return null;
+        }
         return $entry->getStringVars(true);
     }
 
@@ -362,11 +379,15 @@ EOF;
         }
     }
 
-    public function view($id)
+    public function view($id, $isAdmin = false)
     {
         try {
-            $data = $this->data($id);
+            $data = $this->data($id, !$isAdmin);
+            if (empty($data)) {
+                throw new ResourceNotFound;
+            }
             $data['cssOverride'] = $this->mediumCSSOverride();
+            $data['isAdmin'] = $isAdmin;
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             return $template->get();
