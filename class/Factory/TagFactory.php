@@ -181,11 +181,17 @@ class TagFactory extends BaseFactory
         if (!$selectValues) {
             return $result;
         } else {
-            foreach ($result as $row) {
-                $newResult[] = $this->selectValuesFromArray($row);
-            }
-            return $newResult;
+            return $this->changeToSelectValues($result);
         }
+    }
+
+    public function changeToSelectValues($values)
+    {
+        $result = array();
+        foreach ($values as $row) {
+            $result[] = $this->selectValuesFromArray($row);
+        }
+        return $result;
     }
 
 }
