@@ -1,4 +1,10 @@
 <?=$cssOverride?>
+<?php if (!$published):?>
+<div class="alert alert-warning">This story is currently unpublished. <a href="./stories/Entry/<?=$id?>/edit">Edit this story to publish it.</a></div>
+<?php endif;?>
 <div class="story-entry">
     <div class="story-content"><?=$content?></div>
 </div>
+<?php if ($isAdmin):?>
+<a class="btn btn-primary" href="./stories/Entry/<?=$id?>/edit">Edit this story</a>
+<?php endif; ?>
