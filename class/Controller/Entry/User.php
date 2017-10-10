@@ -42,7 +42,7 @@ class User extends RoleController
     protected function viewHtmlCommand(Request $request)
     {
         $style = StoryMenu::mediumCSSLink();
-        return $style . $this->factory->view($this->id);
+        return $style . $this->factory->view($this->id, $this->role->isAdmin());
     }
 
 }
