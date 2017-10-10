@@ -176,7 +176,7 @@ class EntryResource extends BaseResource
     
     public function setTitle($title) {
         $this->title->set($title);
-        $this->urlTitle = $this->processTitle($title);
+        $this->urlTitle->set($this->processTitle($title));
     }
 
     /**
