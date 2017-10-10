@@ -22,6 +22,8 @@ use phpws2\Database;
 use Canopy\Request;
 use phpws2\Template;
 
+require PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
+
 class EntryFactory extends BaseFactory
 {
 
@@ -245,22 +247,75 @@ EOF;
         $content = $request->pullPutVar('content');
         $entry->setContent($content);
         $this->siftContent($entry);
-        $this->checkUrlTitle($entry);
+        return $this->save($entry);
+    }
 
+    public function save(Resource $entry)
+    {
+        $this->checkUrlTitle($entry);
+        $this->saveShortcut($entry);
         self::saveResource($entry);
         return $entry->id;
     }
-    
+
+    /**
+     * Access module is really old, but we need it so we can forward stories.
+     * Shortcut doesn't have a factory so we tinker a little to get our results.
+     * 1 load a shortcut with the matching url.
+     * 2 a. If it exists, update the keyword.
+     *   b. Not exists, create keyword
+     * 
+     * @param Resource $entry
+     */
+    private function saveShortcut(Resource $entry)
+    {
+        $shortcut = $this->getShortcutByUrl($entry);
+        $db = Database::getDB();
+        $tbl = $db->addTable('access_shortcuts');
+        $tbl->addValue('keyword', $entry->urlTitle);
+        if (empty($shortcut)) {
+            return $db->insert();
+        } else {
+            $tbl->addFieldConditional('id', $shortcut['id']);
+            return $db->update();
+        }
+    }
+
     private function checkUrlTitle(Resource $entry)
     {
         $duplicate = $this->getByUrlTitle($entry->urlTitle);
-        // no duplicate found or duplicate is current entry
-        if (empty($duplicate) || $duplicate->id === $entry->id) {
+        $shortcut = $this->getShortcutByKeyword($entry);
+        /**
+         * no duplicate found or duplicate id is same as entry id
+         * AND
+         * no shortcut with matching urlTitle or shortcut url does not match the
+         * entry id
+         * 
+         */
+        if ((empty($duplicate) || $duplicate->id === $entry->id) &&
+                (empty($shortcut) || $shortcut['url'] == "stories:{$entry->id}")) {
             return;
         } else {
             // duplicate found, update title with timestamp
             $entry->urlTitle = $entry->urlTitle . '-' . time();
         }
+    }
+
+    public function getShortcutByUrl($entry)
+    {
+        $url = 'stories:' . $entry->id;
+        $db = Database::getDB();
+        $tbl = $db->addTable('access_shortcuts');
+        $tbl->addFieldConditional('url', $url);
+        return $db->selectOneRow();
+    }
+
+    public function getShortcutByKeyword($entry)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('access_shortcuts');
+        $tbl->addFieldConditional('keyword', $entry->urlTitle);
+        return $db->selectOneRow();
     }
 
     /**

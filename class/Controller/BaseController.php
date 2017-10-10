@@ -49,11 +49,19 @@ class BaseController extends \phpws2\Http\Controller
         if (empty($major_controller)) {
             throw new \stories\Exception\BadCommand('Missing controller name');
         }
-
+        
         $role_name = substr(strrchr(get_class($this->role), '\\'), 1);
         $controller_name = '\\stories\\Controller\\' . $major_controller . '\\' . $role_name;
         if (!class_exists($controller_name)) {
-            throw new \stories\Exception\BadCommand($controller_name);
+            $entryFactory = new \stories\Factory\EntryFactory;
+            $entry = $entryFactory->getByUrlTitle($major_controller);
+            if (!empty($entry)) {
+                $request->setUrl($entry->id);
+                $request->buildCommands();
+                $controller_name = '\\stories\\Controller\\Entry\\' . $role_name;
+            } else {
+                throw new \stories\Exception\BadCommand($controller_name);
+            }
         }
         $this->controller = new $controller_name($this->role);
     }
