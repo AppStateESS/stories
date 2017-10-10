@@ -182,6 +182,7 @@ class EntryFactory extends BaseFactory
         $entryId = $entry->id;
         $vars['home'] = $sourceHttp;
         $vars['publishBar'] = $this->scriptView('PublishBar');
+        $vars['tagBar'] = $this->scriptView('TagBar');
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
         $vars['content'] = $this->prepareFormContent($entry->content);
@@ -190,7 +191,8 @@ class EntryFactory extends BaseFactory
         $vars['publishDate'] = $entry->publishDate;
         $vars['entryId'] = $entryId;
         $vars['title'] = $entry->title;
-        $vars['tags'] = json_encode($entry->tags);
+        $vars['entryTags'] = json_encode($tagFactory->changeToSelectValues($entry->tags));
+        $vars['tags'] = json_encode($tagFactory->listTags(true));
 
         $vars['status'] = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
         $template = new \phpws2\Template($vars);
