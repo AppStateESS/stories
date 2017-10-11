@@ -7,5 +7,6 @@ exports.entry = {
   EntryForm: exports.APP_DIR + '/EntryForm/EntryForm.js',
   PublishBar: exports.APP_DIR + '/PublishBar/index.jsx',
   TagBar: exports.APP_DIR + '/TagBar/index.jsx',
+  Settings: exports.APP_DIR + '/Settings/index.jsx',
   vendor: ['react', 'react-dom']
 }
