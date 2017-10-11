@@ -69,11 +69,6 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         return $error_controller;
     }
 
-    public function afterRun(Request $request, Response $response)
-    {
-        
-    }
-
     private function loadDefines()
     {
         $dist = PHPWS_SOURCE_DIR . 'mod/stories/config/defines.dist.php';
@@ -90,6 +85,23 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         if (\Current_User::allow('stories')) {
             \stories\Factory\StoryMenu::listStoryLink();
             \stories\Factory\StoryMenu::adminDisplayLink();
+        }
+        $this->frontPage($request);
+    }
+
+    private function frontPage(Request $request)
+    {
+        if (!$request->isGet() || $request->getUrl() != '/') {
+            return;
+        }
+        $factory = new \stories\Factory\EntryFactory;
+        $settings = new \phpws2\Settings;
+        if ($settings->get('stories', 'showFeatures')) {
+            \Layout::add($factory->showFeatures($request), 'stories', 'features');
+        }
+
+        if ($settings->get('stories', 'listStories')) {
+            \Layout::add($factory->showStories($request), 'stories', 'stories');
         }
     }
 

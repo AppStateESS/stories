@@ -78,12 +78,12 @@ class EntryFactory extends BaseFactory
     {
         $db = Database::getDB();
         $now = time();
-
         $defaultOptions = array('publishedOnly' => false,
-            'hideExpired' => false,
+            'hideExpired' => true,
             'orderBy' => 'publishDate',
-            'limit' => 30,
+            'limit' => 3,
             'includeContent' => true,
+            'publishedOnly' => true,
             'offset' => 0);
 
         if (is_array($options)) {
@@ -102,6 +102,8 @@ class EntryFactory extends BaseFactory
         $tbl->addField('summary');
         $tbl->addField('thumbnail');
         $tbl->addField('title');
+        $tbl->addField('updateDate');
+        $tbl->addField('urlTitle');
         if ($options['includeContent']) {
             $tbl->addField('content');
         }
@@ -145,7 +147,6 @@ class EntryFactory extends BaseFactory
                 $db->setLimit($options['limit']);
             }
         }
-
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
         if (empty($objectList)) {
             return null;
@@ -274,8 +275,10 @@ EOF;
         $shortcut = $this->getShortcutByUrl($entry);
         $db = Database::getDB();
         $tbl = $db->addTable('access_shortcuts');
+        $tbl->usePearSequence(true);
         $tbl->addValue('keyword', $entry->urlTitle);
         if (empty($shortcut)) {
+            $tbl->addValue('url', 'stories:' . $entry->id);
             return $db->insert();
         } else {
             $tbl->addFieldConditional('id', $shortcut['id']);
@@ -457,6 +460,25 @@ EOF;
     {
         $template = new \phpws2\Template();
         $template->setModuleTemplate('stories', 'Entry/NotFound.html');
+        return $template->get();
+    }
+
+
+    public function showStories(Request $request)
+    {
+        $list = $this->pullList();
+        
+        $template = new \phpws2\Template(array('list'=>$list));
+        $template->setModuleTemplate('stories', 'FrontPageList.html');
+        return $template->get();
+    }
+    
+    public function showFeatures(Request $request)
+    {
+        $options = array('includeContent'=>false);
+        $list = $this->pullList($options);
+        $template = new \phpws2\Template(array('list'=>$list));
+        $template->setModuleTemplate('stories', 'FeatureList.html');
         return $template->get();
     }
 
