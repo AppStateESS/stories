@@ -36,7 +36,12 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
             'image_max_width' => 1920,
             'image_max_height' => 1080,
             'thumb_max_width' => 400,
-            'thumb_max_height' => 400
+            'thumb_max_height' => 400,
+            'commentCode' => '',
+            'showFeatures' => 0,
+            'featureNumber' => 3,
+            'listStories' => 1,
+            'listStoryAmount' => 6,
         );
         return $settings;
     }
@@ -84,6 +89,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     {
         if (\Current_User::allow('stories')) {
             \stories\Factory\StoryMenu::listStoryLink();
+            \stories\Factory\StoryMenu::adminDisplayLink();
         }
     }
 
