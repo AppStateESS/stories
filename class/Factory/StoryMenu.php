@@ -69,5 +69,12 @@ EOF;
 <link type="text/css" rel="stylesheet" href="{$homeHttp}mod/stories/css/medium-editor-insert-plugin.min.css" />
 EOF;
     }
+    
+    public static function adminDisplayLink()
+    {
+        $link = '<a href="./stories/Settings"><i class="fa fa-gear"></i> Settings</a>';
+        \MiniAdmin::add('stories', $link);
+        
+    }
 
 }
