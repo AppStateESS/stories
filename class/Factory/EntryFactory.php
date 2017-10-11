@@ -22,7 +22,7 @@ use phpws2\Database;
 use Canopy\Request;
 use phpws2\Template;
 
-require PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
+require_once PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
 
 class EntryFactory extends BaseFactory
 {
@@ -356,6 +356,7 @@ EOF;
                     break;
 
                 case 'h3':
+                case 'h4':
                     if (!$titleFound && !empty($dom->textContent)) {
                         $entry->title = $dom->textContent;
                         $titleFound = true;
@@ -394,7 +395,6 @@ EOF;
             $values = $request->pullPatchArray('values');
             foreach ($values as $val) {
                 $param = $value = null;
-                extract($val);
                 $this->patchEntry($entry, $param, $value);
             }
         } else {
@@ -466,15 +466,18 @@ EOF;
 
     public function showStories(Request $request)
     {
+        \Layout::addToStyleList('mod/stories/css/front-page.css');
         $list = $this->pullList();
-        
-        $template = new \phpws2\Template(array('list'=>$list));
+        $data['list'] = $list;
+        $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
+        $template = new \phpws2\Template($data);
         $template->setModuleTemplate('stories', 'FrontPageList.html');
         return $template->get();
     }
     
     public function showFeatures(Request $request)
     {
+        \Layout::addToStyleList('mod/stories/css/front-page.css');
         $options = array('includeContent'=>false);
         $list = $this->pullList($options);
         $template = new \phpws2\Template(array('list'=>$list));
