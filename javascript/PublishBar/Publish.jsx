@@ -11,7 +11,7 @@ export default class Publish extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      entryId: props.entryId,
+      id: props.id,
       title: props.title,
       publishOverlay: false,
       published: props.published,
@@ -115,7 +115,7 @@ export default class Publish extends Component {
 }
 
 Publish.propTypes = {
-  entryId: PropTypes.string,
+  id: PropTypes.string,
   publishDate: PropTypes.string,
   title: PropTypes.string,
   published: PropTypes.string,
