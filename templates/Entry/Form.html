@@ -18,7 +18,7 @@
 
 </style>
 <script src="<?=$home?>mod/stories/node_modules/jquery-sortable/source/js/jquery-sortable-min.js"></script>
-<script>const entryId = '<?=$entryId?>'; const title = '<?=$title?>'; const published = '<?=$published?>'; const publishDate = '<?=$publishDate?>'; const tags = <?=$tags?>;const entryTags = <?=$entryTags?>;</script>
+<script>const entry = <?=$entry?>; const tags = <?=$tags?>;</script>
 <div class="entry">
     <div class="status-bar row">
         <div class="col-sm-2">
@@ -35,7 +35,7 @@
     <div class="entry-form"></div>
     <?=$MediumEditorPack,$EntryForm,$insert,$cssOverride?>
     <script>
-        editor.setContent('<?=$content?>')
+        editor.setContent(entry.content)
     </script>
     <hr />
 </div>
