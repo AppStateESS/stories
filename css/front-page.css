@@ -1,0 +1,9 @@
+.story-title h3 {
+  margin-top : 6px;
+}
+
+.story-entry {
+  margin-bottom : 2em;
+  padding-bottom : 1em;
+  border-bottom : 1px solid #e3e3e3;
+}
