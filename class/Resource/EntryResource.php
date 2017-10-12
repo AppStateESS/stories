@@ -91,10 +91,22 @@ class EntryResource extends BaseResource
     protected $summary;
 
     /**
-     * Image shown in feature box.
+     * Smaller version of leadImage
      * @var phpws2\Variable\FileVar 
      */
     protected $thumbnail;
+    
+    /**
+     * @var phpws2\Variable\FileVar
+     */
+    protected $leadImage;
+    
+    /**
+     * 0 - width
+     * 1 - height
+     * @var phpws2\Variable\SmallInteger
+     */
+    protected $thumbOrientation;
 
     /**
      * Title of story.
@@ -147,6 +159,9 @@ class EntryResource extends BaseResource
         $this->expirationDate = new \phpws2\Variable\DateTime(0,
                 'expirationDate');
         $this->expirationDate->setPrintEmpty(false);
+        $this->leadImage = new \phpws2\Variable\FileVar(null, 'leadImage');
+        $this->leadImage->allowNull(true);
+        $this->thumbOrientation = new \phpws2\Variable\SmallInteger(0, 'thumbOrientation');
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
         $this->publishDate->stamp();
         $this->publishDate->setFormat(null);
@@ -215,7 +230,7 @@ class EntryResource extends BaseResource
     private function processTitle($title)
     {
         $title = preg_replace('/\s/', '-', strtolower(str_replace(' - ', ' ', trim($title))));
-        return preg_replace('/[\.;,\(\)]/', '', $title);
+        return preg_replace('/[\.;,\(\)\!]/', '', $title);
     }
 
 }
