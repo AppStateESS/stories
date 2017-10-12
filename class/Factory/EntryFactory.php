@@ -167,7 +167,7 @@ class EntryFactory extends BaseFactory
     {
         $entry = $this->build();
         $entry->title = '';
-        $entry->content = '';
+        $entry->content = '<p class="medium-insert-active"><p>';
         $authorFactory = new AuthorFactory;
         $this->loadAuthor($entry, $authorFactory->getByCurrentUser(true));
         return self::saveResource($entry);
@@ -179,20 +179,17 @@ class EntryFactory extends BaseFactory
 
         $sourceHttp = PHPWS_SOURCE_HTTP;
         $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
+        $entryVars = $entry->getStringVars();
         $vars['cssOverride'] = $this->mediumCSSOverride();
         $entryId = $entry->id;
         $vars['home'] = $sourceHttp;
+        $vars['entry'] = json_encode($entryVars);
         $vars['publishBar'] = $this->scriptView('PublishBar');
         $vars['tagBar'] = $this->scriptView('TagBar');
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
         $vars['content'] = $this->prepareFormContent($entry->content);
         $vars['insert'] = "<script src='$insertSource'></script>";
-        $vars['published'] = $entry->published ? 1 : 0;
-        $vars['publishDate'] = $entry->publishDate;
-        $vars['entryId'] = $entryId;
-        $vars['title'] = $entry->title;
-        $vars['entryTags'] = json_encode($tagFactory->changeToSelectValues($entry->tags));
         $vars['tags'] = json_encode($tagFactory->listTags(true));
 
         $vars['status'] = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
@@ -325,8 +322,7 @@ EOF;
 
     /**
      * Tries to extract the title, first image, and summary from the entry's 
-     * content variable. Title will always be updated but the thumbnail and summary
-     * may be switched on or off by parameters.
+     * content variable. 
      * 
      * @param Resource $entry
      */
@@ -337,44 +333,38 @@ EOF;
         libxml_use_internal_errors(true);
         $doc = new \DomDocument;
         $doc->loadHtml($content);
-        $domlist = $doc->getElementsByTagName('*');
-        $imageFound = false;
-        $titleFound = false;
-        $summaryFound = false;
-        foreach ($domlist as $dom) {
-            // we found everything we need. Stop looking.
-            if ($imageFound && $titleFound && $summaryFound) {
-                break;
-            }
-            switch ($dom->tagName) {
-                case 'img':
-                    if ($imageFound) {
-                        break;
-                    }
-                    $entry->thumbnail = $this->createThumbnailUrl($dom->getAttribute('src'));
-                    $imageFound = true;
-                    break;
+        $doc->preserveWhiteSpace = false;
 
-                case 'h3':
-                case 'h4':
-                    if (!$titleFound && !empty($dom->textContent)) {
-                        $entry->title = $dom->textContent;
-                        $titleFound = true;
-                    }
-                    break;
+        $image = $doc->getElementsByTagName('img');
+        $h3 = $doc->getElementsByTagName('h3');
+        $h4 = $doc->getElementsByTagName('h4');
+        $p = $doc->getElementsByTagName('p');
 
-                case 'p':
-                    if (!$titleFound && !empty($dom->textContent)) {
-                        $entry->title = $dom->textContent;
-                        $titleFound = true;
-                    } elseif (!$summaryFound) {
-                        if (preg_match('/[\.\?\!]/', $dom->textContent) || strlen($dom->textContent) > 10) {
-                            $entry->summary = $dom->textContent;
-                        }
-                        $summaryFound = true;
-                    }
-                    break;
-            }
+        $pStart = 0;
+
+        if ($image->length > 0) {
+            $imgNode = $image->item(0);
+            $src = $imgNode->getAttribute('src');
+            $entry->leadImage = $src;
+            $entry->thumbnail = $this->createThumbnailUrl($src);
+        }
+
+        if ($h3->length > 0) {
+            $h3Node = $h3->item(0);
+            $entry->title = $h3Node->textContent;
+        } elseif ($h4->length > 0) {
+            $h4Node = $h3->item(0);
+            $entry->title = $h4Node->textContent;
+        } elseif ($p->length > 0) {
+            $pNode = $p->item(0);
+            $entry->title = $pNode->textContent;
+            $pStart = 1;
+        }
+
+        if ($p->length > $pStart) {
+            $pNode = $p->item($pStart);
+            $pHtml = $doc->saveHtml($pNode);
+            $entry->summary = $pHtml;
         }
     }
 
@@ -463,24 +453,32 @@ EOF;
         return $template->get();
     }
 
-
     public function showStories(Request $request)
     {
-        \Layout::addToStyleList('mod/stories/css/front-page.css');
         $list = $this->pullList();
+        if (empty($list)) {
+            return null;
+        }
+
+        $settings = new \phpws2\Setting;
+        //listStoryFormat  - 0 is summary, 1 full
+        $templateFile = $settings->get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary';
+
+        \Layout::addToStyleList('mod/stories/css/front-page.css');
         $data['list'] = $list;
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $template = new \phpws2\Template($data);
-        $template->setModuleTemplate('stories', 'FrontPageList.html');
+
+        $template->setModuleTemplate('stories', 'FrontPageSummary.html');
         return $template->get();
     }
-    
+
     public function showFeatures(Request $request)
     {
         \Layout::addToStyleList('mod/stories/css/front-page.css');
-        $options = array('includeContent'=>false);
+        $options = array('includeContent' => false);
         $list = $this->pullList($options);
-        $template = new \phpws2\Template(array('list'=>$list));
+        $template = new \phpws2\Template(array('list' => $list));
         $template->setModuleTemplate('stories', 'FeatureList.html');
         return $template->get();
     }
