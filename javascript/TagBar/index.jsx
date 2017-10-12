@@ -3,6 +3,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import TagBar from './TagBar.jsx'
 
-/* global entryTags, tags, entryId, title */
+/* global entry */
 
-ReactDOM.render(<TagBar entryTags={entryTags} tags={tags} entryId={entryId} title={title}/>, document.getElementById('TagBar'))
+ReactDOM.render(<TagBar entryTags={entry.tags} tags={tags} entryId={entry.id} title={entry.title}/>, document.getElementById('TagBar'))
