@@ -3,26 +3,13 @@
 /* global $ */
 
 export default class EntryForm {
-  constructor(status) {
-    this.entry = {
-      id: 0,
-      title: '',
-      content: '<p class="medium-insert-active"><p>',
-    }
+  constructor(status, entry) {
+    this.entry = entry
     window.onunload = function() {
       this.save()
     }.bind(this)
     // status is the jquery node/object for the status text
     this.status = status
-  }
-
-  load() {
-    if (this.entry.id === 0) {
-      return
-    }
-    $.getJSON('./stories/Entry/' + this.entry.id).done(function (data) {
-      this.entry = data.entry
-    }.bind(this))
   }
 
   uploadUrl() {
@@ -46,7 +33,6 @@ export default class EntryForm {
       dataType: 'json',
       type: 'put',
       success: function (data) {
-        entry.id = data.entryId
         this.status.text('Saved')
       }.bind(this),
       error: function () {
