@@ -1,8 +1,6 @@
-/* global $, MediumEditor, entryId, EntryFormClass */
+/* global $, MediumEditor, entry, EntryFormClass */
 
-const EntryForm = new EntryFormClass($('#story-status'))
-EntryForm.entry.id = entryId
-EntryForm.load()
+const EntryForm = new EntryFormClass($('#story-status'), entry)
 
 var editor = new MediumEditor('.entry-form', {
   placeholder: {
@@ -57,8 +55,6 @@ const saveContent = function (editor) {
   EntryForm.save()
 }
 
-let currentTimeout
-
 // Without this, the throttle will run save twice.
 let delaySave = true
 
@@ -70,6 +66,6 @@ const triggerAutoSave = function (event, editable) {
   saveContent(editor)
   delaySave = true
 }
-const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 3000);
-editor.subscribe('editableInput', throttledAutoSave);
-editor.subscribe('blur', blurContentSave);
+const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 3000)
+editor.subscribe('editableInput', throttledAutoSave)
+editor.subscribe('blur', blurContentSave)
