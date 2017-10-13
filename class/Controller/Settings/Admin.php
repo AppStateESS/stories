@@ -50,6 +50,7 @@ class Admin extends RoleController
         $settingObj->featureNumber = $settings->get('stories', 'featureNumber');
         $settingObj->listStories = $settings->get('stories', 'listStories');
         $settingObj->listStoryAmount = $settings->get('stories', 'listStoryAmount');
+        $settingObj->listStoryFormat = $settings->get('stories', 'listStoryFormat');
         $settingsJson = json_encode($settingObj);
         $script = <<<EOF
 <script>const settings = $settingsJson;</script>
