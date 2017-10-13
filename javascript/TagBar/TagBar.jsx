@@ -17,6 +17,7 @@ export default class TagBar extends Component {
     }
     this.tagChange = this.tagChange.bind(this)
     this.saveTags = this.saveTags.bind(this)
+    this.newOptionClick = this.newOptionClick.bind(this)
   }
 
   componentDidMount() {
