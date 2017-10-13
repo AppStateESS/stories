@@ -13,7 +13,13 @@ const EntryRow = (props) => {
     )
   }
 
-  const {entry, deleteStory, publishStory, showTags, sortByTag} = props
+  const {
+    entry,
+    deleteStory,
+    publishStory,
+    showTags,
+    sortByTag,
+  } = props
 
   const {
     authorEmail, authorName,
@@ -28,7 +34,7 @@ const EntryRow = (props) => {
     summary,
     thumbnail,
     title,
-    tags,
+    tags
   } = entry
 
   const mailto = 'mailto:' + authorEmail
@@ -61,7 +67,10 @@ const EntryRow = (props) => {
       </div>
     )
   }
-
+  const strippedSummary = summary.replace(/(<([^>]+)>)/ig, '').substring(0, 200)
+  const dangerousSummary = {
+    __html: strippedSummary
+  }
   return (
     <div className="entry-row mb-1">
       <div className="row">
@@ -73,7 +82,7 @@ const EntryRow = (props) => {
         <div className="col-sm-6">
           <h3>{title}
           </h3>
-          <p>{summary}</p>
+          <div className="summary" dangerouslySetInnerHTML={dangerousSummary}/>
         </div>
         <div className="col-sm-3">
           <strong>Author:</strong>&nbsp;
@@ -84,7 +93,7 @@ const EntryRow = (props) => {
           <strong>Expires:</strong>&nbsp; {expire}
         </div>
       </div>
-      <hr />
+      <hr/>
       <div className="row mt-1">
         <div className="col-sm-4">
           <Options
@@ -109,15 +118,17 @@ EntryRow.propTypes = {
   publishStory: PropTypes.func,
   deleteStory: PropTypes.func,
   sortByTag: PropTypes.func,
-  showTags: PropTypes.func,
+  showTags: PropTypes.func
 }
 
 export default EntryRow
 
-const Options = ({entryId, deleteStory, isPublished, publishStory}) => {
+const Options = ({entryId, deleteStory, isPublished, publishStory,}) => {
   return (
     <div>
-      <a className="btn btn-sm btn-default mr-1" href={`./stories/Entry/${entryId}/edit`}>Edit</a>
+      <a
+        className="btn btn-sm btn-default mr-1"
+        href={`./stories/Entry/${entryId}/edit`}>Edit</a>
       {isPublished === '0'
         ? <a className="btn btn-sm btn-default mr-1" onClick={publishStory}>Publish</a>
         : null}
@@ -131,22 +142,29 @@ Options.propTypes = {
   entryId: PropTypes.string,
   deleteStory: PropTypes.func,
   isPublished: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
-  publishStory: PropTypes.func,
+  publishStory: PropTypes.func
 }
 
-const TagList = ({tags, showTags, sortByTag}) => {
+const TagList = ({tags, showTags, sortByTag,}) => {
   let tagList
-  const tagButton = <button className="btn btn-primary mr-1 btn-sm" onClick={showTags}><i className="fa fa-tags"></i>&nbsp;Tags</button>
+  const tagButton = <button className="btn btn-primary mr-1 btn-sm" onClick={showTags}>
+    <i className="fa fa-tags"></i>&nbsp;Tags</button>
   if (tags[0] !== undefined) {
     tagList = tags.map(function (value, key) {
-      return <button className="btn btn-sm mr-1" key={key} onClick={sortByTag.bind(null, value.value)}>{value.label}</button>
+      return <button
+        className="btn btn-sm mr-1"
+        key={key}
+        onClick={sortByTag.bind(null, value.value)}>{value.label}</button>
     })
   }
-  return <div><strong>{tagButton} </strong> {tagList}</div>
+  return <div>
+    <strong>{tagButton}
+    </strong>
+    {tagList}</div>
 }
 
 TagList.propTypes = {
   tags: PropTypes.array,
   showTags: PropTypes.func,
-  sortByTag: PropTypes.func,
+  sortByTag: PropTypes.func
 }
