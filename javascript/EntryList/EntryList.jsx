@@ -183,7 +183,12 @@ export default class EntryList extends Component {
 
   closeOverlay() {
     this.setState({publishOverlay: false, tagOverlay: false, currentEntry: null,})
+    this.unlockBody()
     this.currentKey = null
+  }
+
+  unlockBody() {
+    $('body').css('overflow', 'inherit')
   }
 
   deleteStory(key) {
@@ -310,7 +315,7 @@ export default class EntryList extends Component {
   }
 }
 
-EntryList.propType = {
+EntryList.propTypes = {
   segmentSize : PropTypes.number,
 }
 

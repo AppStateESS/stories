@@ -167,7 +167,7 @@ class EntryFactory extends BaseFactory
     {
         $entry = $this->build();
         $entry->title = '';
-        $entry->content = '<p class="medium-insert-active"><p>';
+        $entry->content = '';
         $authorFactory = new AuthorFactory;
         $this->loadAuthor($entry, $authorFactory->getByCurrentUser(true));
         return self::saveResource($entry);
@@ -385,7 +385,7 @@ EOF;
             $values = $request->pullPatchArray('values');
             foreach ($values as $val) {
                 $param = $value = null;
-                $this->patchEntry($entry, $param, $value);
+                $this->patchEntry($entry, $val['param'], $val['value']);
             }
         } else {
             $param = $request->pullPatchString('param');
