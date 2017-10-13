@@ -28,6 +28,10 @@ export default class TagBar extends Component {
     this.setState({tagOverlay: val})
   }
 
+  unlockBody() {
+    $('body').css('overflow', 'inherit')
+  }
+
   saveTags() {
     $.ajax({
       url: './stories/Tag/attach',
@@ -39,6 +43,7 @@ export default class TagBar extends Component {
       type: 'post',
       success: function () {
         this.setOverlay(false)
+        this.unlockBody()
       }.bind(this),
       error: function () {}.bind(this)
     })
