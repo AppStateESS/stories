@@ -1,6 +1,6 @@
 'use strict'
 import React, {Component} from 'react'
-//import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import Waiting from '../AddOn/Waiting'
 import './style.css'
 import EntryRow from './EntryRow'
@@ -27,6 +27,8 @@ export default class EntryList extends Component {
       sortByTagId: 0,
       tags: []
     }
+
+    this.offset = 0
     this.delay
     this.currentKey = null
     this.publish = this.publish.bind(this)
@@ -51,7 +53,9 @@ export default class EntryList extends Component {
   }
 
   sortByTag(sortByTagId) {
-    this.setState({sortByTagId: sortByTagId}, this.load)
+    this.setState({
+      sortByTagId: sortByTagId
+    }, this.load)
   }
 
   setPublishDate(e) {
@@ -79,20 +83,18 @@ export default class EntryList extends Component {
     this.setState({currentEntry: entry})
   }
 
-  showMore() {
-
-  }
+  showMore() {}
 
   load() {
     $.getJSON('./stories/Listing', {
       search: this.state.search,
       sortBy: this.state.sortBy,
-      sortByTagId: this.state.sortByTagId,
+      sortByTagId: this.state.sortByTagId
     }).done(function (data) {
       if (data.listing == null) {
-        this.setState({listing: false, loading: false, tags: data.tags,})
+        this.setState({listing: false, loading: false, tags: data.tags})
       } else {
-        this.setState({listing: data.listing, loading: false, tags: data.tags,})
+        this.setState({listing: data.listing, loading: false, tags: data.tags})
       }
     }.bind(this))
   }
@@ -111,7 +113,7 @@ export default class EntryList extends Component {
 
   newOptionClick(newTag) {
     delete newTag.className
-    let {tags, currentEntry} = this.state
+    let {tags, currentEntry,} = this.state
     $.ajax({
       url: './stories/Tag',
       data: {
@@ -123,9 +125,9 @@ export default class EntryList extends Component {
         newTag.value = data
         tags.push(newTag)
         currentEntry.tags.push(newTag)
-        this.setState({tags, currentEntry})
+        this.setState({tags, currentEntry,})
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -148,10 +150,10 @@ export default class EntryList extends Component {
         values: [
           {
             param: 'published',
-            value: 1
+            value: 1,
           }, {
             param: 'publishDate',
-            value: this.state.currentEntry.publishDate
+            value: this.state.currentEntry.publishDate,
           },
         ]
       },
@@ -163,7 +165,7 @@ export default class EntryList extends Component {
         currentEntry.published = 1
         this.updateListing(this.currentKey, currentEntry)
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -180,7 +182,7 @@ export default class EntryList extends Component {
   }
 
   closeOverlay() {
-    this.setState({publishOverlay: false, tagOverlay: false, currentEntry: null})
+    this.setState({publishOverlay: false, tagOverlay: false, currentEntry: null,})
     this.currentKey = null
   }
 
@@ -196,7 +198,7 @@ export default class EntryList extends Component {
           listing.splice(key, 1)
           this.setState({listing: listing})
         }.bind(this),
-        error: function () {}.bind(this)
+        error: function () {}.bind(this),
       })
     }
   }
@@ -206,7 +208,7 @@ export default class EntryList extends Component {
       url: `./stories/Entry/${this.state.currentEntry.id}`,
       data: {
         param: 'publishDate',
-        value: this.state.currentEntry.publishDate
+        value: this.state.currentEntry.publishDate,
       },
       dataType: 'json',
       type: 'patch',
@@ -214,7 +216,7 @@ export default class EntryList extends Component {
         this.closeOverlay()
         this.updateListing(this.currentKey, this.state.currentEntry)
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -222,8 +224,8 @@ export default class EntryList extends Component {
     $.ajax({
       url: './stories/Tag/attach',
       data: {
-        entryId : this.state.currentEntry.id,
-        tags: this.state.currentEntry.tags
+        entryId: this.state.currentEntry.id,
+        tags: this.state.currentEntry.tags,
       },
       dataType: 'json',
       type: 'post',
@@ -231,7 +233,7 @@ export default class EntryList extends Component {
         this.updateListing(this.currentKey, this.state.currentEntry)
         this.closeOverlay()
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
 
   }
@@ -262,6 +264,13 @@ export default class EntryList extends Component {
 
     const fadeOut = {
       animation: "fadeOut"
+    }
+
+    let showMore
+    if (this.state.listing.length > this.props.segmentSize) {
+      showMore = (
+        <button className="btn btn-primary" onClick={this.showMore}>Show more rows</button>
+      )
     }
 
     return (
@@ -295,10 +304,14 @@ export default class EntryList extends Component {
           handleChange={this.searchChange}
           updateSort={this.updateSort}/>
         <div>{listing}</div>
-        <div><button className="btn btn-primary" onClick={this.showMore}>Show more rows</button></div>
+        <div>{showMore}</div>
       </div>
     )
   }
+}
+
+EntryList.propType = {
+  segmentSize : PropTypes.number,
 }
 
 const NoEntries = () => {
