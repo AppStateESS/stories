@@ -48,7 +48,12 @@ class Admin extends RoleController
 
     protected function listHtmlCommand(Request $request)
     {
-        return $this->factory->scriptView('EntryList');
+        $settings = new \phpws2\Settings();
+        $segmentSize = $settings->get('stories', 'segmentSize');
+        $script = <<<EOF
+<script>const segmentSize = $segmentSize;</script>
+EOF;
+        return $script . $this->factory->scriptView('EntryList');
     }
     
     protected function listJsonCommand(Request $request)
