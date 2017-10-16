@@ -346,7 +346,7 @@ EOF;
             $imgNode = $image->item(0);
             $src = $imgNode->getAttribute('src');
             $entry->leadImage = $src;
-            $entry->thumbnail = $this->createThumbnailUrl($src);
+            $entry->thumbnail = $this->createThumbnailUrl($entry->id, $src);
         }
 
         if ($h3->length > 0) {
@@ -368,11 +368,18 @@ EOF;
         }
     }
 
-    private function createThumbnailUrl($url)
+    private function createThumbnailUrl($entryId, $url)
     {
         $urlArray = explode('/', $url);
         $filename = array_pop($urlArray);
-        return implode('/', $urlArray) . '/thumbnail/' . $filename;
+        $rootImageDir = 'images/stories/' . $entryId . '/';
+        $thumbDir = $rootImageDir . 'thumbnail/';
+        if (!file_exists($thumbDir . $filename)) {
+            $factory = new EntryPhotoFactory;
+            $factory->createThumbnail($rootImageDir, $filename);
+        }
+        
+        return $thumbDir . $filename;
     }
 
     public function patch($entryId, Request $request)
@@ -460,16 +467,16 @@ EOF;
             return null;
         }
 
-        $settings = new \phpws2\Setting;
+        $settings = new \phpws2\Settings;
         //listStoryFormat  - 0 is summary, 1 full
-        $templateFile = $settings->get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary';
 
         \Layout::addToStyleList('mod/stories/css/front-page.css');
         $data['list'] = $list;
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $template = new \phpws2\Template($data);
 
-        $template->setModuleTemplate('stories', 'FrontPageSummary.html');
+        $templateFile = $settings->get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary';
+        $template->setModuleTemplate('stories', $templateFile);
         return $template->get();
     }
 

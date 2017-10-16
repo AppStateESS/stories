@@ -55,12 +55,63 @@ class EntryPhotoFactory
             'corrent_image_extensions' => true,
             'upload_dir' => $imagePath,
             'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory,
-            'image_versions' => array('thumbnail' => array('max_width' => Settings::get('stories',
-                            'thumb_max_width'), 'max_height' => Settings::get('stories',
-                            'thumb_max_height')))
+            'image_versions' => array()
         );
         $upload_handler = new \UploadHandler($options, false);
-        return $upload_handler->post(false);
+        $result = $upload_handler->post(false);
+        return $result;
+    }
+
+    public function createThumbnail($sourceDirectory, $filename)
+    {
+        $settings = new \phpws2\Settings();
+
+        $options = array('image_library' => true, 'upload_dir' => $sourceDirectory);
+        $upload = new \UploadHandler($options, false);
+
+        list($width, $height) = $this->getOrientationDimensions($sourceDirectory . $filename);
+        $scaledOptions = array(
+            'max_width' => $width,
+            'max_height' => $height,
+            'crop' => true,
+            'jpeg_quality' => 100
+        );
+
+        $upload->create_scaled_image($filename, 'thumbnail', $scaledOptions);
+    }
+
+    public function getOrientationDimensions($filePath)
+    {
+        list($width, $height) = getimagesize($filePath);
+        $ratio = $width / $height;
+
+        if ($ratio > STORIES_ORIENTATION_RATIO) {
+            if ($width > STORIES_LANDSCAPE_THUMB_WIDTH) {
+                $finalWidth = STORIES_LANDSCAPE_THUMB_WIDTH;
+                $finalHeight = STORIES_LANDSCAPE_THUMB_HEIGHT;
+            } else {
+                $finalWidth = $width;
+                if ($height > STORIES_LANDSCAPE_THUMB_HEIGHT) {
+                    $finalHeight = STORIES_LANDSCAPE_THUMB_HEIGHT;
+                } else {
+                    $finalHeight = $height;
+                }
+            }
+        } else {
+            if ($height > STORIES_PORTRAIT_THUMB_HEIGHT) {
+                $finalWidth = STORIES_PORTRAIT_THUMB_HEIGHT;
+                $finalHeight = STORIES_PORTRAIT_THUMB_WIDTH;
+            } else {
+                $finalWidth = $height;
+                if ($width > STORIES_PORTRAIT_THUMB_WIDTH) {
+                    $finalHeight = STORIES_PORTRAIT_THUMB_WIDTH;
+                } else {
+                    $finalHeight = $width;
+                }
+            }
+        }
+
+        return array($finalWidth, $finalHeight);
     }
 
     public function delete($entryId, Request $request)
@@ -72,7 +123,8 @@ class EntryPhotoFactory
         if (is_file($cleanName)) {
             unlink($cleanName);
         }
-        $this->deleteThumbnail($entryId, $filenameOnly);;
+        $this->deleteThumbnail($entryId, $filenameOnly);
+        ;
         return true;
     }
 
@@ -83,7 +135,7 @@ class EntryPhotoFactory
         if (is_file($thumbnailPath)) {
             unlink($thumbnailPath);
         }
-        
+
         $db = Database::getDB();
         $tbl = $db->addTable('storiesEntry');
         $tbl->addFieldConditional('id', $entryId);
