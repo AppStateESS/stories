@@ -11,7 +11,7 @@
  * http://www.opensource.org/licenses/MIT
  * 
  * This script has been updated from its original version. Error suppression
- * using at (@) has been removed and the reprecusions worked around. Most of the
+ * using at (@) has been removed and the repercussions worked around. Most of the
  * suppression occurs with exif functions. Unfortunately, that is just how PHP
  * handles them. There is no way to test for failure, you have to fail and deal.
  * For us though, failure is a thrown exception, so I added new code to test prior
@@ -373,7 +373,7 @@ class UploadHandler
                 $this->error_messages[$error] : $error;
     }
 
-    function get_config_bytes($val)
+    public function get_config_bytes($val)
     {
         $val = trim($val);
         $last = strtolower($val[strlen($val) - 1]);
@@ -1033,7 +1033,7 @@ class UploadHandler
         return getimagesize($file_path);
     }
 
-    protected function create_scaled_image($file_name, $version, $options)
+    public function create_scaled_image($file_name, $version, $options)
     {
         if ($this->options['image_library'] === 2) {
             return $this->imagemagick_create_scaled_image($file_name, $version,
