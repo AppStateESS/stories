@@ -230,7 +230,7 @@ class EntryResource extends BaseResource
     private function processTitle($title)
     {
         $title = preg_replace('/\s/', '-', strtolower(str_replace(' - ', ' ', trim($title))));
-        return preg_replace('/[\.;,\(\)\!]/', '', $title);
+        return preg_replace('/[\W\-]/', '', $title);
     }
 
 }
