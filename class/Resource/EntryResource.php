@@ -180,31 +180,9 @@ class EntryResource extends BaseResource
         $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
     }
 
-    /**
-     * Runs the filter before setting the content.
-     * @param string $content
-     */
-    public function setContent($content)
-    {
-        $this->content->set($this->filterContent($content));
-    }
-    
     public function setTitle($title) {
         $this->title->set($title);
         $this->urlTitle->set($this->processTitle($title));
-    }
-
-    /**
-     * Cleans up the content string that is imported from Medium Editor.
-     * Medium editor content contains remnants of its controls.
-     * @param string $content
-     */
-    public function filterContent($content)
-    {
-        $noControls = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s', '', $content));
-        $noExtraParagraphs = preg_replace('/(<p class=""><\/p>){2,}|(<p class="medium-insert-active"><\/p>)$/s', '<p class="medium-insert-active"></p>', $noControls);
-        $noEmptyHeaders = preg_replace('/<h[34]><\/h[34]>/', '', $noExtraParagraphs);
-        return $noEmptyHeaders;
     }
     
     public function getStringVars($return_null = false, $hide = null)
