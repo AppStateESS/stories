@@ -128,9 +128,19 @@ class EntryPhotoFactory
         return true;
     }
 
+    public function getImagePath($entryId)
+    {
+        return 'images/stories/' . $entryId . '/';
+    }
+
+    public function getThumbnailPath($entryId)
+    {
+        return 'images/stories/' . $entryId . '/thumbnail/';
+    }
+
     private function deleteThumbnail($entryId, $filename)
     {
-        $thumbnailPath = 'images/stories/' . $entryId . '/thumbnail/' . $filename;
+        $thumbnailPath = $this->getThumbnailPath($entryId) . $filename;
         $thumbnailUrl = \Canopy\Server::getSiteUrl(true) . $thumbnailPath;
         if (is_file($thumbnailPath)) {
             unlink($thumbnailPath);
@@ -142,6 +152,50 @@ class EntryPhotoFactory
         $tbl->addFieldConditional('thumbnail', $thumbnailUrl);
         $tbl->addValue('thumbnail', null);
         $db->update();
+    }
+
+    private function getYouTubeId($src)
+    {
+        // https://stackoverflow.com/questions/2936467/parse-youtube-video-id-using-preg-match
+        if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i',
+                        $src, $match)) {
+            return $match[1];
+        } else {
+            return null;
+        }
+    }
+
+    private function getYouTubeThumbUrl($youTubeId)
+    {
+        return <<<EOF
+https://img.youtube.com/vi/$youTubeId/0.jpg
+EOF;
+    }
+
+    public function saveYouTubeImage($entryId, $src)
+    {
+        $youtubeId = $this->getYouTubeId($src);
+        if (empty($youtubeId)) {
+            return false;
+        }
+        $url = $this->getYouTubeThumbUrl($youtubeId);
+        $content = file_get_contents($url);
+        if (empty($content)) {
+            return false;
+        }
+        $imageName = $youtubeId . '.jpg';
+        $imagePath = $this->getImagePath($entryId);
+        $fullPath = $imagePath . $imageName;
+        if (!is_dir($imagePath)) {
+            mkdir($imagePath, 0755);
+        }
+
+        if (file_put_contents($fullPath, $content) !== false) {
+            $this->createThumbnail($imagePath, $imageName);
+            return array('image' => $fullPath, 'thumbnail' => $this->getThumbnailPath($entryId) . $imageName);
+        } else {
+            return false;
+        }
     }
 
 }
