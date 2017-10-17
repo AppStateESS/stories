@@ -183,12 +183,14 @@ class EntryFactory extends BaseFactory
         $vars['cssOverride'] = $this->mediumCSSOverride();
         $entryId = $entry->id;
         $vars['home'] = $sourceHttp;
+        $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
+        $vars['twitter'] = $this->loadTwitterScript(true);
         $vars['entry'] = json_encode($entryVars);
         $vars['publishBar'] = $this->scriptView('PublishBar');
         $vars['tagBar'] = $this->scriptView('TagBar');
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
-        $vars['content'] = $this->prepareFormContent($entry->content);
+
         $vars['insert'] = "<script src='$insertSource'></script>";
         $vars['tags'] = json_encode($tagFactory->listTags(true));
 
@@ -220,16 +222,23 @@ class EntryFactory extends BaseFactory
 EOF;
     }
 
+    /**
+     * Adds the medium-insert overlay that allows videos to be edited.
+     * @param type $content
+     * @return type
+     */
     private function prepareFormContent($content)
     {
-        $content = str_replace("\n", '\\n', $content);
+        $content = str_replace("\n", '', $content);
         $suffix = '<p class="medium-insert-active"><br></p>';
-        return $content . $suffix;
         $figure = '<figure contenteditable="false">';
         $content2 = preg_replace("/$figure/",
                 '<div class="medium-insert-images medium-insert-active">' . $figure,
                 $content);
-        return preg_replace("/<\/figure>/", '</figure></div>', $content2) . $suffix;
+        $contentReady = preg_replace("/<\/figure>/",
+                        '</figure><div class="medium-insert-embeds-overlay"></div>',
+                        $content2) . $suffix;
+        return $contentReady;
     }
 
     protected function loadAuthor(Resource $entry, AuthorResource $author)
@@ -245,7 +254,8 @@ EOF;
         $entry = $this->load($entryId);
         $entry->stamp();
         $content = $request->pullPutVar('content');
-        $entry->setContent($content);
+        $content = $this->filterMedium($content);
+        $entry->content = $content;
         $this->siftContent($entry);
         return $this->save($entry);
     }
@@ -322,11 +332,12 @@ EOF;
 
     /**
      * Tries to extract the title, first image, and summary from the entry's 
-     * content variable. 
+     * content variable.  If first image is not found but a youtube video is
+     * used, the video thumbnail will get extracted.
      * 
      * @param Resource $entry
      */
-    private function siftContent(Resource $entry)
+    public function siftContent(Resource $entry)
     {
         $photoFactory = new EntryPhotoFactory();
         $content = $entry->content;
@@ -339,6 +350,7 @@ EOF;
         $h3 = $doc->getElementsByTagName('h3');
         $h4 = $doc->getElementsByTagName('h4');
         $p = $doc->getElementsByTagName('p');
+        $iframe = $doc->getElementsByTagName('iframe');
 
         $pStart = 0;
 
@@ -347,6 +359,16 @@ EOF;
             $src = $imgNode->getAttribute('src');
             $entry->leadImage = $src;
             $entry->thumbnail = $this->createThumbnailUrl($entry->id, $src);
+        } elseif ($iframe->length > 0) {
+            $iframeNode = $iframe->item(0);
+            $src = $iframeNode->getAttribute('src');
+            if ($src) {
+                $imgResult = $photoFactory->saveYouTubeImage($entry->id, $src);
+                if (!empty($imgResult)) {
+                    $entry->leadImage = $imgResult['image'];
+                    $entry->thumbnail = $imgResult['thumbnail'];
+                }
+            }
         }
 
         if ($h3->length > 0) {
@@ -378,7 +400,6 @@ EOF;
             $factory = new EntryPhotoFactory;
             $factory->createThumbnail($rootImageDir, $filename);
         }
-        
         return $thumbDir . $filename;
     }
 
@@ -460,6 +481,12 @@ EOF;
         return $template->get();
     }
 
+    /**
+     * Called from Module.php not a controller
+     * 
+     * @param Request $request
+     * @return string
+     */
     public function showStories(Request $request)
     {
         $list = $this->pullList();
@@ -473,13 +500,42 @@ EOF;
         \Layout::addToStyleList('mod/stories/css/front-page.css');
         $data['list'] = $list;
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
+        $data['twitter'] = $this->loadTwitterScript();
         $template = new \phpws2\Template($data);
 
-        $templateFile = $settings->get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary';
+        $templateFile = $settings->get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary.html';
         $template->setModuleTemplate('stories', $templateFile);
         return $template->get();
     }
 
+    /**
+     * Medium editor insert doesn't initialize the Twitter embed. Has to be done
+     * manually. The editor includes a script call to widgets BUT that is stripped
+     * by our parser. It also showed it at different times. Just in case, 
+     * there is the include parameter if we get repeat includes.
+     * @param boolean $include - If true, include a link to twitter's widget file.
+     * @return string
+     */
+    private function loadTwitterScript($include = true)
+    {
+        $includeFile = '<script src="//platform.twitter.com/widgets.js"></script>';
+        $homeHttp = PHPWS_HOME_HTTP;
+        $script = <<<EOF
+<script src="$homeHttp/mod/stories/javascript/MediumEditor/loadTwitter.js"></script>
+EOF;
+        if ($include) {
+            return $includeFile . $script;
+        } else {
+            return $script;
+        }
+    }
+
+    /**
+     * Called from Module.php not a controller
+     * 
+     * @param Request $request
+     * @return string
+     */
     public function showFeatures(Request $request)
     {
         \Layout::addToStyleList('mod/stories/css/front-page.css');
@@ -488,6 +544,39 @@ EOF;
         $template = new \phpws2\Template(array('list' => $list));
         $template->setModuleTemplate('stories', 'FeatureList.html');
         return $template->get();
+    }
+
+    /**
+     * Removes the media overlay that prevents the video from working
+     */
+    private function removeMediumOverlay($content)
+    {
+        return str_replace('<div class="medium-insert-embeds-overlay"></div>',
+                '', $content);
+    }
+
+    /**
+     * Cleans up the content string that is imported from Medium Editor.
+     * Medium editor content contains remnants of its controls.
+     * @param string $content
+     */
+    public function filterMedium($content)
+    {
+        // Removes medium buttons
+        $sift1 = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
+                        '', $content));
+
+        // Removes extra medium paragraphs padded to end of content
+        $sift2 = preg_replace('/(<p class=""><\/p>){2,}|(<p class="medium-insert-active"><\/p>)$/s',
+                '<p class="medium-insert-active"></p>', $sift1);
+
+        // Removes extra headers sometimes padded on end
+        $sift3 = preg_replace('/<h[34]><\/h[34]>/', '', $sift2);
+
+        // Removes the overlay left on embeds (e.g. youtube)
+        $sift4 = $this->removeMediumOverlay($sift3);
+        $sift5 = str_replace("\n", '', $sift4);
+        return $sift5;
     }
 
 }
