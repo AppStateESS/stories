@@ -30,7 +30,7 @@ export default class Publish extends Component {
 
   publishStory() {
     $.ajax({
-      url: `./stories/Entry/${this.state.entryId}`,
+      url: `./stories/Entry/${this.state.id}`,
       data: {
         values: [
           {
@@ -57,7 +57,7 @@ export default class Publish extends Component {
 
   savePublishDate() {
     $.ajax({
-      url: `./stories/Entry/${this.state.entryId}`,
+      url: `./stories/Entry/${this.state.id}`,
       data: {
         param: 'publishDate',
         value: this.state.publishDate,
