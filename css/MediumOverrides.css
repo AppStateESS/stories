@@ -1,12 +1,18 @@
 div.entry-form .medium-insert-images figure figcaption,div.entry-form .mediumInsert figure figcaption, div.entry-form .medium-insert-embeds figure figcaption, div.entry-form .mediumInsert-embeds figure figcaption
 {
-  color : #4e4e4e;
-  font-size : 14px;
+    color : #4e4e4e;
+    font-size : 14px;
 }
 
 div.story-entry .medium-insert-images figure figcaption,div.story-entry .mediumInsert figure figcaption, div.story-entry .medium-insert-embeds figure figcaption, div.story-entry .mediumInsert-embeds figure figcaption
 {
-  color : #4e4e4e;
-  font-size : 14px;
+    color : #4e4e4e;
+    font-size : 14px;
 }
 
+/* medium forces a 100px height on its embed iframe. This doesn't work with instagram */
+@media screen and (min-width: 616px) {
+    div.medium-insert-embed>div>div>div {
+        height: 182px !important;
+    }
+}
