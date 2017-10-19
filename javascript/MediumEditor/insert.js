@@ -5,7 +5,7 @@ const EntryForm = new EntryFormClass($('#story-status'), entry)
 var editor = new MediumEditor('.entry-form', {
   placeholder: {
     text: 'Start your story here...',
-    hideOnClick: true
+    hideOnClick: true,
   },
   toolbar: {
     buttons: [
@@ -19,7 +19,7 @@ var editor = new MediumEditor('.entry-form', {
       'unorderedlist',
       'removeFormat',
     ]
-  }
+  },
 })
 
 $('.entry-form').mediumInsert({
@@ -27,21 +27,35 @@ $('.entry-form').mediumInsert({
   addons: {
     images: {
       deleteScript: EntryForm.deleteUrl(),
-      deleteMethod : 'DELETE',
+      deleteMethod: 'DELETE',
       captions: true,
       autoGrid: 3,
       fileUploadOptions: {
         url: EntryForm.uploadUrl(),
         type: 'post',
-        formData: {entryId : EntryForm.entry.id},
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-      },
-    }
-  },
+        formData: {
+          entryId: EntryForm.entry.id
+        },
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
+      }
+    },
+    embeds: {
+      actions: {
+        remove: {
+          label: '<span class="fa fa-times"></span>',
+          clicked: function (el) {
+            var $event = $.Event('keydown')
+            $event.which = 8
+            $(document).trigger($event)
+            EntryForm.cleanUpEmbed($(el[0]))
+          },
+        }
+      }
+    },
+  }
 })
 
-
-$('#entry-title').blur(function(){
+$('#entry-title').blur(function () {
   EntryForm.entry.title = $(this).val()
   EntryForm.save()
 })
