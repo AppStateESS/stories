@@ -1,10 +1,16 @@
 <?=$style?>
-  <?php foreach ($list as $entry):?>
-  <div class="story-entry">
-      <div>Published <?=$entry['publishDateRelative']?></div>
+<?php foreach ($list as $entry):?>
+<div class="story-entry">
+    <div>Published <?=$entry['publishDateRelative']?></div>
+    <?php if ($isAdmin):?>
+        <a class="pull-right btn btn-default btn-sm" href="./stories/Entry/<?=$entry['id']?>/edit">Edit</a>
+    <?php endif;?>
     <div class="story-content">
-      <?=$entry['content']?>
+        <?=$entry['content']?>
     </div>
-  </div>
-  <?php endforeach; ?>
+    <div class="story-tags">
+        <?=$entry['tagLinks']?>
+    </div>
+</div>
+<?php endforeach; ?>
 <?=$twitter?>
