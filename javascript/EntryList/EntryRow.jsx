@@ -31,7 +31,7 @@ const EntryRow = (props) => {
     publishDateRelative,
     published,
     id,
-    summary,
+    strippedSummary,
     thumbnail,
     title,
     tags
@@ -39,7 +39,7 @@ const EntryRow = (props) => {
 
   const mailto = 'mailto:' + authorEmail
 
-  let image = noImage
+  let image = noImage()
   if (thumbnail.length > 0) {
     image = <img className="img-responsive" src={thumbnail}/>
   }
@@ -67,10 +67,7 @@ const EntryRow = (props) => {
       </div>
     )
   }
-  const strippedSummary = summary.replace(/(<([^>]+)>)/ig, '').substring(0, 200)
-  const dangerousSummary = {
-    __html: strippedSummary
-  }
+
   return (
     <div className="entry-row mb-1">
       <div className="row">
@@ -82,7 +79,7 @@ const EntryRow = (props) => {
         <div className="col-sm-6">
           <h3>{title}
           </h3>
-          <div className="summary" dangerouslySetInnerHTML={dangerousSummary}/>
+          <div className="summary">{strippedSummary}</div>
         </div>
         <div className="col-sm-3">
           <strong>Author:</strong>&nbsp;
