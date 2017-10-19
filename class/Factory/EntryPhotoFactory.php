@@ -196,5 +196,12 @@ EOF;
             return false;
         }
     }
+    
+    public function purgeEntry($entryId)
+    {
+        $thumbnailPath = $this->getThumbnailPath($entryId);
+        $imagePath = $this->getImagePath($entryId);
+        \phpws\PHPWS_File::rmdir($imagePath);
+    }
 
 }
