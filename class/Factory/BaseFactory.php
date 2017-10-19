@@ -109,13 +109,13 @@ EOF;
 
         switch ($days) {
             case 0:
-                return 'Today at ' . strftime('%l:%M%P', $date);
+                return 'today at ' . strftime('%l:%M%P', $date);
 
             case 1:
-                return 'Yesterday at ' . strftime('%l:%M%P', $date);
+                return 'yesterday at ' . strftime('%l:%M%P', $date);
 
             case -1:
-                return 'Tomorrow at ' . strftime('%l:%M%P', $date);
+                return 'tomorrow at ' . strftime('%l:%M%P', $date);
 
             case ($days > 0 && $days < STORIES_DAY_THRESHOLD):
                 return "$days days ago";
