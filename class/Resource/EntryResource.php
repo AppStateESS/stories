@@ -175,7 +175,7 @@ class EntryResource extends BaseResource
         $this->tags = new \phpws2\Variable\ArrayVar(null, 'tags');
         $this->tags->allowNull(true);
         $this->tags->setIsTableColumn(false);
-        $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle');
+        $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle', 255);
 
         $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
     }
@@ -192,6 +192,7 @@ class EntryResource extends BaseResource
         $vars = parent::getStringVars($return_null, $hide);
         $vars['createDateRelative'] = $factory->relativeTime($this->createDate->get());
         $vars['publishDateRelative'] = $factory->relativeTime($this->publishDate->get());
+        $vars['strippedSummary'] = strip_tags($vars['summary']);
         $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
         return $vars;
     }
@@ -205,10 +206,15 @@ class EntryResource extends BaseResource
         return $this->publishDate->get($format);
     }
     
+    /**
+     * Prepare the title for a url. Shortened to 240 characters to allow room for 
+     * timestamped duplicates.
+     * @param string $title
+     * @return string
+     */
     private function processTitle($title)
     {
         $title = preg_replace('/\s/', '-', strtolower(str_replace(' - ', ' ', trim($title))));
-        return preg_replace('/[\W\-]/', '', $title);
+        return substr(preg_replace('/[\W\-]/', '', $title), 0, 240);
     }
-
 }
