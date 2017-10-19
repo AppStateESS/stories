@@ -5,7 +5,7 @@
 export default class EntryForm {
   constructor(status, entry) {
     this.entry = entry
-    window.onunload = function() {
+    window.onunload = function () {
       this.save()
     }.bind(this)
     // status is the jquery node/object for the status text
@@ -20,6 +20,30 @@ export default class EntryForm {
     return './stories/EntryPhoto/' + this.entry.id
   }
 
+  removeYouTube(element) {
+    const youtubeUrl = element.find('iframe').attr('src')
+    const youtubeId = youtubeUrl.replace(/.*embed\/(\w+)\?.*/g, '$1')
+    if (youtubeId && youtubeId.length > 0) {
+      $.ajax({
+        url: './stories/EntryPhoto/' + this.entry.id,
+        data: {file : youtubeId + '.jpg'},
+        dataType: 'json',
+        type: 'delete',
+        success: function () {
+          this.save()
+        }.bind(this),
+        error: function () {}.bind(this),
+      })
+    }
+  }
+
+  cleanUpEmbed(element) {
+    const html = element.html()
+    if (html.search('youtube.com') > 0) {
+      this.removeYouTube(element)
+    }
+  }
+
   save() {
     const entry = this.entry
     // Do not try and save content with an base64 encoded image
@@ -32,12 +56,12 @@ export default class EntryForm {
       data: entry,
       dataType: 'json',
       type: 'put',
-      success: function (data) {
+      success: function () {
         this.status.text('Saved')
       }.bind(this),
       error: function () {
         this.status.text('ERROR')
-      }.bind(this),
+      }.bind(this)
     })
 
   }
