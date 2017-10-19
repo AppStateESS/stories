@@ -18,6 +18,7 @@ class AuthorResource extends BaseResource
     protected $pic;
     protected $email;
     protected $userId;
+    protected $twitterUsername;
     
     protected $table = 'storiesAuthor';
     
@@ -26,6 +27,8 @@ class AuthorResource extends BaseResource
         parent::__construct();
         $this->name = new \phpws2\Variable\TextOnly(null, 'name');
         $this->name->setLimit('100');
+        $this->twitterUsername = new \phpws2\Variable\TextOnly(null, 'twitterUsername');
+        $this->twitterUsername->setLimit('50');
         $this->pic = new \phpws2\Variable\FileVar(null, 'pic');
         $this->pic->allowNull(true);
         $this->email = new \phpws2\Variable\Email(null, 'email');
