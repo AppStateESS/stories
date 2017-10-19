@@ -5,7 +5,11 @@
 <div class="story-entry">
     <div class="story-content"><?=$content?></div>
 </div>
-<?php if ($isAdmin):?>
-<a class="btn btn-primary" href="./stories/Entry/<?=$id?>/edit">Edit this story</a>
-<?php endif; ?>
+<?=$tagList?>
 <?=$twitter?>
+<?php if ($isAdmin):?>
+<hr />
+<div>
+<a class="btn btn-primary" href="./stories/Entry/<?=$id?>/edit">Edit this story</a>
+</div>
+<?php endif; ?>
