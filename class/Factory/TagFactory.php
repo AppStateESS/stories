@@ -194,4 +194,17 @@ class TagFactory extends BaseFactory
         return $result;
     }
 
+    public function buildLinks($tags)
+    {
+        if (empty($tags)) {
+            return null;
+        }
+        foreach ($tags as $tag) {
+            $content[] = <<<EOF
+<li><a class="btn btn-sm btn-default" href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
+EOF;
+        }
+        return 'Tagged: <ul class="tag-list">' . implode('', $content) . '</ul>';
+    }
+
 }
