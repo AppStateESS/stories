@@ -19,24 +19,24 @@
 </style>
 <script src="<?=$home?>mod/stories/node_modules/jquery-sortable/source/js/jquery-sortable-min.js"></script>
 <script>const entry = <?=$entry?>; const tags = <?=$tags?>;</script>
-<div class="entry">
-    <div class="status-bar row">
-        <div class="col-md-2 mb-1">
-            <a href="./stories/Listing/" class="btn btn-sm btn-default"><i class="fa fa-list"></i>&nbsp;Back to list</a>
-        </div>
-        <div class="col-md-4 col-sm-6">
-            <?=$publishBar?>
-        </div>
-        <div class="col-md-6 col-sm-6">
-            <?=$tagBar?>
-        </div>
+<div class="status-bar row">
+    <div class="col-md-2 mb-1">
+        <a href="./stories/Listing/" class="btn btn-sm btn-default"><i class="fa fa-list"></i>&nbsp;Back to list</a>
     </div>
-    <div><em>Status:</em> <span id="story-status"><?=$status?></span></div>
+    <div class="col-md-4 col-sm-6">
+        <?=$publishBar?>
+    </div>
+    <div class="col-md-6 col-sm-6">
+        <?=$tagBar?>
+    </div>
+</div>
+<div><em>Status:</em> <span id="story-status"><?=$status?></span></div>
+<div class="entry">
     <div class="entry-form"></div>
     <?=$MediumEditorPack,$EntryForm,$insert,$cssOverride?>
-    <script>
-        editor.setContent(entry.content)
-    </script>
+        <script>
+    editor.setContent(entry.content)
+        </script>
     <hr />
 </div>
 <?=$twitter?>
