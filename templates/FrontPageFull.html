@@ -1,6 +1,6 @@
 <?=$style?>
 <?php foreach ($list as $entry):?>
-<div class="story-entry">
+<div class="story-list-entry">
     <div>Published <?=$entry['publishDateRelative']?></div>
     <?php if ($isAdmin):?>
         <a class="pull-right btn btn-default btn-sm" href="./stories/Entry/<?=$entry['id']?>/edit">Edit</a>
