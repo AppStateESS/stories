@@ -70,7 +70,8 @@ class Admin extends User
     
     protected function viewJsonCommand(Request $request)
     {
-        return array('entry' => $this->factory->data($this->id));
+        $entry = $this->factory->load($this->id);
+        return array('entry' => $this->factory->data($entry));
     }
 
     protected function viewHtmlCommand(Request $request)
