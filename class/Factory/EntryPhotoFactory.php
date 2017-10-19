@@ -124,7 +124,6 @@ class EntryPhotoFactory
             unlink($cleanName);
         }
         $this->deleteThumbnail($entryId, $filenameOnly);
-        ;
         return true;
     }
 
