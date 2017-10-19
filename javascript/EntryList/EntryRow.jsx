@@ -34,7 +34,8 @@ const EntryRow = (props) => {
     strippedSummary,
     thumbnail,
     title,
-    tags
+    tags,
+    urlTitle
   } = entry
 
   const mailto = 'mailto:' + authorEmail
@@ -58,7 +59,7 @@ const EntryRow = (props) => {
     if (publishDate >= moment().format('X')) {
       publishLabel = 'Publish on'
     } else {
-      publishLabel = 'Published on'
+      publishLabel = <strong>Published</strong>
     }
     publishInfo = (
       <div>
@@ -77,17 +78,14 @@ const EntryRow = (props) => {
           </div>
         </div>
         <div className="col-sm-6">
-          <h3>{title}
-          </h3>
+          <a href={urlTitle}><h3>{title}</h3></a>
           <div className="summary">{strippedSummary}</div>
         </div>
         <div className="col-sm-3">
-          <strong>Author:</strong>&nbsp;
-          <a href={mailto}>{authorName}</a><br/>
-          <strong>Created:</strong>&nbsp;
-          <abbr title={createDate}>{createDateRelative}</abbr><br/> {publishInfo}
-          <br/>
-          <strong>Expires:</strong>&nbsp; {expire}
+          <div> <strong>Author:</strong>&nbsp;<a href={mailto}>{authorName}</a></div>
+          <div><strong>Created:</strong>&nbsp;<abbr title={createDate}>{createDateRelative}</abbr></div>
+          <div>{publishInfo}</div>
+          <div><strong>Expires:</strong>&nbsp;{expire}</div>
         </div>
       </div>
       <hr/>
