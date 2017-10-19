@@ -78,7 +78,7 @@ class EntryFactory extends BaseFactory
 
     public function userListView(Request $request, $title = null)
     {
-        $this->addFrontPageCss();
+        $this->addStoryCss();
         $options = $this->pullOptions($request);
 
         $list = $this->pullList($options);
@@ -194,7 +194,7 @@ class EntryFactory extends BaseFactory
         foreach ($objectList as $entry) {
             $row = $entry->getStringVars();
             if ($options['showTagLinks']) {
-                $row['tagLinks'] = $tagFactory->buildLinks($row['tags']);
+                $row['tagLinks'] = $tagFactory->getTagLinks($row['tags']);
             }
             $listing[] = $row;
         }
@@ -498,6 +498,14 @@ EOF;
         if (!$entry->deleted) {
             throw new \stories\Exception\CannotPurge;
         }
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntry');
+        $tbl->addFieldConditional('id', $id);
+        $db->delete();
+        $photoFactory = new EntryPhotoFactory();
+        $photoFactory->purgeEntry($id);
+        $tagFactory = new TagFactory;
+        $tagFactory->purgeEntry($id);
     }
 
     private function includeFacebookCards(Resource $entry)
@@ -531,6 +539,7 @@ EOF;
 
     public function view($id, $isAdmin = false)
     {
+        $tagFactory = new TagFactory;
         try {
             $entry = $this->load($id);
             $data = $this->data($entry, !$isAdmin);
@@ -541,8 +550,10 @@ EOF;
             $data['twitter'] = $this->loadTwitterScript(true);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
+            $data['tagList'] = $tagFactory->getTagLinks($entry->tags);
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
+            $this->addStoryCss();
             return $template->get();
         } catch (ResourceNotFound $e) {
             return $this->notFound();
@@ -556,9 +567,9 @@ EOF;
         return $template->get();
     }
 
-    private function addFrontPageCss()
+    private function addStoryCss()
     {
-        \Layout::addToStyleList('mod/stories/css/front-page.css');
+        \Layout::addToStyleList('mod/stories/css/story.css');
     }
 
     /**
@@ -576,7 +587,7 @@ EOF;
 
         $settings = new \phpws2\Settings;
         //listStoryFormat  - 0 is summary, 1 full
-        $this->addFrontPageCss();
+        $this->addStoryCss();
         $data['list'] = $list;
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $data['isAdmin'] = \Current_User::allow('stories');
@@ -619,7 +630,7 @@ EOF;
      */
     public function showFeatures(Request $request)
     {
-        \Layout::addToStyleList('mod/stories/css/front-page.css');
+        \Layout::addToStyleList('mod/stories/css/story.css');
         $options = array('includeContent' => false);
         $list = $this->pullList($options);
         $template = new \phpws2\Template(array('list' => $list));
