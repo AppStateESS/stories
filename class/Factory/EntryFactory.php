@@ -48,7 +48,7 @@ class EntryFactory extends BaseFactory
         return $entry;
     }
 
-    public function adminListView(Request $request)
+    private function pullOptions(Request $request)
     {
         $segmentSize = \phpws2\Settings::get('stories', 'segmentSize');
         // if offset not set, default 0
@@ -62,14 +62,41 @@ class EntryFactory extends BaseFactory
 
         $search = $request->pullGetString('search', true);
 
+        $tag = $request->pullGetString('tag', true);
+
         $options = array(
             'search' => $search,
             'orderBy' => $orderBy,
             'publishedOnly' => false,
             'hideExpired' => true,
             'limit' => $segmentSize,
-            'offset' => $offsetSize
+            'offset' => $offsetSize,
+            'tag' => $tag
         );
+        return $options;
+    }
+
+    public function userListView(Request $request, $title = null)
+    {
+        $this->addFrontPageCss();
+        $options = $this->pullOptions($request);
+
+        $list = $this->pullList($options);
+        if (empty($list)) {
+            return null;
+        }
+        $vars['title'] = $title;
+        $vars['list'] = $list;
+        $vars['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
+
+        $template = new \phpws2\Template($vars);
+        $template->setModuleTemplate('stories', 'FrontPageSummary.html');
+        return $template->get();
+    }
+
+    public function adminListView(Request $request)
+    {
+        $options = $this->pullOptions($request);
 
         return $this->pullList($options);
     }
@@ -81,10 +108,12 @@ class EntryFactory extends BaseFactory
         $defaultOptions = array('publishedOnly' => false,
             'hideExpired' => true,
             'orderBy' => 'publishDate',
-            'limit' => 3,
+            'limit' => 6,
             'includeContent' => true,
             'publishedOnly' => true,
-            'offset' => 0);
+            'offset' => 0,
+            'tag' => null,
+            'showTagLinks' => true);
 
         if (is_array($options)) {
             $options = array_merge($defaultOptions, $options);
@@ -126,7 +155,17 @@ class EntryFactory extends BaseFactory
                     0);
             $expire2 = $db->createConditional($tbl->getField('expirationDate'),
                     $now, '>');
-            $db->addConditional($db->createConditional($expire1, $expire1, 'or'));
+            $db->addConditional($db->createConditional($expire1, $expire2, 'or'));
+        }
+
+        if ($options['tag']) {
+            $tagIdTable = $db->addTable('storiesTagToEntry', null, false);
+            $tagTable = $db->addTable('storiesTag', null, false);
+            $tagTable->addFieldConditional('title', $options['tag']);
+            $db->addConditional($db->createConditional($tagTable->getField('id'),
+                            $tagIdTable->getField('tagId'), '='));
+            $db->addConditional($db->createConditional($tbl->getField('id'),
+                            $tagIdTable->getField('entryId'), '='));
         }
 
         $tbl2 = $db->addTable('storiesAuthor');
@@ -151,8 +190,13 @@ class EntryFactory extends BaseFactory
         if (empty($objectList)) {
             return null;
         }
+        $tagFactory = new TagFactory;
         foreach ($objectList as $entry) {
-            $listing[] = $entry->getStringVars();
+            $row = $entry->getStringVars();
+            if ($options['showTagLinks']) {
+                $row['tagLinks'] = $tagFactory->buildLinks($row['tags']);
+            }
+            $listing[] = $row;
         }
         return $listing;
     }
@@ -433,9 +477,8 @@ EOF;
         }
     }
 
-    public function data($id, $publishOnly = true)
+    public function data(Resource $entry, $publishOnly = true)
     {
-        $entry = $this->load($id);
         if ($publishOnly && (!$entry->published && $entry->publishDate < time())) {
             return null;
         }
@@ -457,13 +500,45 @@ EOF;
         }
     }
 
+    private function includeFacebookCards(Resource $entry)
+    {
+        $vars = $entry->getStringVars(true);
+        $templateFile = PHPWS_SOURCE_DIR . 'mod/stories/api/Facebook/meta.html';
+        $template = new \phpws2\Template($vars, $templateFile);
+        return $template->get();
+    }
+
+    private function includeTwitterCards(Resource $entry)
+    {
+        $vars = $entry->getStringVars(true);
+        $settings = new \phpws2\Settings;
+
+        // need to pull author twitter name
+        $twitterUsername = $settings->get('stories', 'twitterDefault');
+        if (!empty($twitterUsername)) {
+            $vars['twitterUsername'] = $twitterUsername;
+        }
+        $templateFile = PHPWS_SOURCE_DIR . 'mod/stories/api/Twitter/meta.html';
+        $template = new \phpws2\Template($vars, $templateFile);
+        return $template->get();
+    }
+
+    private function includeCards(Resource $entry)
+    {
+        \Layout::addJSHeader($this->includeFacebookCards($entry));
+        \Layout::addJSHeader($this->includeTwitterCards($entry));
+    }
+
     public function view($id, $isAdmin = false)
     {
         try {
-            $data = $this->data($id, !$isAdmin);
+            $entry = $this->load($id);
+            $data = $this->data($entry, !$isAdmin);
             if (empty($data)) {
                 throw new ResourceNotFound;
             }
+            $this->includeCards($entry);
+            $data['twitter'] = $this->loadTwitterScript(true);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
             $template = new \phpws2\Template($data);
@@ -481,6 +556,11 @@ EOF;
         return $template->get();
     }
 
+    private function addFrontPageCss()
+    {
+        \Layout::addToStyleList('mod/stories/css/front-page.css');
+    }
+
     /**
      * Called from Module.php not a controller
      * 
@@ -496,10 +576,11 @@ EOF;
 
         $settings = new \phpws2\Settings;
         //listStoryFormat  - 0 is summary, 1 full
-
-        \Layout::addToStyleList('mod/stories/css/front-page.css');
+        $this->addFrontPageCss();
         $data['list'] = $list;
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
+        $data['isAdmin'] = \Current_User::allow('stories');
+
         $data['twitter'] = $this->loadTwitterScript();
         $template = new \phpws2\Template($data);
 
@@ -556,6 +637,25 @@ EOF;
     }
 
     /**
+     * Facebook embed does strangeness. This *hack* cleans it up before saving.
+     * @param string $content
+     */
+    private function cleanFacebook($content)
+    {
+        $content = preg_replace('/<div data-embed-code="(.*?)(<\/script>)/s',
+                '', $content);
+        $content = preg_replace('/container_width=0/s', 'container_width=500px',
+                $content);
+        return $content;
+    }
+
+    private function removeExtraParagraphs($content)
+    {
+        return preg_replace('/(<p class=""><\/p>)\n?|(<p class="medium-insert-active"><\/p>|<p><\/p>)\n/',
+                '', $content);
+    }
+
+    /**
      * Cleans up the content string that is imported from Medium Editor.
      * Medium editor content contains remnants of its controls.
      * @param string $content
@@ -567,16 +667,18 @@ EOF;
                         '', $content));
 
         // Removes extra medium paragraphs padded to end of content
-        $sift2 = preg_replace('/(<p class=""><\/p>){2,}|(<p class="medium-insert-active"><\/p>)$/s',
-                '<p class="medium-insert-active"></p>', $sift1);
+        $sift2 = $this->removeExtraParagraphs($sift1);
 
         // Removes extra headers sometimes padded on end
         $sift3 = preg_replace('/<h[34]><\/h[34]>/', '', $sift2);
 
         // Removes the overlay left on embeds (e.g. youtube)
         $sift4 = $this->removeMediumOverlay($sift3);
-        $sift5 = str_replace("\n", '', $sift4);
-        return $sift5;
+        $sift5 = $this->cleanFacebook($sift4);
+        // clear extra spaces
+        $sift6 = preg_replace('/>\s{2,}</', '> <', $sift5);
+        $sift7 = str_replace("\n", '', $sift6);
+        return $sift6;
     }
 
 }
