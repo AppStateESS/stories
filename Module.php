@@ -38,6 +38,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
             'image_max_width' => 1920,
             'image_max_height' => 1080,
             'segmentSize'=> 10,
+            'showComments'=> 0,
             'commentCode' => '',
             'showFeatures' => 0,
             'featureNumber' => 3,

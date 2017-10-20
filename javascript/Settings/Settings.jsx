@@ -15,13 +15,17 @@ export default class Settings extends Component {
       showFeatures: 0,
       featureNumber: 6,
       listStoryFormat: 0,
+      commentCode: '',
+      showComments: 0,
     }
     this.setListStories = this.setListStories.bind(this)
     this.setListStoryAmount = this.setListStoryAmount.bind(this)
     this.setShowFeatures = this.setShowFeatures.bind(this)
     this.setShowFeatureNumber = this.setShowFeatureNumber.bind(this)
     this.setListStoryFormat = this.setListStoryFormat.bind(this)
-
+    this.setCommentCode = this.setCommentCode.bind(this)
+    this.setShowComments = this.setShowComments.bind(this)
+    this.saveCommentCode = this.saveCommentCode.bind(this)
   }
 
   componentDidMount() {
@@ -29,43 +33,56 @@ export default class Settings extends Component {
   }
 
   saveSetting(param, value) {
+    let setting
+    if (typeof(value) === 'boolean') {
+      setting = value
+        ? 1
+        : 0
+    } else {
+      setting = value
+
+    }
     $.post('./stories/Settings', {
       param: param,
-      value: value
-    }, null, 'json')
+      value: setting
+    }, null, 'json').done(function () {
+      const stateSetting = {}
+      stateSetting[param] = setting
+      this.setState(stateSetting)
+    }.bind(this))
+  }
+
+  saveCommentCode() {
+    this.saveSetting('commentCode', this.state.commentCode)
+  }
+
+  setCommentCode(e) {
+    this.setState({commentCode: e.target.value})
+  }
+
+  setShowComments(value) {
+    this.saveSetting('showComments', value)
   }
 
   setListStories(value) {
     this.saveSetting('listStories', value)
-    this.setState({
-      listStories: value
-        ? 1
-        : 0
-    })
   }
 
   setListStoryAmount(value) {
     this.saveSetting('listStoryAmount', value)
-    this.setState({listStoryAmount: value})
   }
 
   setShowFeatures(value) {
     this.saveSetting('showFeatures', value)
-    this.setState({
-      showFeatures: value
-        ? 1
-        : 0
-    })
   }
 
   setShowFeatureNumber(value) {
     this.saveSetting('featureNumber', value)
-    this.setState({featureNumber: value})
+    // this.setState({featureNumber: value})
   }
 
   setListStoryFormat(value) {
     this.saveSetting('listStoryFormat', value)
-    this.setState({listStoryFormat: value})
   }
 
   render() {
@@ -139,6 +156,21 @@ export default class Settings extends Component {
                 match={this.state.featureNumber}/>
             </div>
             <div>Number of features displayed</div>
+          </div>
+        </div>
+        <div className="settings">
+          <BigCheckbox
+            handle={this.setShowComments}
+            checked={this.state.showComments}
+            label="Show comments on story"/>
+          <div className="indent">
+            <span>Comment embed code</span>
+            <textarea
+              className="form-control"
+              value={this.state.commentCode}
+              onChange={this.setCommentCode}
+              placeholder="e.g. Muut, StaticMan, Disqus, Isso"/>
+              <button className="btn btn-primary" onClick={this.saveCommentCode}><i className="fa fa-save"></i>&nbsp;Save</button>
           </div>
         </div>
       </div>

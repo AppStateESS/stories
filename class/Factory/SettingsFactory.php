@@ -50,9 +50,6 @@ class SettingsFactory extends BaseFactory
         $value = $request->pullPostVar('value');
 
         $settings = new \phpws2\Settings();
-        if ($param == 'listStories' || $param == 'showFeatures') {
-            $value = $value == 'true' ? 1 : 0;
-        }
         $settings->set('stories', $param, $value);
     }
 
