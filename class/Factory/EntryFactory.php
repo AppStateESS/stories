@@ -271,17 +271,16 @@ EOF;
      * @param type $content
      * @return type
      */
-    private function prepareFormContent($content)
+    public function prepareFormContent($content)
     {
         $content = str_replace("\n", '', $content);
-        $suffix = '<p class="medium-insert-active"><br></p>';
-        $figure = '<figure contenteditable="false">';
-        $content2 = preg_replace("/$figure/",
-                '<div class="medium-insert-images medium-insert-active">' . $figure,
-                $content);
+        $suffix = '<p class="medium-insert-active"><br /></p>';
+        if (preg_match('@<p class="medium-insert-active"><br /></p>$@', $content)) {
+            $suffix = null;
+        }
         $contentReady = preg_replace("/<\/figure>/",
                         '</figure><div class="medium-insert-embeds-overlay"></div>',
-                        $content2) . $suffix;
+                        $content) . $suffix;
         return $contentReady;
     }
 
@@ -540,6 +539,7 @@ EOF;
     public function view($id, $isAdmin = false)
     {
         $tagFactory = new TagFactory;
+        $showComments = \phpws2\Settings::get('stories', 'showComments');
         try {
             $entry = $this->load($id);
             $data = $this->data($entry, !$isAdmin);
@@ -551,6 +551,7 @@ EOF;
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
             $data['tagList'] = $tagFactory->getTagLinks($entry->tags);
+            
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             $this->addStoryCss();
@@ -633,6 +634,9 @@ EOF;
         \Layout::addToStyleList('mod/stories/css/story.css');
         $options = array('includeContent' => false);
         $list = $this->pullList($options);
+        if (empty($list)) {
+            return null;
+        }
         $template = new \phpws2\Template(array('list' => $list));
         $template->setModuleTemplate('stories', 'FeatureList.html');
         return $template->get();
