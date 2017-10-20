@@ -170,7 +170,7 @@ export default class Settings extends Component {
               value={this.state.commentCode}
               onChange={this.setCommentCode}
               placeholder="e.g. Muut, StaticMan, Disqus, Isso"/>
-              <button className="btn btn-primary" onClick={this.saveCommentCode}><i className="fa fa-save"></i>&nbsp;Save</button>
+              <button className="btn btn-primary" onClick={this.saveCommentCode}><i className="fa fa-save"></i>&nbsp;Save comment code</button>
           </div>
         </div>
       </div>
