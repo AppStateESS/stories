@@ -116,7 +116,10 @@ class EntryPhotoFactory
 
     public function delete($entryId, Request $request)
     {
-        $file = $request->pullDeleteString('file');
+        $file = $request->pullDeleteString('file', true);
+        if ($file === false) {
+            return;
+        }
         $path = \Canopy\Server::getSiteUrl(true) . 'images/stories/' . $entryId . '/';
         $filenameOnly = urldecode(preg_replace("@$path@", '', $file));
         $cleanName = "images/stories/$entryId/$filenameOnly";
