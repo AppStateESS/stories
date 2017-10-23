@@ -2,17 +2,20 @@
 <?=$style?>
 <?php foreach ($list as $entry):?>
 <div class="story-list-entry">
-    <div>Published <?=$entry['publishDateRelative']?>
-    </div>
     <div class="story-image"><a href="./<?=$entry['urlTitle']?>"><img src="<?=$entry['leadImage']?>" class="img-responsive" /></a></div>
     <div class="story-title">
         <a href="./<?=$entry['urlTitle']?>"><h3><?=$entry['title']?></h3></a></div>
     <div class="story-summary">
-        <?=$entry['strippedSummary']?>
+        <?=$entry['summary']?>
+    </div>
+    <div>Published <?=$entry['publishDateRelative']?>
+    </div>
+    <div class="story-readmore">
+        <a href="<?=$entry['urlTitle']?>">Read on...</a>
     </div>
     <?php if (isset($isAdmin)):?>
-    <div>
-        <a class="pull-right btn btn-default btn-sm" href="./stories/Entry/{$entry['id']}/edit">Edit</a>
+    <div style="border-top: 1px solid #e3e3e3;padding-top:1em;margin-top:1em">
+        <a class="btn btn-default btn-sm" href="./stories/Entry/<?=$entry['id']?>/edit">Edit</a>
     </div>
     <?php endif;?>
 </div>
