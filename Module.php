@@ -34,6 +34,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     {
         //segmentSize : how many stories to show on the admin list page
         //listStoryFormat : 0 - summary, 1 - full
+        // featureForms : 0 - dynamic, 1 - horizontal, 2 - portrait
         $settings = array(
             'image_max_width' => 1920,
             'image_max_height' => 1080,
@@ -42,6 +43,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
             'commentCode' => '',
             'showFeatures' => 0,
             'featureNumber' => 3,
+            'featureFormat' => 0,
             'listStories' => 1,
             'listStoryAmount' => 6,
             'listStoryFormat' => 0,
@@ -86,6 +88,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     public function runTime(Request $request)
     {
         if (\Current_User::allow('stories')) {
+            \stories\Factory\StoryMenu::addStoryLink();
             \stories\Factory\StoryMenu::listStoryLink();
             \stories\Factory\StoryMenu::adminDisplayLink();
         }
@@ -100,11 +103,11 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         $factory = new \stories\Factory\EntryFactory;
         $settings = new \phpws2\Settings;
         if ($settings->get('stories', 'showFeatures')) {
-            \Layout::add($factory->showFeatures($request), 'stories', 'features');
+            \Layout::add($factory->showFeatures($request), 'stories', 'features', true);
         }
 
         if ($settings->get('stories', 'listStories')) {
-            \Layout::add($factory->showStories($request), 'stories', 'stories');
+            \Layout::add($factory->showStories($request), 'stories', 'stories', true);
         }
     }
 
