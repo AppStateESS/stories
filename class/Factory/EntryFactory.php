@@ -133,6 +133,7 @@ class EntryFactory extends BaseFactory
         $tbl->addField('title');
         $tbl->addField('updateDate');
         $tbl->addField('urlTitle');
+        $tbl->addField('leadImage');
         if ($options['includeContent']) {
             $tbl->addField('content');
         }
@@ -225,7 +226,6 @@ class EntryFactory extends BaseFactory
         $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
         $entryVars = $entry->getStringVars();
         $vars['cssOverride'] = $this->mediumCSSOverride();
-        $entryId = $entry->id;
         $vars['home'] = $sourceHttp;
         $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
         $vars['twitter'] = $this->loadTwitterScript(true);
@@ -244,11 +244,16 @@ class EntryFactory extends BaseFactory
         return $template->get();
     }
 
-    public function getByUrlTitle($title)
+    /**
+     * Pulls an entry by the urlTitle or null if not found
+     * @param string $title
+     * @return \stories\Resource\EntryResource
+     */
+    public function getByUrlTitle($urlTitle)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesEntry');
-        $tbl->addFieldConditional('urlTitle', $title);
+        $tbl->addFieldConditional('urlTitle', $urlTitle);
         $data = $db->selectOneRow();
         if (empty($data)) {
             return null;
@@ -306,6 +311,7 @@ EOF;
     public function save(Resource $entry)
     {
         $this->checkUrlTitle($entry);
+        $this->removeShortcut($entry);
         $this->saveShortcut($entry);
         self::saveResource($entry);
         return $entry->id;
@@ -322,24 +328,24 @@ EOF;
      */
     private function saveShortcut(Resource $entry)
     {
-        $shortcut = $this->getShortcutByUrl($entry);
         $db = Database::getDB();
         $tbl = $db->addTable('access_shortcuts');
         $tbl->usePearSequence(true);
         $tbl->addValue('keyword', $entry->urlTitle);
-        if (empty($shortcut)) {
-            $tbl->addValue('url', 'stories:' . $entry->id);
-            return $db->insert();
-        } else {
-            $tbl->addFieldConditional('id', $shortcut['id']);
-            return $db->update();
-        }
+        $tbl->addValue('url', 'stories:' . $entry->id);
+        return $db->insert();
     }
 
+    /**
+     * Checks for duplicate urlTitle entry or a shortcut with the same keyword.
+     * 
+     * @param Resource $entry
+     * @return boolean
+     */
     private function checkUrlTitle(Resource $entry)
     {
         $duplicate = $this->getByUrlTitle($entry->urlTitle);
-        $shortcut = $this->getShortcutByKeyword($entry);
+        $shortcut = $this->getShortcutByKeyword($entry->urlTitle);
         /**
          * no duplicate found or duplicate id is same as entry id
          * AND
@@ -365,11 +371,11 @@ EOF;
         return $db->selectOneRow();
     }
 
-    public function getShortcutByKeyword($entry)
+    public function getShortcutByKeyword($keyword)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('access_shortcuts');
-        $tbl->addFieldConditional('keyword', $entry->urlTitle);
+        $tbl->addFieldConditional('keyword', $keyword);
         return $db->selectOneRow();
     }
 
@@ -400,8 +406,9 @@ EOF;
         if ($image->length > 0) {
             $imgNode = $image->item(0);
             $src = $imgNode->getAttribute('src');
-            $entry->leadImage = $src;
-            $entry->thumbnail = $this->createThumbnailUrl($entry->id, $src);
+            $entry->leadImage = $photoFactory->getImagePath($entry->id) . $photoFactory->getImageFilename($src);
+            $entry->thumbnail = $photoFactory->createThumbnailUrl($entry->id,
+                    $src);
         } elseif ($iframe->length > 0) {
             $iframeNode = $iframe->item(0);
             $src = $iframeNode->getAttribute('src');
@@ -431,19 +438,6 @@ EOF;
             $pHtml = $doc->saveHtml($pNode);
             $entry->summary = $pHtml;
         }
-    }
-
-    private function createThumbnailUrl($entryId, $url)
-    {
-        $urlArray = explode('/', $url);
-        $filename = array_pop($urlArray);
-        $rootImageDir = 'images/stories/' . $entryId . '/';
-        $thumbDir = $rootImageDir . 'thumbnail/';
-        if (!file_exists($thumbDir . $filename)) {
-            $factory = new EntryPhotoFactory;
-            $factory->createThumbnail($rootImageDir, $filename);
-        }
-        return $thumbDir . $filename;
     }
 
     public function patch($entryId, Request $request)
@@ -505,6 +499,17 @@ EOF;
         $photoFactory->purgeEntry($id);
         $tagFactory = new TagFactory;
         $tagFactory->purgeEntry($id);
+        $this->removeShortcut($entry);
+    }
+
+    private function removeShortcut($entry)
+    {
+        $shortcutUrl = 'stories:' . $entry->id;
+
+        $db = Database::getDB();
+        $tbl = $db->addTable('access_shortcuts');
+        $tbl->addFieldConditional('url', $shortcutUrl);
+        $db->delete();
     }
 
     private function includeFacebookCards(Resource $entry)
@@ -551,7 +556,7 @@ EOF;
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
             $data['tagList'] = $tagFactory->getTagLinks($entry->tags);
-            
+
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             $this->addStoryCss();
@@ -582,6 +587,7 @@ EOF;
     public function showStories(Request $request)
     {
         $list = $this->pullList();
+
         if (empty($list)) {
             return null;
         }
