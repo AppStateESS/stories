@@ -214,7 +214,7 @@ class EntryResource extends BaseResource
      */
     private function processTitle($title)
     {
-        $title = preg_replace('/\s/', '-', strtolower(str_replace(' - ', ' ', trim($title))));
-        return substr(preg_replace('/[\W\-]/', '', $title), 0, 240);
+        $title = preg_replace('/\s/', '-', strtolower(str_replace(' - ', '-', trim($title))));
+        return substr(preg_replace('/[^\w\-]/', '', $title), 0, 240);
     }
 }
