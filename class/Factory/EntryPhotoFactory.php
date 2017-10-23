@@ -199,12 +199,29 @@ EOF;
             return false;
         }
     }
-    
+
+    public function getImageFilename($url)
+    {
+        $urlArray = explode('/', $url);
+        return array_pop($urlArray);
+    }
+
     public function purgeEntry($entryId)
     {
         $thumbnailPath = $this->getThumbnailPath($entryId);
         $imagePath = $this->getImagePath($entryId);
         \phpws\PHPWS_File::rmdir($imagePath);
+    }
+
+    public function createThumbnailUrl($entryId, $url)
+    {
+        $filename = $this->getImageFilename($url);
+        $rootImageDir = $this->getImagePath($entryId);
+        $thumbDir = $this->getThumbnailPath($entryId);
+        if (!file_exists($thumbDir . $filename)) {
+            $this->createThumbnail($rootImageDir, $filename);
+        }
+        return $thumbDir . $filename;
     }
 
 }
