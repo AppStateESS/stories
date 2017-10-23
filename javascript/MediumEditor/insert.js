@@ -22,6 +22,8 @@ var editor = new MediumEditor('.entry-form', {
   },
 })
 
+editor.selectElement(document.querySelector('.entry-form'))
+
 $('.entry-form').mediumInsert({
   editor: editor,
   addons: {
