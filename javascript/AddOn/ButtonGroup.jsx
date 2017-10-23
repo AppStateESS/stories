@@ -9,18 +9,18 @@ const ButtonGroup = ({
   handle,
   vertical,
   name,
+  activeColor
 }) => {
   let buttonList = buttons.map(function (value, key) {
-    const activeColor = 'btn-' + activeColor
+    const buttonColor = 'btn-' + activeColor
     let cn = classnames('btn', 'btn-default')
     if (match !== null && match !== undefined) {
       if (match.constructor === Array && (match.indexOf(value.value) !== -1)) {
-        cn = classnames('btn', 'active', activeColor)
+        cn = classnames('btn', 'active', buttonColor)
       } else if (match == value.value) {
-        cn = classnames('btn', 'active', activeColor)
+        cn = classnames('btn', 'active', buttonColor)
       }
     }
-
     return (
       <button
         type="button"
@@ -58,12 +58,14 @@ const ButtonGroup = ({
 ButtonGroup.propTypes = {
   buttons: PropTypes.array.isRequired,
   handle: PropTypes.func.isRequired,
-  match: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array,]),
+  activeColor: PropTypes.string,
+  match: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
   vertical: PropTypes.bool,
   name: PropTypes.string
 }
 
-ButtonGroup.defaultProp = {
+ButtonGroup.defaultProps = {
+  activeColor: 'default',
   match: null,
   name: null
 }
