@@ -15,14 +15,10 @@ export default class Settings extends Component {
       showFeatures: 0,
       featureNumber: 6,
       listStoryFormat: 0,
+      featureFormat: 0,
       commentCode: '',
-      showComments: 0,
+      showComments: 0
     }
-    this.setListStories = this.setListStories.bind(this)
-    this.setListStoryAmount = this.setListStoryAmount.bind(this)
-    this.setShowFeatures = this.setShowFeatures.bind(this)
-    this.setShowFeatureNumber = this.setShowFeatureNumber.bind(this)
-    this.setListStoryFormat = this.setListStoryFormat.bind(this)
     this.setCommentCode = this.setCommentCode.bind(this)
     this.setShowComments = this.setShowComments.bind(this)
     this.saveCommentCode = this.saveCommentCode.bind(this)
@@ -44,7 +40,7 @@ export default class Settings extends Component {
     }
     $.post('./stories/Settings', {
       param: param,
-      value: setting
+      value: setting,
     }, null, 'json').done(function () {
       const stateSetting = {}
       stateSetting[param] = setting
@@ -64,52 +60,45 @@ export default class Settings extends Component {
     this.saveSetting('showComments', value)
   }
 
-  setListStories(value) {
-    this.saveSetting('listStories', value)
-  }
-
-  setListStoryAmount(value) {
-    this.saveSetting('listStoryAmount', value)
-  }
-
-  setShowFeatures(value) {
-    this.saveSetting('showFeatures', value)
-  }
-
-  setShowFeatureNumber(value) {
-    this.saveSetting('featureNumber', value)
-    // this.setState({featureNumber: value})
-  }
-
-  setListStoryFormat(value) {
-    this.saveSetting('listStoryFormat', value)
-  }
-
   render() {
     const amountButtons = [
       {
         value: 3,
-        label: 3
+        label: 3,
       }, {
         value: 6,
-        label: 6
+        label: 6,
       }, {
         value: 9,
-        label: 9
+        label: 9,
       }, {
         value: 12,
-        label: 12
+        label: 12,
       },
     ]
 
     const formatButton = [
       {
         value: 0,
-        label: 'Summary',
+        label: 'Summary'
       }, {
         value: 1,
-        label: 'Full',
+        label: 'Full'
       },
+    ]
+
+    const featureFormat = [
+      {
+        value: 0,
+        label: 'Dynamic based on image'
+      }, {
+        value: 1,
+        label: 'Stacked landscape image'
+      }, {
+        value: 2,
+        label: 'Side-by-side portrait image'
+      },
+
     ]
 
     return (
@@ -118,49 +107,63 @@ export default class Settings extends Component {
         <div className="settings">
           <div className="mb-1">
             <BigCheckbox
-              handle={this.setListStories}
+              handle={this.saveSetting.bind(this, 'listStories')}
               checked={this.state.listStories}
               label="List stories on front page"/>
           </div>
           <div className="indent clearfix">
-            <div className="pull-left mr-1">
-              <ButtonGroup
-                buttons={amountButtons}
-                handle={this.setListStoryAmount}
-                match={this.state.listStoryAmount}/>
+            <div className="row">
+              <div className="row">
+                <div className="col-sm-6">
+                  <div>Number of stories per page</div>
+                  <ButtonGroup
+                    buttons={amountButtons}
+                    handle={this.saveSetting.bind(this, 'listStoryAmount')}
+                    match={this.state.listStoryAmount}/>
+                </div>
+                <div className="col-sm-6">
+                  <div>Story display type</div>
+                  <ButtonGroup
+                    buttons={formatButton}
+                    handle={this.saveSetting.bind(this, 'listStoryFormat')}
+                    match={this.state.listStoryFormat}/>
+                </div>
+              </div>
             </div>
-            <div>Number of stories per page</div>
-          </div>
-          <div className="indent clearfix mt-1">
-            <div className="pull-left mr-1">
-              <ButtonGroup
-                buttons={formatButton}
-                handle={this.setListStoryFormat}
-                match={this.state.listStoryFormat}/>
-            </div>
-            <div>Story display type:</div>
           </div>
         </div>
         <div className="settings">
           <div>
             <BigCheckbox
-              handle={this.setShowFeatures}
+              handle={this.saveSetting.bind(this, 'showFeatures')}
               checked={this.state.showFeatures}
               label="Show features on front page"/>
           </div>
           <div className="indent">
-            <div className="pull-left mr-1">
-              <ButtonGroup
-                buttons={amountButtons}
-                handle={this.setShowFeatureNumber}
-                match={this.state.featureNumber}/>
+            <div className="row">
+              <div className="col-sm-6">
+                <div>
+                  Features displayed
+                </div>
+                <ButtonGroup
+                  buttons={amountButtons}
+                  handle={this.saveSetting.bind(this, 'featureNumber')}
+                  match={this.state.featureNumber}/>
+                </div>
+              <div className="col-sm-6">
+                <div>Feature format</div>
+                <ButtonGroup
+                  buttons={featureFormat}
+                  vertical={true}
+                  handle={this.saveSetting.bind(this, 'featureFormat')}
+                  match={this.state.featureFormat}/>
+              </div>
             </div>
-            <div>Number of features displayed</div>
           </div>
         </div>
         <div className="settings">
           <BigCheckbox
-            handle={this.setShowComments}
+            handle={this.saveSetting.bind(this, 'showComments')}
             checked={this.state.showComments}
             label="Show comments on story"/>
           <div className="indent">
@@ -170,7 +173,8 @@ export default class Settings extends Component {
               value={this.state.commentCode}
               onChange={this.setCommentCode}
               placeholder="e.g. Muut, StaticMan, Disqus, Isso"/>
-              <button className="btn btn-primary" onClick={this.saveCommentCode}><i className="fa fa-save"></i>&nbsp;Save comment code</button>
+            <button className="btn btn-primary" onClick={this.saveCommentCode}>
+              <i className="fa fa-save"></i>&nbsp;Save comment code</button>
           </div>
         </div>
       </div>
