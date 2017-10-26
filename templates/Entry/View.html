@@ -1,6 +1,8 @@
 <?=$cssOverride?>
 <?php if (!$published):?>
 <div class="alert alert-warning">This story is currently unpublished. <a href="./stories/Entry/<?=$id?>/edit">Edit this story to publish it.</a></div>
+<?php else:?>
+<div class="published-info">Published <?=$publishDateRelative?></div>
 <?php endif;?>
 <div class="story-entry">
     <div class="story-content"><?=$content?></div>
