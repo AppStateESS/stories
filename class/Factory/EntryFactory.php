@@ -13,12 +13,14 @@
 namespace stories\Factory;
 
 use stories\Resource\EntryResource as Resource;
+use stories\Resource\ThumbnailResource;
 use stories\Factory\AuthorFactory;
 use stories\Factory\TagFactory;
 use stories\Resource\AuthorResource;
 use stories\Exception\MissingInput;
 use stories\Exception\ResourceNotFound;
 use phpws2\Database;
+use phpws2\Settings;
 use Canopy\Request;
 use phpws2\Template;
 
@@ -101,6 +103,22 @@ class EntryFactory extends BaseFactory
         return $this->pullList($options);
     }
 
+    /**
+     * Return a list of entries based on options
+     * 
+     * Options:
+     * hideExpired => true,
+     * orderBy => 'publishDate',
+     * limit => 6,
+     * includeContent => true,
+     * publishedOnly => true,
+     * offset => 0,
+     * tag => null,
+     * showTagLinks => true);
+     * 
+     * @param array $options
+     * @return array
+     */
     public function pullList(array $options = null)
     {
         $db = Database::getDB();
@@ -134,6 +152,7 @@ class EntryFactory extends BaseFactory
         $tbl->addField('updateDate');
         $tbl->addField('urlTitle');
         $tbl->addField('leadImage');
+        $tbl->addField('thumbOrientation');
         if ($options['includeContent']) {
             $tbl->addField('content');
         }
@@ -406,9 +425,13 @@ EOF;
         if ($image->length > 0) {
             $imgNode = $image->item(0);
             $src = $imgNode->getAttribute('src');
-            $entry->leadImage = $photoFactory->getImagePath($entry->id) . $photoFactory->getImageFilename($src);
-            $entry->thumbnail = $photoFactory->createThumbnailUrl($entry->id,
-                    $src);
+            $imageDirectory = $photoFactory->getImagePath($entry->id);
+            $imageFile = $photoFactory->getImageFilename($src);
+            $entry->leadImage = $imageDirectory . $imageFile;
+            $thumbnail = new ThumbnailResource($imageDirectory, $imageFile);
+            $thumbnail->createThumbnail();
+            $entry->thumbnail = $thumbnail->getPath();
+            $entry->thumbOrientation = $thumbnail->orientation;
         } elseif ($iframe->length > 0) {
             $iframeNode = $iframe->item(0);
             $src = $iframeNode->getAttribute('src');
@@ -416,7 +439,8 @@ EOF;
                 $imgResult = $photoFactory->saveYouTubeImage($entry->id, $src);
                 if (!empty($imgResult)) {
                     $entry->leadImage = $imgResult['image'];
-                    $entry->thumbnail = $imgResult['thumbnail'];
+                    $entry->thumbnail = $imgResult['thumbnail']->getPath();
+                    $entry->thumbOrientation = $imgResult['thumbnail']->orientation;
                 }
             }
         }
@@ -425,7 +449,7 @@ EOF;
             $h3Node = $h3->item(0);
             $entry->title = $h3Node->textContent;
         } elseif ($h4->length > 0) {
-            $h4Node = $h3->item(0);
+            $h4Node = $h4->item(0);
             $entry->title = $h4Node->textContent;
         } elseif ($p->length > 0) {
             $pNode = $p->item(0);
@@ -556,7 +580,6 @@ EOF;
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
             $data['tagList'] = $tagFactory->getTagLinks($entry->tags);
-
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             $this->addStoryCss();
@@ -638,14 +661,36 @@ EOF;
     public function showFeatures(Request $request)
     {
         \Layout::addToStyleList('mod/stories/css/story.css');
-        $options = array('includeContent' => false);
+        \Layout::addToStyleList('mod/stories/css/bootstrap-fills.css');
+        $featureNumber = Settings::get('stories', 'featureNumber');
+        $options = array('includeContent' => false, 'limit' => $featureNumber);
         $list = $this->pullList($options);
         if (empty($list)) {
             return null;
         }
-        $template = new \phpws2\Template(array('list' => $list));
-        $template->setModuleTemplate('stories', 'FeatureList.html');
-        return $template->get();
+        $row = array();
+        $count = 0;
+        foreach ($list as $entryVars) {
+            if ($count === 0) {
+                $row[] = '<div class="row">';
+            }
+
+            if ($entryVars['thumbOrientation'] == '0') {
+                $templateFile = 'Landscape.html';
+            } else {
+                $templateFile = 'Portrait.html';
+            }
+            $template = new Template($entryVars);
+            $template->setModuleTemplate('stories', 'Feature/' . $templateFile);
+            $row[] = $template->get();
+            if ($count === 1) {
+                $row[] = '</div>';
+                $count = 0;
+            } else {
+                $count++;
+            }
+        }
+        return '<div id="story-feature-list">'. implode('', $row) . '</div>';
     }
 
     /**
