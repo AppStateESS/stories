@@ -76,9 +76,13 @@ class Admin extends User
 
     protected function viewHtmlCommand(Request $request)
     {
-        StoryMenu::addStoryLink();
         StoryMenu::editStoryLink($this->id);
         return parent::viewHtmlCommand($request);
+    }
+    
+    protected function flipPatchCommand(Request $request)
+    {
+        $this->factory->flipThumbnail($this->id);
     }
 
 }
