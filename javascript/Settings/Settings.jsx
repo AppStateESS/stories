@@ -17,7 +17,7 @@ export default class Settings extends Component {
       listStoryFormat: 0,
       featureFormat: 0,
       commentCode: '',
-      showComments: 0
+      showComments: 0,
     }
     this.setCommentCode = this.setCommentCode.bind(this)
     this.setShowComments = this.setShowComments.bind(this)
@@ -40,7 +40,7 @@ export default class Settings extends Component {
     }
     $.post('./stories/Settings', {
       param: param,
-      value: setting,
+      value: setting
     }, null, 'json').done(function () {
       const stateSetting = {}
       stateSetting[param] = setting
@@ -63,40 +63,43 @@ export default class Settings extends Component {
   render() {
     const amountButtons = [
       {
-        value: 3,
-        label: 3,
+        value: 2,
+        label: 2
+      }, {
+        value: 4,
+        label: 4
       }, {
         value: 6,
-        label: 6,
+        label: 6
       }, {
-        value: 9,
-        label: 9,
+        value: 8,
+        label: 8
       }, {
-        value: 12,
-        label: 12,
+        value: 10,
+        label: 10
       },
     ]
 
     const formatButton = [
       {
         value: 0,
-        label: 'Summary'
+        label: 'Summary',
       }, {
         value: 1,
-        label: 'Full'
+        label: 'Full',
       },
     ]
 
     const featureFormat = [
       {
         value: 0,
-        label: 'Dynamic based on image'
+        label: 'Dynamic based on image',
       }, {
         value: 1,
-        label: 'Stacked landscape image'
+        label: 'Stacked landscape image',
       }, {
         value: 2,
-        label: 'Side-by-side portrait image'
+        label: 'Side-by-side portrait image',
       },
 
     ]
@@ -149,7 +152,7 @@ export default class Settings extends Component {
                   buttons={amountButtons}
                   handle={this.saveSetting.bind(this, 'featureNumber')}
                   match={this.state.featureNumber}/>
-                </div>
+              </div>
               <div className="col-sm-6">
                 <div>Feature format</div>
                 <ButtonGroup
