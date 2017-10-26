@@ -19,6 +19,7 @@ const EntryRow = (props) => {
     publishStory,
     showTags,
     sortByTag,
+    flipThumbnail,
   } = props
 
   const {
@@ -35,7 +36,8 @@ const EntryRow = (props) => {
     thumbnail,
     title,
     tags,
-    urlTitle
+    urlTitle,
+    thumbOrientation,
   } = entry
 
   const mailto = 'mailto:' + authorEmail
@@ -68,9 +70,35 @@ const EntryRow = (props) => {
       </div>
     )
   }
+  let content
 
-  return (
-    <div className="entry-row mb-1">
+  if (thumbOrientation == 0) {
+    content = (
+      <div className="row">
+        <div className="col-sm-8">
+          <div className="entry-image">
+            {image}
+          </div>
+          <a href={urlTitle}>
+            <h3>{title}</h3>
+          </a>
+          <div className="summary">{strippedSummary}</div>
+        </div>
+        <div className="col-sm-4 story-data">
+          <div>
+            <strong>Author:</strong>&nbsp;<a href={mailto}>{authorName}</a>
+          </div>
+          <div>
+            <strong>Created:</strong>&nbsp;<abbr title={createDate}>{createDateRelative}</abbr>
+          </div>
+          <div>{publishInfo}</div>
+          <div>
+            <strong>Expires:</strong>&nbsp;{expire}</div>
+        </div>
+      </div>
+    )
+  } else {
+    content = (
       <div className="row">
         <div className="col-sm-3">
           <div className="entry-image">
@@ -78,16 +106,29 @@ const EntryRow = (props) => {
           </div>
         </div>
         <div className="col-sm-6">
-          <a href={urlTitle}><h3>{title}</h3></a>
+          <a href={urlTitle}>
+            <h3>{title}</h3>
+          </a>
           <div className="summary">{strippedSummary}</div>
         </div>
-        <div className="col-sm-3">
-          <div> <strong>Author:</strong>&nbsp;<a href={mailto}>{authorName}</a></div>
-          <div><strong>Created:</strong>&nbsp;<abbr title={createDate}>{createDateRelative}</abbr></div>
+        <div className="col-sm-3 story-data">
+          <div>
+            <strong>Author:</strong>&nbsp;<a href={mailto}>{authorName}</a>
+          </div>
+          <div>
+            <strong>Created:</strong>&nbsp;<abbr title={createDate}>{createDateRelative}</abbr>
+          </div>
           <div>{publishInfo}</div>
-          <div><strong>Expires:</strong>&nbsp;{expire}</div>
+          <div>
+            <strong>Expires:</strong>&nbsp;{expire}</div>
         </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="entry-row mb-1">
+      {content}
       <hr/>
       <div className="row mt-1">
         <div className="col-sm-4">
@@ -95,7 +136,8 @@ const EntryRow = (props) => {
             entryId={id}
             deleteStory={deleteStory}
             isPublished={published}
-            publishStory={publishStory}/>
+            publishStory={publishStory}
+            flipThumbnail={flipThumbnail}/>
         </div>
         <div className="col-sm-8">
           <TagList tags={tags} showTags={showTags} sortByTag={sortByTag}/>
@@ -113,12 +155,19 @@ EntryRow.propTypes = {
   publishStory: PropTypes.func,
   deleteStory: PropTypes.func,
   sortByTag: PropTypes.func,
-  showTags: PropTypes.func
+  showTags: PropTypes.func,
+  flipThumbnail: PropTypes.func,
 }
 
 export default EntryRow
 
-const Options = ({entryId, deleteStory, isPublished, publishStory,}) => {
+const Options = ({
+  entryId,
+  deleteStory,
+  isPublished,
+  publishStory,
+  flipThumbnail,
+}) => {
   return (
     <div>
       <a
@@ -129,6 +178,7 @@ const Options = ({entryId, deleteStory, isPublished, publishStory,}) => {
         : null}
       <a className="btn btn-sm btn-default mr-1" onClick={deleteStory}>
         Delete</a>
+      <a className="btn btn-sm btn-default" onClick={flipThumbnail}>Flip</a>
     </div>
   )
 }
@@ -137,7 +187,8 @@ Options.propTypes = {
   entryId: PropTypes.string,
   deleteStory: PropTypes.func,
   isPublished: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
-  publishStory: PropTypes.func
+  publishStory: PropTypes.func,
+  flipThumbnail: PropTypes.func
 }
 
 const TagList = ({tags, showTags, sortByTag,}) => {
