@@ -13,10 +13,5 @@
     <div class="story-readmore">
         <a href="<?=$entry['urlTitle']?>">Read on...</a>
     </div>
-    <?php if (isset($isAdmin)):?>
-    <div style="border-top: 1px solid #e3e3e3;padding-top:1em;margin-top:1em">
-        <a class="btn btn-default btn-sm" href="./stories/Entry/<?=$entry['id']?>/edit">Edit</a>
-    </div>
-    <?php endif;?>
 </div>
 <?php endforeach; ?>
