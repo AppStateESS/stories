@@ -151,7 +151,7 @@ abstract class RoleController
         if (empty($getCommand)) {
             $restCommand = $method . 'Command';
         } else {
-            $restCommand = $getCommand . $method . 'Command';
+            $restCommand = $getCommand . ucfirst($method) . 'Command';
         }
 
         if (!method_exists($this, $restCommand)) {
