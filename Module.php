@@ -34,7 +34,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     {
         //segmentSize : how many stories to show on the admin list page
         //listStoryFormat : 0 - summary, 1 - full
-        // featureForms : 0 - dynamic, 1 - horizontal, 2 - portrait
+        // featureFormat : 0 - dynamic, 1 - horizontal, 2 - portrait
         $settings = array(
             'image_max_width' => 1920,
             'image_max_height' => 1080,
