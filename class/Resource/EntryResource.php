@@ -102,8 +102,8 @@ class EntryResource extends BaseResource
     protected $leadImage;
     
     /**
-     * 0 - width
-     * 1 - height
+     * 0 - landscape
+     * 1 - portrait
      * @var phpws2\Variable\SmallInteger
      */
     protected $thumbOrientation;
