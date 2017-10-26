@@ -5,7 +5,7 @@ const EntryForm = new EntryFormClass($('#story-status'), entry)
 var editor = new MediumEditor('.entry-form', {
   placeholder: {
     text: 'Start your story here...',
-    hideOnClick: true,
+    hideOnClick: false,
   },
   toolbar: {
     buttons: [
