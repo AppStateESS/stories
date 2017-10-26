@@ -72,7 +72,7 @@ export default class Publish extends Component {
   }
 
   render() {
-    const now = moment.unix()
+    const now = moment().format('X')
     const fadeIn = {
       animation: "fadeIn"
     }
@@ -93,7 +93,6 @@ export default class Publish extends Component {
     }
 
     let publishLink
-
     if (this.state.published === '0') {
       publishLink = 'Unpublished'
     } else if (this.state.publishDate < now) {
