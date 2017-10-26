@@ -29,6 +29,8 @@ namespace stories\Factory;
 use phpws2\Database;
 use Canopy\Request;
 use phpws2\Settings;
+use stories\Resource\EntryResource;
+use stories\Resource\ThumbnailResource;
 
 require_once PHPWS_SOURCE_DIR . 'mod/stories/class/UploadHandler.php';
 
@@ -60,58 +62,6 @@ class EntryPhotoFactory
         $upload_handler = new \UploadHandler($options, false);
         $result = $upload_handler->post(false);
         return $result;
-    }
-
-    public function createThumbnail($sourceDirectory, $filename)
-    {
-        $settings = new \phpws2\Settings();
-
-        $options = array('image_library' => true, 'upload_dir' => $sourceDirectory);
-        $upload = new \UploadHandler($options, false);
-
-        list($width, $height) = $this->getOrientationDimensions($sourceDirectory . $filename);
-        $scaledOptions = array(
-            'max_width' => $width,
-            'max_height' => $height,
-            'crop' => true,
-            'jpeg_quality' => 100
-        );
-
-        $upload->create_scaled_image($filename, 'thumbnail', $scaledOptions);
-    }
-
-    public function getOrientationDimensions($filePath)
-    {
-        list($width, $height) = getimagesize($filePath);
-        $ratio = $width / $height;
-
-        if ($ratio > STORIES_ORIENTATION_RATIO) {
-            if ($width > STORIES_LANDSCAPE_THUMB_WIDTH) {
-                $finalWidth = STORIES_LANDSCAPE_THUMB_WIDTH;
-                $finalHeight = STORIES_LANDSCAPE_THUMB_HEIGHT;
-            } else {
-                $finalWidth = $width;
-                if ($height > STORIES_LANDSCAPE_THUMB_HEIGHT) {
-                    $finalHeight = STORIES_LANDSCAPE_THUMB_HEIGHT;
-                } else {
-                    $finalHeight = $height;
-                }
-            }
-        } else {
-            if ($height > STORIES_PORTRAIT_THUMB_HEIGHT) {
-                $finalWidth = STORIES_PORTRAIT_THUMB_HEIGHT;
-                $finalHeight = STORIES_PORTRAIT_THUMB_WIDTH;
-            } else {
-                $finalWidth = $height;
-                if ($width > STORIES_PORTRAIT_THUMB_WIDTH) {
-                    $finalHeight = STORIES_PORTRAIT_THUMB_WIDTH;
-                } else {
-                    $finalHeight = $width;
-                }
-            }
-        }
-
-        return array($finalWidth, $finalHeight);
     }
 
     public function delete($entryId, Request $request)
@@ -193,8 +143,9 @@ EOF;
         }
 
         if (file_put_contents($fullPath, $content) !== false) {
-            $this->createThumbnail($imagePath, $imageName);
-            return array('image' => $fullPath, 'thumbnail' => $this->getThumbnailPath($entryId) . $imageName);
+            $thumbnail = new ThumbnailResource($imagePath, $imageName);
+            $thumbnail->createThumbnail();
+            return array('thumbnail' => $thumbnail, 'image' => $fullPath);
         } else {
             return false;
         }
@@ -212,16 +163,4 @@ EOF;
         $imagePath = $this->getImagePath($entryId);
         \phpws\PHPWS_File::rmdir($imagePath);
     }
-
-    public function createThumbnailUrl($entryId, $url)
-    {
-        $filename = $this->getImageFilename($url);
-        $rootImageDir = $this->getImagePath($entryId);
-        $thumbDir = $this->getThumbnailPath($entryId);
-        if (!file_exists($thumbDir . $filename)) {
-            $this->createThumbnail($rootImageDir, $filename);
-        }
-        return $thumbDir . $filename;
-    }
-
 }
