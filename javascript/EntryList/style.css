@@ -83,3 +83,12 @@ ul.tag-list li {
   padding: 3px;
   font-size : 16px;
 }
+
+.entry-image {
+  max-height: 130px;
+  overflow:hidden;
+}
+
+.story-data {
+  font-size : 14px;
+}
