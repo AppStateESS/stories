@@ -80,9 +80,4 @@ class Admin extends User
         return parent::viewHtmlCommand($request);
     }
     
-    protected function flipPatchCommand(Request $request)
-    {
-        $this->factory->flipThumbnail($this->id);
-    }
-
 }
