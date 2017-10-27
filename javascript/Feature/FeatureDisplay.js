@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import DisplayColumn from './DisplayColumn'
 
 const FeatureDisplay = (props) => {
-  const {feature} = props
+  const {feature, applyStory, stories, clearStory,} = props
   const columns = parseInt(feature.columns)
   let bsClass
 
@@ -22,18 +22,14 @@ const FeatureDisplay = (props) => {
 
   let columnContent = []
   for (let i = 0; i < columns; i++) {
-    //columnContent.push(<div className={bsClass} key={i}>columns!</div>)
-    let entry = {
-      id: 0,
-      title: 'Example title',
-      strippedSummary: 'Example summary',
-      publishDateRelative: 'today',
-      thumbnail: 'mod/stories/img/sample.jpg',
-    }
-    if (feature.entries[i] !== undefined) {
-      entry = feature.entries[i]
-    }
-    columnContent.push(<DisplayColumn key={i} bsClass={bsClass} format={feature.format} entry={entry}/>)
+    columnContent.push(<DisplayColumn
+      key={i}
+      bsClass={bsClass}
+      format={feature.format}
+      entry={feature.entries[i]}
+      stories={stories}
+      applyStory={applyStory.bind(null, i)}
+      clearStory={clearStory.bind(null, i)}/>)
   }
 
   return (
@@ -44,7 +40,10 @@ const FeatureDisplay = (props) => {
 }
 
 FeatureDisplay.propTypes = {
-  feature: PropTypes.object
+  feature: PropTypes.object,
+  stories: PropTypes.array,
+  applyStory: PropTypes.func,
+  clearStory: PropTypes.func,
 }
 
 FeatureDisplay.defaultTypes = {}
