@@ -23,6 +23,7 @@ namespace stories\Controller\Feature;
 
 use Canopy\Request;
 use stories\Factory\FeatureFactory as Factory;
+use stories\Factory\EntryFactory;
 use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
@@ -33,25 +34,36 @@ class Admin extends RoleController
      * @var \stories\Factory\FeatureFactory factory
      */
     protected $factory;
-    
-    protected function loadFactory() {
+
+    protected function loadFactory()
+    {
         $this->factory = new Factory;
     }
 
     protected function listHtmlCommand(Request $request)
     {
         $this->factory->addStoryCss();
-        return $this->factory->scriptView('Feature', true, array('srcHttp'=>PHPWS_SOURCE_HTTP));
+        return $this->factory->scriptView('Feature', true,
+                        array('srcHttp' => PHPWS_SOURCE_HTTP));
     }
-    
+
     protected function listJsonCommand(Request $request)
     {
-        return $this->factory->listing($request);
+        $featureList = $this->factory->listing($request);
+        $entryFactory = new EntryFactory();
+        $options = array(
+            'vars' => array('id', 'title'),
+            'includeContent' => false,
+            'orderBy' => 'title',
+            'asResource'=> false,
+            'showTagLinks' => false);
+        $stories = $entryFactory->pullList($options);
+        return array('featureList' => $featureList, 'stories' => $stories);
     }
-    
+
     protected function postCommand(Request $request)
     {
-        return array('featureId'=>$this->factory->post($request));
+        return array('featureId' => $this->factory->post($request));
     }
-    
+
 }
