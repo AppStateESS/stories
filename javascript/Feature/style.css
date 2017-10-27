@@ -1,0 +1,17 @@
+ul.format-selection {
+  list-style-type: none;
+  margin : 0px;
+  padding : 0px;
+}
+
+ul.format-selection li {
+  position: relative;
+  display: block;
+  float: left;
+  text-align : center;
+  margin-right : 1em;
+}
+
+ul.format-selection li img {
+  height : 40px;
+}

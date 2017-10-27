@@ -89,6 +89,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     {
         if (\Current_User::allow('stories')) {
             \stories\Factory\StoryMenu::addStoryLink();
+            \stories\Factory\StoryMenu::featureLink();
             \stories\Factory\StoryMenu::listStoryLink();
             \stories\Factory\StoryMenu::adminDisplayLink();
         }
