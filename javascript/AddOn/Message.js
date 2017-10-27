@@ -22,8 +22,10 @@ const Message = (props) => {
   }
 
   let messageType = 'alert alert-dismissible alert-' + props.type
-  return (
-    <div className={messageType} role="alert">
+
+  let closeButton
+  if (props.onClose !== undefined) {
+    closeButton = (
       <button
         type="button"
         onClick={props.onClose}
@@ -32,6 +34,12 @@ const Message = (props) => {
         aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
+    )
+  }
+
+  return (
+    <div className={messageType} role="alert">
+      {closeButton}
       <i className={icon}></i>&nbsp; {props.children}
     </div>
   )
