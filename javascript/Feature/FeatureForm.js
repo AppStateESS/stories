@@ -3,7 +3,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ButtonGroup from '../AddOn/ButtonGroup'
 import FeatureDisplay from './FeatureDisplay'
+import SampleEntry from './SampleEntry'
 import './style.css'
+
+/* global $ */
 
 const FeatureForm = (props) => {
 
@@ -25,16 +28,36 @@ const FeatureForm = (props) => {
     props.update(feature)
   }
 
+  const applyStory = (key, entry) => {
+    const feature = props.feature
+    $.ajax({
+      url: './stories/Entry/' + entry.value,
+      dataType: 'json',
+      type: 'get',
+      success: function (data) {
+        feature.entries[key] = data.entry
+        props.update(feature)
+      }.bind(this),
+      error: function () {}.bind(this),
+    })
+  }
+
+  const clearStory = (key) => {
+    const feature = props.feature
+    feature.entries[key] = SampleEntry
+    props.update(feature)
+  }
+
   const columnButtons = [
     {
       value: '2',
-      label: '2',
+      label: '2'
     }, {
       value: '3',
-      label: '3',
+      label: '3'
     }, {
       value: '4',
-      label: '4',
+      label: '4'
     },
   ]
 
@@ -47,7 +70,6 @@ const FeatureForm = (props) => {
   const formatTopBottom = props.srcHttp + 'mod/stories/img/top-bottom.png'
   const formatLandscape = props.srcHttp + 'mod/stories/img/landscape.png'
   const formatLeftRight = props.srcHttp + 'mod/stories/img/left-right.png'
-
 
   return (
     <div>
@@ -93,7 +115,7 @@ const FeatureForm = (props) => {
         </div>
       </div>
       <div id="story-feature-list">
-        <FeatureDisplay {...props}/>
+        <FeatureDisplay {...props} applyStory={applyStory} clearStory={clearStory}/>
       </div>
     </div>
   )
@@ -102,7 +124,7 @@ const FeatureForm = (props) => {
 FeatureForm.propTypes = {
   feature: PropTypes.object,
   update: PropTypes.func,
-  srcHttp: PropTypes.string
+  srcHttp: PropTypes.string,
 }
 
 FeatureForm.defaultTypes = {}
