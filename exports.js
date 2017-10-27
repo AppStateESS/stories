@@ -8,5 +8,6 @@ exports.entry = {
   PublishBar: exports.APP_DIR + '/PublishBar/index.jsx',
   TagBar: exports.APP_DIR + '/TagBar/index.jsx',
   Settings: exports.APP_DIR + '/Settings/index.jsx',
+  Feature: exports.APP_DIR + '/Feature/index.jsx',
   vendor: ['react', 'react-dom']
 }
