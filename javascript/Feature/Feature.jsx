@@ -6,6 +6,7 @@ import FeatureList from './FeatureList'
 import FeatureForm from './FeatureForm'
 import Message from '../AddOn/Message'
 import Waiting from '../AddOn/Waiting'
+import SampleEntry from './SampleEntry'
 
 /* global $ */
 
@@ -18,6 +19,7 @@ export default class Feature extends Component {
       currentKey: null,
       featureList: [],
       loading: true,
+      stories: []
     }
     this.addRow = this.addRow.bind(this)
     this.closeMessage = this.closeMessage.bind(this)
@@ -35,18 +37,26 @@ export default class Feature extends Component {
       dataType: 'json',
       type: 'get',
       success: function (data) {
-        const featureList = data
-        this.setState({featureList: featureList, loading: false})
+        if (data.stories == null) {
+          const message = {}
+          message.text = <span>No stories available for features.
+            <a href="stories/Entry/create">Go write some.</a>
+          </span>
+          message.type = 'warning'
+          this.setState({message: message, loading: false,})
+        } else {
+          this.setState({featureList: data.featureList, stories: data.stories, loading: false,})
+        }
       }.bind(this),
       error: function () {
         this.setState({
           loading: false,
           message: {
             text: 'Error: Could not pull feature list',
-            type: 'danger'
-          }
+            type: 'danger',
+          },
         })
-      }.bind(this)
+      }.bind(this),
     })
   }
 
@@ -54,12 +64,16 @@ export default class Feature extends Component {
     const feature = this.state.featureList[key]
     if (feature.entries === 'null') {
       feature.entries = []
+      feature.entries[0] = SampleEntry
+      feature.entries[1] = SampleEntry
+      feature.entries[2] = SampleEntry
+      feature.entries[3] = SampleEntry
     }
 
     if (feature.title === null) {
       feature.title = ''
     }
-    this.setState({currentFeature: feature, currentKey: key,})
+    this.setState({currentFeature: feature, currentKey: key})
   }
 
   addRow() {
@@ -74,9 +88,9 @@ export default class Feature extends Component {
         const featureList = this.state.featureList
         featureList.push(feature)
         */
-        this.setState({currentFeature: FeatureObj, currentKey: data.featureId,})
+        this.setState({currentFeature: FeatureObj, currentKey: data.featureId})
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -91,7 +105,7 @@ export default class Feature extends Component {
   message() {
     if (this.state.message !== null) {
       const {message} = this.state
-      return <Message type={message.type} message={message.text} onClose={this.closeMessage}>{message.text}</Message>
+      return <Message type={message.type} message={message.text}>{message.text}</Message>
     }
   }
 
@@ -100,6 +114,7 @@ export default class Feature extends Component {
       return <Waiting/>
     } else if (this.state.currentKey !== null) {
       return <FeatureForm
+        stories={this.state.stories}
         feature={this.state.currentFeature}
         srcHttp={this.props.srcHttp}
         update={this.updateFeature}/>
