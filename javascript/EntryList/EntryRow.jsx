@@ -19,7 +19,6 @@ const EntryRow = (props) => {
     publishStory,
     showTags,
     sortByTag,
-    flipThumbnail,
   } = props
 
   const {
@@ -36,8 +35,7 @@ const EntryRow = (props) => {
     thumbnail,
     title,
     tags,
-    urlTitle,
-    thumbOrientation,
+    urlTitle
   } = entry
 
   const mailto = 'mailto:' + authorEmail
@@ -70,35 +68,8 @@ const EntryRow = (props) => {
       </div>
     )
   }
-  let content
-
-  if (thumbOrientation == 0) {
-    content = (
-      <div className="row">
-        <div className="col-sm-8">
-          <div className="entry-image">
-            {image}
-          </div>
-          <a href={urlTitle}>
-            <h3>{title}</h3>
-          </a>
-          <div className="summary">{strippedSummary}</div>
-        </div>
-        <div className="col-sm-4 story-data">
-          <div>
-            <strong>Author:</strong>&nbsp;<a href={mailto}>{authorName}</a>
-          </div>
-          <div>
-            <strong>Created:</strong>&nbsp;<abbr title={createDate}>{createDateRelative}</abbr>
-          </div>
-          <div>{publishInfo}</div>
-          <div>
-            <strong>Expires:</strong>&nbsp;{expire}</div>
-        </div>
-      </div>
-    )
-  } else {
-    content = (
+  return (
+    <div className="entry-row mb-1">
       <div className="row">
         <div className="col-sm-3">
           <div className="entry-image">
@@ -123,12 +94,6 @@ const EntryRow = (props) => {
             <strong>Expires:</strong>&nbsp;{expire}</div>
         </div>
       </div>
-    )
-  }
-
-  return (
-    <div className="entry-row mb-1">
-      {content}
       <hr/>
       <div className="row mt-1">
         <div className="col-sm-4">
@@ -136,8 +101,7 @@ const EntryRow = (props) => {
             entryId={id}
             deleteStory={deleteStory}
             isPublished={published}
-            publishStory={publishStory}
-            flipThumbnail={flipThumbnail}/>
+            publishStory={publishStory}/>
         </div>
         <div className="col-sm-8">
           <TagList tags={tags} showTags={showTags} sortByTag={sortByTag}/>
@@ -156,18 +120,11 @@ EntryRow.propTypes = {
   deleteStory: PropTypes.func,
   sortByTag: PropTypes.func,
   showTags: PropTypes.func,
-  flipThumbnail: PropTypes.func,
 }
 
 export default EntryRow
 
-const Options = ({
-  entryId,
-  deleteStory,
-  isPublished,
-  publishStory,
-  flipThumbnail,
-}) => {
+const Options = ({entryId, deleteStory, isPublished, publishStory}) => {
   return (
     <div>
       <a
@@ -178,7 +135,6 @@ const Options = ({
         : null}
       <a className="btn btn-sm btn-default mr-1" onClick={deleteStory}>
         Delete</a>
-      <a className="btn btn-sm btn-default" onClick={flipThumbnail}>Flip</a>
     </div>
   )
 }
@@ -188,10 +144,9 @@ Options.propTypes = {
   deleteStory: PropTypes.func,
   isPublished: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
   publishStory: PropTypes.func,
-  flipThumbnail: PropTypes.func
 }
 
-const TagList = ({tags, showTags, sortByTag,}) => {
+const TagList = ({tags, showTags, sortByTag}) => {
   let tagList
   const tagButton = <button className="btn btn-primary mr-1 btn-sm" onClick={showTags}>
     <i className="fa fa-tags"></i>&nbsp;Tags</button>
@@ -212,5 +167,5 @@ const TagList = ({tags, showTags, sortByTag,}) => {
 TagList.propTypes = {
   tags: PropTypes.array,
   showTags: PropTypes.func,
-  sortByTag: PropTypes.func
+  sortByTag: PropTypes.func,
 }
