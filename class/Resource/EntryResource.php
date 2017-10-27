@@ -102,13 +102,6 @@ class EntryResource extends BaseResource
     protected $leadImage;
     
     /**
-     * 0 - landscape
-     * 1 - portrait
-     * @var phpws2\Variable\SmallInteger
-     */
-    protected $thumbOrientation;
-
-    /**
      * Title of story.
      * @var phpws2\Variable\TextOnly
      */
@@ -161,7 +154,6 @@ class EntryResource extends BaseResource
         $this->expirationDate->setPrintEmpty(false);
         $this->leadImage = new \phpws2\Variable\FileVar(null, 'leadImage');
         $this->leadImage->allowNull(true);
-        $this->thumbOrientation = new \phpws2\Variable\SmallInteger(0, 'thumbOrientation');
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
         $this->publishDate->stamp();
         $this->publishDate->setFormat(null);

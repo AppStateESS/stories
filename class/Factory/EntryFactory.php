@@ -152,7 +152,6 @@ class EntryFactory extends BaseFactory
         $tbl->addField('updateDate');
         $tbl->addField('urlTitle');
         $tbl->addField('leadImage');
-        $tbl->addField('thumbOrientation');
         if ($options['includeContent']) {
             $tbl->addField('content');
         }
@@ -431,7 +430,6 @@ EOF;
             $thumbnail = new ThumbnailResource($imageDirectory, $imageFile);
             $thumbnail->createThumbnail();
             $entry->thumbnail = $thumbnail->getPath();
-            $entry->thumbOrientation = $thumbnail->orientation;
         } elseif ($iframe->length > 0) {
             $iframeNode = $iframe->item(0);
             $src = $iframeNode->getAttribute('src');
@@ -440,7 +438,6 @@ EOF;
                 if (!empty($imgResult)) {
                     $entry->leadImage = $imgResult['image'];
                     $entry->thumbnail = $imgResult['thumbnail']->getPath();
-                    $entry->thumbOrientation = $imgResult['thumbnail']->orientation;
                 }
             }
         }
@@ -596,11 +593,6 @@ EOF;
         return $template->get();
     }
 
-    private function addStoryCss()
-    {
-        \Layout::addToStyleList('mod/stories/css/story.css');
-    }
-
     /**
      * Called from Module.php not a controller
      * 
@@ -661,7 +653,6 @@ EOF;
     public function showFeatures(Request $request)
     {
         \Layout::addToStyleList('mod/stories/css/story.css');
-        \Layout::addToStyleList('mod/stories/css/bootstrap-fills.css');
         $featureNumber = Settings::get('stories', 'featureNumber');
         $options = array('includeContent' => false, 'limit' => $featureNumber);
         $list = $this->pullList($options);
@@ -675,7 +666,8 @@ EOF;
                 $row[] = '<div class="row">';
             }
 
-            if ($entryVars['thumbOrientation'] == '0') {
+            // new code here
+            if (1) {
                 $templateFile = 'Landscape.html';
             } else {
                 $templateFile = 'Portrait.html';
@@ -683,7 +675,7 @@ EOF;
             $template = new Template($entryVars);
             $template->setModuleTemplate('stories', 'Feature/' . $templateFile);
             $row[] = $template->get();
-            if ($count === 1) {
+            if ($count === 2) {
                 $row[] = '</div>';
                 $count = 0;
             } else {

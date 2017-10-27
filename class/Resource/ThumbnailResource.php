@@ -62,14 +62,6 @@ class ThumbnailResource
      */
     public $width;
 
-    /**
-     * Orientation of the thumbnail
-     * 0: landscape
-     * 1: portrait
-     * @var integer
-     */
-    public $orientation;
-    
     public function __construct($sourceDirectory, $filename)
     {
         $this->filename = $filename;
@@ -77,31 +69,21 @@ class ThumbnailResource
         $this->thumbDirectory= $this->sourceDirectory . 'thumbnail/';
     }
     
-    
-    private function createPortraitThumbnail($width, $height)
-    {
-        $this->setPortraitDimensions($width, $height);
-        $this->scaleImage();
-    }
-
-    private function createLandscapeThumbnail($width, $height)
-    {
-        $this->setLandscapeDimensions($width, $height);
-        $this->scaleImage();
-    }
-    
     /**
      * Creates a thumbnail based on object variables.
-     * Returns the orientation type (0 landscape, 1 portrait) of the thumbnail.
      */
     public function createThumbnail()
     {
-        list($width, $height) = getimagesize($this->getSourcePath());
-        $this->createPortraitThumbnail($width, $height);
-        $this->createLandscapeThumbnail($width, $height);
-        
-        $this->loadDimensions();
-        $this->scaleImage();
+        $options = array('image_library' => true, 'upload_dir' => $this->sourceDirectory);
+        $upload = new \UploadHandler($options, false);
+        $scaledOptions = array(
+            'max_width' => STORIES_THUMB_TARGET_WIDTH,
+            'max_height' => STORIES_THUMB_TARGET_HEIGHT,
+            'crop' => true,
+            'jpeg_quality' => 100
+        );
+
+        $upload->create_scaled_image($this->filename, 'thumbnail', $scaledOptions);
     }
     
     /**
@@ -113,21 +95,6 @@ class ThumbnailResource
         return $this->thumbDirectory . $this->filename;
     }
 
-    private function scaleImage()
-    {
-        $options = array('image_library' => true, 'upload_dir' => $this->sourceDirectory);
-        $upload = new \UploadHandler($options, false);
-        $scaledOptions = array(
-            'max_width' => $this->width,
-            'max_height' => $this->height,
-            'crop' => true,
-            'jpeg_quality' => 100
-        );
-
-        $upload->create_scaled_image($this->filename, 'thumbnail', $scaledOptions);
-    }
-
-    
     /**
      * Returns the pull path of the source image used to create the thumbnail
      * @return string
@@ -136,50 +103,4 @@ class ThumbnailResource
     {
         return $this->sourceDirectory . $this->filename;
     }
-
-    private function setLandscapeDimensions($width, $height)
-    {
-        $this->orientation = 0;
-        if ($width > STORIES_LANDSCAPE_THUMB_WIDTH) {
-            $this->width = STORIES_LANDSCAPE_THUMB_WIDTH;
-            $this->height = STORIES_LANDSCAPE_THUMB_HEIGHT;
-        } else {
-            $this->width = $width;
-            if ($height > STORIES_LANDSCAPE_THUMB_HEIGHT) {
-                $this->height = STORIES_LANDSCAPE_THUMB_HEIGHT;
-            } else {
-                $this->height = $height;
-            }
-        }
-    }
-
-    private function setPortraitDimensions($width, $height)
-    {
-        $this->orientation = 1;
-        if ($height > STORIES_PORTRAIT_THUMB_HEIGHT) {
-            $this->width = STORIES_PORTRAIT_THUMB_WIDTH;
-            $this->height = STORIES_PORTRAIT_THUMB_HEIGHT;
-        } else {
-            $this->width = $height;
-            if ($width > STORIES_PORTRAIT_THUMB_WIDTH) {
-                $this->height = STORIES_PORTRAIT_THUMB_HEIGHT;
-            } else {
-                $this->height = $height;
-            }
-        }
-    }
-
-    private function loadDimensions()
-    {
-        list($width, $height) = getimagesize($this->getSourcePath());
-        $ratio = $width / $height;
-
-        $featureFormat = \phpws2\Settings::get('stories', 'featureFormat');
-        if ($featureFormat != 2 && ($featureFormat == 1 || $ratio > STORIES_ORIENTATION_RATIO)) {
-            $this->setLandscapeDimensions($width, $height);
-        } else {
-            $this->setPortraitDimensions($width, $height);
-        }
-    }
-
 }
