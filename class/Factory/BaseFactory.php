@@ -39,12 +39,15 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         return $resource;
     }
 
-    public function scriptView($view_name, $add_anchor = true)
+    public function scriptView($view_name, $add_anchor = true, $vars = null)
     {
         static $vendor_included = false;
         if (!$vendor_included) {
             $script[] = $this->getScript('vendor');
             $vendor_included = true;
+        }
+        if (!empty($vars)) {
+            $script[] = $this->addScriptVars($vars);
         }
         $script[] = $this->getScript($view_name);
         $react = implode("\n", $script);
@@ -57,6 +60,17 @@ EOF;
         } else {
             return $react;
         }
+    }
+
+    private function addScriptVars($vars)
+    {
+        if (empty($vars)) {
+            return null;
+        }
+        foreach ($vars as $key => $value) {
+            $varList[] = "const $key = '$value';";
+        }
+        return '<script type="text/javascript">' . implode('', $varList) . '</script>';
     }
 
     protected function walkingCase($name)
@@ -130,6 +144,11 @@ EOF;
                     return strftime('%b %e', $date);
                 }
         }
+    }
+
+    public function addStoryCss()
+    {
+        \Layout::addToStyleList('mod/stories/css/story.css');
     }
 
 }
