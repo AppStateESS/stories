@@ -3,6 +3,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 
+/**
+* Example buttons prop
+* const buttons = [{label: 'One', value: 1}, {...}]
+*
+*/
+
 const ButtonGroup = ({
   match,
   buttons,
@@ -59,15 +65,15 @@ ButtonGroup.propTypes = {
   buttons: PropTypes.array.isRequired,
   handle: PropTypes.func.isRequired,
   activeColor: PropTypes.string,
-  match: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
+  match: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array,]),
   vertical: PropTypes.bool,
   name: PropTypes.string
 }
 
 ButtonGroup.defaultProps = {
   activeColor: 'default',
-  match: null,
-  name: null
+  match: '',
+  name: ''
 }
 
 export default ButtonGroup
