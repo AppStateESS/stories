@@ -122,6 +122,8 @@ class EntryFactory extends BaseFactory
     public function pullList(array $options = null)
     {
         $db = Database::getDB();
+        // if true, don't add fields to the query
+        $limitedVars = false;
         $now = time();
         $defaultOptions = array('publishedOnly' => false,
             'hideExpired' => true,
@@ -131,6 +133,8 @@ class EntryFactory extends BaseFactory
             'publishedOnly' => true,
             'offset' => 0,
             'tag' => null,
+            'vars' => null,
+            'asResource' => true,
             'showTagLinks' => true);
 
         if (is_array($options)) {
@@ -140,20 +144,26 @@ class EntryFactory extends BaseFactory
         }
 
         $tbl = $db->addTable('storiesEntry');
-
-        $tbl->addField('id');
-        $tbl->addField('createDate');
-        $tbl->addField('expirationDate');
-        $tbl->addField('publishDate');
-        $tbl->addField('published');
-        $tbl->addField('summary');
-        $tbl->addField('thumbnail');
-        $tbl->addField('title');
-        $tbl->addField('updateDate');
-        $tbl->addField('urlTitle');
-        $tbl->addField('leadImage');
-        if ($options['includeContent']) {
-            $tbl->addField('content');
+        if (!empty($options['vars'])) {
+            $limitedVars = true;
+            foreach ($options['vars'] as $field) {
+                $tbl->addField($field);
+            }
+        } else {
+            $tbl->addField('id');
+            $tbl->addField('createDate');
+            $tbl->addField('expirationDate');
+            $tbl->addField('publishDate');
+            $tbl->addField('published');
+            $tbl->addField('summary');
+            $tbl->addField('thumbnail');
+            $tbl->addField('title');
+            $tbl->addField('updateDate');
+            $tbl->addField('urlTitle');
+            $tbl->addField('leadImage');
+            if ($options['includeContent']) {
+                $tbl->addField('content');
+            }
         }
 
         //conditionals
@@ -187,12 +197,21 @@ class EntryFactory extends BaseFactory
                             $tagIdTable->getField('entryId'), '='));
         }
 
-        $tbl2 = $db->addTable('storiesAuthor');
-        $tbl2->addField('name', 'authorName');
-        $tbl2->addField('email', 'authorEmail');
-        $db->joinResources($tbl, $tbl2,
-                $db->createConditional($tbl->getField('authorId'),
-                        $tbl2->getField('id')), 'left');
+        if (!$limitedVars ||
+                (
+                in_array('authorName', $options['vars']) ||
+                in_array('authorEmail', $options['vars'])
+                )
+        ) {
+
+            $tbl2 = $db->addTable('storiesAuthor');
+
+            $tbl2->addField('name', 'authorName');
+            $tbl2->addField('email', 'authorEmail');
+            $db->joinResources($tbl, $tbl2,
+                    $db->createConditional($tbl->getField('authorId'),
+                            $tbl2->getField('id')), 'left');
+        }
         if (isset($options['orderBy'])) {
             $tbl->addOrderBy($options['orderBy'],
                     $options['orderBy'] === 'title' ? 'asc' : 'desc');
@@ -205,17 +224,21 @@ class EntryFactory extends BaseFactory
                 $db->setLimit($options['limit']);
             }
         }
-        $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
-        if (empty($objectList)) {
-            return null;
-        }
-        $tagFactory = new TagFactory;
-        foreach ($objectList as $entry) {
-            $row = $entry->getStringVars();
-            if ($options['showTagLinks']) {
-                $row['tagLinks'] = $tagFactory->getTagLinks($row['tags']);
+        if ($options['asResource']) {
+            $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
+            if (empty($objectList)) {
+                return null;
             }
-            $listing[] = $row;
+            $tagFactory = new TagFactory;
+            foreach ($objectList as $entry) {
+                $row = $entry->getStringVars();
+                if ($options['showTagLinks']) {
+                    $row['tagLinks'] = $tagFactory->getTagLinks($row['tags']);
+                }
+                $listing[] = $row;
+            }
+        } else {
+            $listing = $db->select();
         }
         return $listing;
     }
@@ -682,7 +705,7 @@ EOF;
                 $count++;
             }
         }
-        return '<div id="story-feature-list">'. implode('', $row) . '</div>';
+        return '<div id="story-feature-list">' . implode('', $row) . '</div>';
     }
 
     /**
