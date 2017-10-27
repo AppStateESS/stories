@@ -27,42 +27,56 @@ ul.tag-list li {
 
 .story-feature {
     border : 1px solid #e3e3e3;
-    border-radius : 5px;
-    height : 200px;
+    height : 250px;
     position: relative;
     margin-bottom: 1em;
 }
 
 .story-feature .story-thumbnail {
     background-repeat: no-repeat;
-    background-position: center center;
 }
 
-.story-feature.landscape .story-thumbnail {
-    width: 100%;
-    height: 45%;
-    margin-bottom: 6px;
-    border: 1px solid transparent;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-}
-
-.story-feature.portrait .story-thumbnail {
+.story-feature.leftright .story-thumbnail {
     width: 40%;
     max-width: 230px;
     height: 100%;
     float: left;
     margin-right: 8px;
     border: 1px solid transparent;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
 }
 
-.story-thumbnail>a {
-    display:block;
+.story-feature.landscape .story-thumbnail {
+    display: block;
     width: 100%;
-    height: 100%;
+    height: 40%;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
 }
+
+
+.story-feature.topbottom {
+    height : 350px;
+}
+
+.story-feature.topbottom .story-thumbnail {
+    display: block;
+    width: 100%;
+    height: 50%;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+}
+
+@media screen and (max-width: 768px) {
+    .story-feature {
+        height : 300px;
+    }
+
+    .story-feature.landscape .story-thumbnail {
+        height: 50%;
+    }
+
+}
+
 
 #story-feature-list .story-feature p {
     font-family: "Source Sans Pro", sans, sans-serif, 'Helvetica';
