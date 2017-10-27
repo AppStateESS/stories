@@ -61,6 +61,12 @@ EOF;
         $link = '<a href="./stories/Listing/"><i class="fa fa-list"></i> List</a>';
         \MiniAdmin::add('stories', $link);
     }
+    
+    public static function featureLink()
+    {
+        $link = '<a href="./stories/Feature/"><i class="fa fa-exclamation-circle"></i> Features</a>';
+        \MiniAdmin::add('stories', $link);
+    }
 
     public static function mediumCSSLink()
     {
