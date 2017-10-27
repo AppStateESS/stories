@@ -27,7 +27,7 @@ ul.tag-list li {
 
 .story-feature {
     border : 1px solid #e3e3e3;
-    height : 250px;
+    height : 260px;
     position: relative;
     margin-bottom: 1em;
 }
@@ -74,7 +74,6 @@ ul.tag-list li {
     .story-feature.landscape .story-thumbnail {
         height: 50%;
     }
-
 }
 
 
@@ -85,6 +84,11 @@ ul.tag-list li {
 
 .story-feature .story-content {
     padding: 6px;
+}
+
+.story-content .story-summary {
+    overflow: hidden;
+    line-height : 1.4em;
 }
 
 .published-date {
