@@ -69,8 +69,6 @@ class EntryFactory extends BaseFactory
         $options = array(
             'search' => $search,
             'orderBy' => $orderBy,
-            'publishedOnly' => false,
-            'hideExpired' => true,
             'limit' => $segmentSize,
             'offset' => $offsetSize,
             'tag' => $tag
@@ -134,6 +132,7 @@ class EntryFactory extends BaseFactory
             'offset' => 0,
             'tag' => null,
             'vars' => null,
+            'mustHaveThumbnail' => false,
             'asResource' => true,
             'showTagLinks' => true);
 
@@ -166,7 +165,12 @@ class EntryFactory extends BaseFactory
             }
         }
 
+        
         //conditionals
+        if ($options['mustHaveThumbnail'] === true) {
+            $tbl->addFieldConditional('thumbnail', null, 'is not');
+        }
+        
         $tbl->addFieldConditional('deleted', 0);
         if ($options['publishedOnly']) {
             $tbl->addFieldConditional('published', 1);
@@ -718,16 +722,29 @@ EOF;
     }
 
     /**
-     * Facebook embed does strangeness. This *hack* cleans it up before saving.
+     * Removed the data-embed-code div medium editor adds.
+     * @param string $content
+     * @return string
+     */
+    private function cleanEmbed($content)
+    {
+        return preg_replace('/<div data-embed-code="[^"]+">/s', '', $content);
+    }
+
+    /**
+     * Facebook does zeroes out the container_width
      * @param string $content
      */
     private function cleanFacebook($content)
     {
-        $content = preg_replace('/<div data-embed-code="(.*?)(<\/script>)/s',
-                '', $content);
-        $content = preg_replace('/container_width=0/s', 'container_width=500px',
+        return preg_replace('/container_width=0/s', 'container_width=500px',
                 $content);
-        return $content;
+    }
+
+    private function cleanTwitter($content)
+    {
+        return str_replace('<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>',
+                '', $content);
     }
 
     private function removeExtraParagraphs($content)
@@ -744,22 +761,21 @@ EOF;
     public function filterMedium($content)
     {
         // Removes medium buttons
-        $sift1 = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
+        $content = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
                         '', $content));
-
         // Removes extra medium paragraphs padded to end of content
-        $sift2 = $this->removeExtraParagraphs($sift1);
-
+        $content = $this->removeExtraParagraphs($content);
         // Removes extra headers sometimes padded on end
-        $sift3 = preg_replace('/<h[34]><\/h[34]>/', '', $sift2);
-
+        $content = preg_replace('/<h[34]><\/h[34]>/', '', $content);
         // Removes the overlay left on embeds (e.g. youtube)
-        $sift4 = $this->removeMediumOverlay($sift3);
-        $sift5 = $this->cleanFacebook($sift4);
+        $content = $this->removeMediumOverlay($content);
+        $content = $this->cleanEmbed($content);
+        $content = $this->cleanFacebook($content);
+        $content = $this->cleanTwitter($content);
         // clear extra spaces
-        $sift6 = preg_replace('/>\s{2,}</', '> <', $sift5);
-        $sift7 = str_replace("\n", '', $sift6);
-        return $sift6;
+        $content = preg_replace('/>\s{2,}</', '> <', $content);
+        $content = str_replace("\n", '', $content);
+        return $content;
     }
 
 }
