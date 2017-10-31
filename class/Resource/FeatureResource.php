@@ -39,6 +39,7 @@ class FeatureResource extends BaseResource
     protected $format;
     protected $columns;
     protected $sorting;
+    protected $stories;
     
     protected $table = 'storiesFeature';
     
@@ -54,5 +55,7 @@ class FeatureResource extends BaseResource
         $this->entries = new \phpws2\Variable\ArrayVar(null, 'entries');
         $this->columns = new \phpws2\Variable\SmallInteger(2, 'columns');
         $this->sorting = new \phpws2\Variable\SmallInteger(0, 'sorting');
+        $this->stories = new \phpws2\Variable\ArrayVar(null, 'stories');
+        $this->stories->setIsTableColumn(false);
     }
 }
