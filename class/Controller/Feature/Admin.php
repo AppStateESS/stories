@@ -55,7 +55,9 @@ class Admin extends RoleController
             'vars' => array('id', 'title'),
             'includeContent' => false,
             'orderBy' => 'title',
+            'mustHaveThumbnail'=> true,
             'asResource'=> false,
+            
             'showTagLinks' => false);
         $stories = $entryFactory->pullList($options);
         return array('featureList' => $featureList, 'stories' => $stories);
@@ -64,6 +66,12 @@ class Admin extends RoleController
     protected function postCommand(Request $request)
     {
         return array('featureId' => $this->factory->post($request));
+    }
+    
+    protected function putCommand(Request $request)
+    {
+        $this->factory->update($this->id, $request);
+        return array('featureId'=>$this->id);
     }
 
 }
