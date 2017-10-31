@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const FeatureList = (props) => {
-  if (props.list === undefined) {
+  if (props.list === undefined || props.list === null) {
     return <div>No features found. Add a feature row to get started.</div>
   }
 

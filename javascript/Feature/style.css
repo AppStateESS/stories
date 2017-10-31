@@ -15,3 +15,21 @@ ul.format-selection li {
 ul.format-selection li img {
   height : 40px;
 }
+.move-buttons {
+  position : absolute;
+  left : 50%;
+  top : 50%;
+  margin-top : -43px;
+  margin-left : -43px;
+  opacity: .6;
+  height : 85px;
+  width : 85px;
+}
+
+.move-buttons table {
+  margin : 0 auto;
+}
+
+.story-thumbnail {
+  position : relative;
+}

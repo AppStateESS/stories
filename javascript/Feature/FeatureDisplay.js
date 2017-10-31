@@ -4,7 +4,15 @@ import PropTypes from 'prop-types'
 import DisplayColumn from './DisplayColumn'
 
 const FeatureDisplay = (props) => {
-  const {feature, applyStory, stories, clearStory,} = props
+  const {
+    feature,
+    applyStory,
+    stories,
+    clearStory,
+    moveThumb,
+    holdThumb,
+    stopMove
+  } = props
   const columns = parseInt(feature.columns)
   let bsClass
 
@@ -29,7 +37,10 @@ const FeatureDisplay = (props) => {
       entry={feature.entries[i]}
       stories={stories}
       applyStory={applyStory.bind(null, i)}
-      clearStory={clearStory.bind(null, i)}/>)
+      clearStory={clearStory.bind(null, i)}
+      stopMove={stopMove}
+      moveThumb={moveThumb.bind(null, i)}
+      holdThumb={holdThumb.bind(null, i)}/>)
   }
 
   return (
@@ -44,6 +55,9 @@ FeatureDisplay.propTypes = {
   stories: PropTypes.array,
   applyStory: PropTypes.func,
   clearStory: PropTypes.func,
+  holdThumb: PropTypes.func,
+  moveThumb: PropTypes.func,
+  stopMove: PropTypes.func,
 }
 
 FeatureDisplay.defaultTypes = {}

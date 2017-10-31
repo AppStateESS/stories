@@ -19,7 +19,7 @@ export default class Feature extends Component {
       currentKey: null,
       featureList: [],
       loading: true,
-      stories: []
+      stories: [],
     }
     this.addRow = this.addRow.bind(this)
     this.closeMessage = this.closeMessage.bind(this)
@@ -43,9 +43,9 @@ export default class Feature extends Component {
             <a href="stories/Entry/create">Go write some.</a>
           </span>
           message.type = 'warning'
-          this.setState({message: message, loading: false,})
+          this.setState({message: message, loading: false})
         } else {
-          this.setState({featureList: data.featureList, stories: data.stories, loading: false,})
+          this.setState({featureList: data.featureList, stories: data.stories, loading: false})
         }
       }.bind(this),
       error: function () {
@@ -53,27 +53,31 @@ export default class Feature extends Component {
           loading: false,
           message: {
             text: 'Error: Could not pull feature list',
-            type: 'danger',
-          },
+            type: 'danger'
+          }
         })
-      }.bind(this),
+      }.bind(this)
     })
   }
 
   loadCurrentFeature(key) {
     const feature = this.state.featureList[key]
-    if (feature.entries === 'null') {
+    if (feature.entries === null || feature.entries === 'null') {
       feature.entries = []
-      feature.entries[0] = SampleEntry
-      feature.entries[1] = SampleEntry
-      feature.entries[2] = SampleEntry
-      feature.entries[3] = SampleEntry
     }
-
+    this.fillEntries(feature)
     if (feature.title === null) {
       feature.title = ''
     }
-    this.setState({currentFeature: feature, currentKey: key})
+    this.setState({currentFeature: feature, currentKey: key,})
+  }
+
+  fillEntries(feature) {
+    for (let i = 0; i < 4; i++) {
+      if (feature.entries[i] === undefined) {
+        feature.entries[i] = SampleEntry()
+      }
+    }
   }
 
   addRow() {
@@ -84,17 +88,46 @@ export default class Feature extends Component {
       success: function (data) {
         const feature = FeatureObj
         feature.id = data.featureId
-        /*
-        const featureList = this.state.featureList
+        let featureList = this.state.featureList
+        if (featureList === null) {
+          featureList = []
+        }
         featureList.push(feature)
-        */
-        this.setState({currentFeature: FeatureObj, currentKey: data.featureId})
+        this.setState({currentFeature: FeatureObj, currentKey: data.featureId, featureList: featureList})
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
   updateFeature(feature) {
+    if (feature.id > 0) {
+      const {
+        title,
+        active,
+        entries,
+        format,
+        columns,
+        sorting
+      } = feature
+      let newEntries = entries.map(function (value) {
+        return {id: value.id, x: value.x, y: value.y}
+      })
+      $.ajax({
+        url: './stories/Feature/' + feature.id,
+        data: {
+          title,
+          active,
+          entries: newEntries,
+          format,
+          columns,
+          sorting
+        },
+        dataType: 'json',
+        type: 'put',
+        success: function () {}.bind(this),
+        error: function () {}.bind(this),
+      })
+    }
     this.setState({currentFeature: feature})
   }
 
