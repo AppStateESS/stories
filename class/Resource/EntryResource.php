@@ -71,7 +71,7 @@ class EntryResource extends BaseResource
      * @var phpws2\Variable\BooleanVar
      */
     protected $forceFeature;
-    
+
     /**
      * Time after the story may be published.
      * @var phpws2\Variable\IntegerVar 
@@ -95,12 +95,12 @@ class EntryResource extends BaseResource
      * @var phpws2\Variable\FileVar 
      */
     protected $thumbnail;
-    
+
     /**
      * @var phpws2\Variable\FileVar
      */
     protected $leadImage;
-    
+
     /**
      * Title of story.
      * @var phpws2\Variable\TextOnly
@@ -112,18 +112,18 @@ class EntryResource extends BaseResource
      * @var phpws2\Variable\DateTime
      */
     protected $updateDate;
-    
+
     /**
      *
      * @var phpws2\Variable\StringVar
      */
     protected $tags;
-    
+
     /**
      * @var phpws2\Variable\TextOnly
      */
     protected $urlTitle;
-    
+
     /**
      * @var string
      */
@@ -172,12 +172,13 @@ class EntryResource extends BaseResource
         $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
     }
 
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         $this->title->set($title);
         $this->urlTitle->set($this->processTitle($title));
     }
-    
-    public function getStringVars($return_null = false, $hide = null)
+
+    public function getStringVars($return_null = null, $hide = null)
     {
         $factory = new \stories\Factory\EntryFactory;
         $tagFactory = new \stories\Factory\TagFactory;
@@ -188,16 +189,17 @@ class EntryResource extends BaseResource
         $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
         return $vars;
     }
-    
+
     public function stamp()
     {
         $this->updateDate->stamp();
     }
-    
-    public function getPublishDate($format = null) {
+
+    public function getPublishDate($format = null)
+    {
         return $this->publishDate->get($format);
     }
-    
+
     /**
      * Prepare the title for a url. Shortened to 240 characters to allow room for 
      * timestamped duplicates.
@@ -206,7 +208,9 @@ class EntryResource extends BaseResource
      */
     private function processTitle($title)
     {
-        $title = preg_replace('/\s/', '-', strtolower(str_replace(' - ', '-', trim($title))));
+        $title = preg_replace('/\s/', '-',
+                strtolower(str_replace(' - ', '-', trim($title))));
         return substr(preg_replace('/[^\w\-]/', '', $title), 0, 240);
     }
+
 }
