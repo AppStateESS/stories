@@ -27,6 +27,7 @@
 namespace stories\Factory;
 
 use stories\Resource\FeatureResource as Resource;
+use stories\Factory\EntryFactory;
 use phpws2\Database;
 use phpws2\Settings;
 use Canopy\Request;
@@ -44,7 +45,7 @@ class FeatureFactory extends BaseFactory
     {
         return new Resource;
     }
-    
+
     public function post(Request $request)
     {
         $db = Database::getDB();
@@ -52,13 +53,48 @@ class FeatureFactory extends BaseFactory
         self::saveResource($feature);
         return $feature->id;
     }
-    
+
     public function listing(Request $request)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesFeature');
         $tbl->addOrderBy('sorting');
-        return $db->select();
+        $result = $db->select('\stories\Resource\FeatureResource');
+        if (empty($result)) {
+            return null;
+        }
+
+
+        $encode = function(&$value) {
+        $hide = array(
+                'content', 'tags', 'authorEmail', 'authorId', 'authorName',
+                'authorPic', 'deleted', 'expirationDate', 'leadImage');
+            $entryFactory = new EntryFactory;
+            $entries = json_decode($value['entries']);
+            foreach ($entries as $k => $e) {
+                $entry = $entryFactory->load($e->id);
+                $vars = $entry->getStringVars(true, $hide);
+                unset($vars['tags']);
+                $entries[$k]->story = $vars;
+            }
+            $value['entries'] = $entries;
+        };
+        array_walk($result, $encode);
+        return $result;
+    }
+
+    public function update($id, Request $request)
+    {
+        $feature = $this->load($id);
+        $feature->loadPutByType($request, array('id'));
+        $entries = $feature->entries;
+        foreach ($entries as $key => $entry) {
+            if ($entry['id'] == 0) {
+                unset($entries[$key]);
+            }
+        }
+        $feature->entries = $entries;
+        self::saveResource($feature);
     }
 
 }
