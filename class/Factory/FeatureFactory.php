@@ -58,6 +58,9 @@ class FeatureFactory extends BaseFactory
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesFeature');
+        if (!$adminView) {
+            $tbl->addFieldConditional('active', 1);
+        }
         $tbl->addOrderBy('sorting');
         $result = $db->select('\stories\Resource\FeatureResource');
         if (empty($result)) {
@@ -127,7 +130,6 @@ EOF;
 
     public function show(Request $request)
     {
-        
         $features = $this->listing($request);
         if (empty($features)) {
             return;

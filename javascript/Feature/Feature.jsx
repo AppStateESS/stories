@@ -24,6 +24,7 @@ export default class Feature extends Component {
     this.addRow = this.addRow.bind(this)
     this.closeMessage = this.closeMessage.bind(this)
     this.updateFeature = this.updateFeature.bind(this)
+    this.updateActive = this.updateActive.bind(this)
     this.loadCurrentFeature = this.loadCurrentFeature.bind(this)
   }
 
@@ -135,6 +136,12 @@ export default class Feature extends Component {
     this.setState({message: null})
   }
 
+  updateActive(key, value) {
+    const feature = this.state.featureList[key]
+    feature.active = value
+    this.updateFeature(feature)
+  }
+
   message() {
     if (this.state.message !== null) {
       const {message} = this.state
@@ -154,6 +161,8 @@ export default class Feature extends Component {
     } else {
       return <FeatureList
         list={this.state.featureList}
+        srcHttp={this.props.srcHttp}
+        updateActive={this.updateActive}
         loadCurrentFeature={this.loadCurrentFeature}/>
     }
   }
