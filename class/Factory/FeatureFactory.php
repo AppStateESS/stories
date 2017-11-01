@@ -54,7 +54,7 @@ class FeatureFactory extends BaseFactory
         return $feature->id;
     }
 
-    public function listing(Request $request)
+    public function listing(Request $request, $adminView = false)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesFeature');
@@ -64,23 +64,86 @@ class FeatureFactory extends BaseFactory
             return null;
         }
 
-
-        $encode = function(&$value) {
-        $hide = array(
-                'content', 'tags', 'authorEmail', 'authorId', 'authorName',
-                'authorPic', 'deleted', 'expirationDate', 'leadImage');
+        $encode = function(&$value, $adminView) {
+            if ($adminView) {
+                $hide = array(
+                    'content', 'tags', 'authorEmail', 'authorId', 'authorName',
+                    'authorPic', 'deleted', 'expirationDate', 'leadImage');
+            } else {
+                $hide = null;
+            }
             $entryFactory = new EntryFactory;
             $entries = json_decode($value['entries']);
             foreach ($entries as $k => $e) {
                 $entry = $entryFactory->load($e->id);
                 $vars = $entry->getStringVars(true, $hide);
-                unset($vars['tags']);
                 $entries[$k]->story = $vars;
             }
             $value['entries'] = $entries;
         };
-        array_walk($result, $encode);
+        array_walk($result, $encode, $adminView);
         return $result;
+    }
+
+    private function featureColumn($entry)
+    {
+        $vars = $entry->story;
+        $vars['thumbnailStyle'] = $this->thumbnailStyle($entry);
+        return $vars;
+    }
+
+    private function thumbnailStyle($entry) {
+        $thumbnail = $entry->story['thumbnail'];
+        $x = $entry->x;
+        $y = $entry->y;
+        return <<<EOF
+background-image : url('$thumbnail');background-position: {$x}% {$y}%;
+EOF;
+    }
+    
+    private function featureRow($feature)
+    {
+        foreach ($feature['entries'] as $entry) {
+            $vars['entries'][] = $this->featureColumn($entry);
+        }
+        switch ($feature['columns']) {
+            case '2':
+                $bsClass = 'col-sm-6';
+                break;
+            case '3':
+                $bsClass = 'col-sm-4';
+                break;
+            case '4':
+                $bsClass = 'col-sm-3';
+                break;
+        }
+        $vars['bsClass'] = $bsClass;
+        $vars['format'] = 'story-feature ' . $feature['format'];
+        $vars['featureTitle'] = $feature['title'];
+        $template = new \phpws2\Template($vars);
+        $template->setModuleTemplate('stories', 'Feature.html');
+        return $template->get();
+    }
+
+    public function show(Request $request)
+    {
+        
+        $features = $this->listing($request);
+        if (empty($features)) {
+            return;
+        }
+        
+        foreach ($features as $f) {
+            if (empty($f['entries'])) {
+                continue;
+            }
+            $featureStack[] = $this->featureRow($f);
+        }
+        if (empty($featureStack)) {
+            return null;
+        }
+        $this->addStoryCss();
+        return '<div id="story-feature-list">' . implode('', $featureStack) . '</div>';
     }
 
     public function update($id, Request $request)

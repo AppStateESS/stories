@@ -49,7 +49,7 @@ class Admin extends RoleController
 
     protected function listJsonCommand(Request $request)
     {
-        $featureList = $this->factory->listing($request);
+        $featureList = $this->factory->listing($request, true);
         $entryFactory = new EntryFactory();
         $options = array(
             'vars' => array('id', 'title'),

@@ -1,0 +1,23 @@
+<div class="feature-title row">
+  <h3><?=$featureTitle?></h3>
+  <?php foreach ($entries as $entry): extract($entry);?>
+  <div class="<?=$bsClass?>">
+    <div class="<?=$format?>">
+      <div class="story-thumbnail" style="<?=$thumbnailStyle?>"></div>
+      <div class="story-content">
+        <div class="story-title">
+          <a href="<?=$urlTitle?>" title="Link to story">
+            <h3><?=$title?></h3>
+          </a>
+        </div>
+        <div class="story-summary">
+          <?=$strippedSummary?>
+        </div>
+        <div class="published-date">Published
+          <?=$publishDateRelative?>
+        </div>
+      </div>
+    </div>
+  </div>
+  <?php endforeach; ?>
+</div>
