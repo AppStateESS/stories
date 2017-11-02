@@ -11,7 +11,7 @@ const FeatureDisplay = (props) => {
     clearStory,
     moveThumb,
     holdThumb,
-    stopMove
+    stopMove,
   } = props
   const columns = parseInt(feature.columns)
   let bsClass
@@ -29,25 +29,32 @@ const FeatureDisplay = (props) => {
   }
 
   let columnContent = []
+  let previousEmpty = false
+  let currentEntry = {}
   for (let i = 0; i < columns; i++) {
-    columnContent.push(<DisplayColumn
-      key={i}
-      bsClass={bsClass}
-      format={feature.format}
-      entry={feature.entries[i]}
-      stories={stories}
-      applyStory={applyStory.bind(null, i)}
-      clearStory={clearStory.bind(null, i)}
-      stopMove={stopMove}
-      moveThumb={moveThumb.bind(null, i)}
-      holdThumb={holdThumb.bind(null, i)}/>)
+    currentEntry = feature.entries[i]
+    columnContent.push(
+      <DisplayColumn
+        key={i}
+        bsClass={bsClass}
+        previousEmpty={previousEmpty}
+        format={feature.format}
+        entry={currentEntry}
+        stories={stories}
+        applyStory={applyStory.bind(null, i)}
+        clearStory={clearStory.bind(null, i)}
+        stopMove={stopMove}
+        moveThumb={moveThumb.bind(null, i)}
+        holdThumb={holdThumb.bind(null, i)}/>
+    )
+    if (currentEntry.id == 0) {
+      previousEmpty = true
+    }
   }
 
-  return (
-    <div className="row">
-      {columnContent}
-    </div>
-  )
+  return (<div className="row">
+    {columnContent}
+  </div>)
 }
 
 FeatureDisplay.propTypes = {
@@ -57,7 +64,7 @@ FeatureDisplay.propTypes = {
   clearStory: PropTypes.func,
   holdThumb: PropTypes.func,
   moveThumb: PropTypes.func,
-  stopMove: PropTypes.func,
+  stopMove: PropTypes.func
 }
 
 FeatureDisplay.defaultTypes = {}
