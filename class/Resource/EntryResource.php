@@ -180,13 +180,24 @@ class EntryResource extends BaseResource
 
     public function getStringVars($return_null = null, $hide = null)
     {
+        $holdSummary = false;
         $factory = new \stories\Factory\EntryFactory;
         $tagFactory = new \stories\Factory\TagFactory;
+        if (is_array($hide) && in_array('summary', $hide)) {
+            $holdSummary = true;
+            unset($hide[array_search('summary', $hide)]);
+        }
         $vars = parent::getStringVars($return_null, $hide);
+        $vars['strippedSummary'] = strip_tags($vars['summary']);
+        if ($holdSummary) {
+            unset($vars['summary']);
+        }
+        
         $vars['createDateRelative'] = $factory->relativeTime($this->createDate->get());
         $vars['publishDateRelative'] = $factory->relativeTime($this->publishDate->get());
-        $vars['strippedSummary'] = strip_tags($vars['summary']);
-        $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
+        if (!in_array('tags', $hide)) {
+            $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
+        }
         return $vars;
     }
 
