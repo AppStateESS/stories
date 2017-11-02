@@ -54,11 +54,28 @@ class FeatureFactory extends BaseFactory
         return $feature->id;
     }
 
-    public function listing(Request $request, $adminView = false)
+    private function defaultHiddenEntryVars()
     {
+        return array(
+            'content', 'tags', 'deleted', 'expirationDate', 'leadImage', 'summary');
+    }
+
+    public function listing($options = null)
+    {
+        $defaultOptions = array(
+            'hiddenVars' => $this->defaultHiddenEntryVars(),
+            'activeOnly' => true
+        );
+
+        if (is_array($options)) {
+            $options = array_merge($defaultOptions, $options);
+        } else {
+            $options = $defaultOptions;
+        }
+
         $db = Database::getDB();
         $tbl = $db->addTable('storiesFeature');
-        if (!$adminView) {
+        if (!$options['activeOnly']) {
             $tbl->addFieldConditional('active', 1);
         }
         $tbl->addOrderBy('sorting');
@@ -67,25 +84,22 @@ class FeatureFactory extends BaseFactory
             return null;
         }
 
-        $encode = function(&$value, $adminView) {
-            if ($adminView) {
-                $hide = array(
-                    'content', 'tags', 'authorEmail', 'authorId', 'authorName',
-                    'authorPic', 'deleted', 'expirationDate', 'leadImage');
-            } else {
-                $hide = null;
-            }
-            $entryFactory = new EntryFactory;
-            $entries = json_decode($value['entries']);
+        array_walk($result, array($this, 'encodeEntry'), $options['hiddenVars']);
+        return $result;
+    }
+
+    private function encodeEntry(&$feature, $key, $hiddenVars)
+    {
+        $entryFactory = new EntryFactory;
+        $entries = json_decode($feature['entries']);
+        if (!empty($entries)) {
             foreach ($entries as $k => $e) {
                 $entry = $entryFactory->load($e->id);
-                $vars = $entry->getStringVars(true, $hide);
+                $vars = $entry->getStringVars(true, $hiddenVars);
                 $entries[$k]->story = $vars;
             }
-            $value['entries'] = $entries;
-        };
-        array_walk($result, $encode, $adminView);
-        return $result;
+        }
+        $feature['entries'] = $entries;
     }
 
     private function featureColumn($entry)
@@ -95,7 +109,8 @@ class FeatureFactory extends BaseFactory
         return $vars;
     }
 
-    private function thumbnailStyle($entry) {
+    private function thumbnailStyle($entry)
+    {
         $thumbnail = $entry->story['thumbnail'];
         $x = $entry->x;
         $y = $entry->y;
@@ -103,7 +118,7 @@ class FeatureFactory extends BaseFactory
 background-image : url('$thumbnail');background-position: {$x}% {$y}%;
 EOF;
     }
-    
+
     private function featureRow($feature)
     {
         foreach ($feature['entries'] as $entry) {
@@ -128,13 +143,29 @@ EOF;
         return $template->get();
     }
 
+    public function loadEntries(Resource $feature)
+    {
+        $entries = $feature->entries;
+        if (empty($entries)) {
+            return;
+        }
+        $entryFactory = new EntryFactory;
+        foreach ($feature->entries as $k=>$e) {
+            $entryObj = $entryFactory->load($e['id']);
+            $vars = $entryObj->getStringVars(true,
+                    $this->defaultHiddenEntryVars());
+            $entries[$k]['story'] = $vars;
+        }
+        $feature->entries = $entries;
+    }
+
     public function show(Request $request)
     {
-        $features = $this->listing($request);
+        $features = $this->listing();
         if (empty($features)) {
             return;
         }
-        
+
         foreach ($features as $f) {
             if (empty($f['entries'])) {
                 continue;
@@ -148,9 +179,8 @@ EOF;
         return '<div id="story-feature-list">' . implode('', $featureStack) . '</div>';
     }
 
-    public function update($id, Request $request)
+    public function update(Resource $feature, Request $request)
     {
-        $feature = $this->load($id);
         $feature->loadPutByType($request, array('id'));
         $entries = $feature->entries;
         foreach ($entries as $key => $entry) {
@@ -160,6 +190,7 @@ EOF;
         }
         $feature->entries = $entries;
         self::saveResource($feature);
+        return $feature;
     }
 
 }
