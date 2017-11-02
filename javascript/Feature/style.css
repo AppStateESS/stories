@@ -15,6 +15,7 @@ ul.format-selection li {
 ul.format-selection li img {
   height : 40px;
 }
+
 .move-buttons {
   position : absolute;
   left : 50%;
@@ -32,4 +33,10 @@ ul.format-selection li img {
 
 .story-thumbnail {
   position : relative;
+}
+
+
+.feature-admin .buttons {
+  position: relative;
+  margin-bottom : 1em;
 }
