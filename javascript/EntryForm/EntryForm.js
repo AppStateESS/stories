@@ -50,14 +50,16 @@ export default class EntryForm {
     if (entry.content.match(/<img src="data:image\//)) {
       return
     }
-    this.status.text('Saving...')
+    this.status.html('<span><i class="fa fa-cog fa-spin fa-fw"></i>Saving...</span>')
     $.ajax({
       url: './stories/Entry/' + entry.id,
       data: entry,
       dataType: 'json',
       type: 'put',
       success: function () {
-        this.status.text('Saved')
+        setTimeout(function(){
+          this.status.html('<span class="text-success"><i class="fa fa-check"></i>Saved!</span>')
+        }.bind(this), 1000)
       }.bind(this),
       error: function () {
         this.status.text('ERROR')
