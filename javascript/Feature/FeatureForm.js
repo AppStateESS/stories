@@ -3,10 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ButtonGroup from '../AddOn/ButtonGroup'
 import FeatureDisplay from './FeatureDisplay'
-import SampleEntry from './SampleEntry'
 import './style.css'
-
-/* global $ */
 
 class FeatureForm extends React.Component {
   constructor(props) {
@@ -19,7 +16,7 @@ class FeatureForm extends React.Component {
     this.moveThumb = this.moveThumb.bind(this)
     this.holdThumb = this.holdThumb.bind(this)
     this.applyStory = this.applyStory.bind(this)
-    this.clearStory = this.clearStory.bind(this)
+    this.saveTitle = this.saveTitle.bind(this)
   }
 
   setColumns(columns) {
@@ -28,10 +25,21 @@ class FeatureForm extends React.Component {
     this.props.update(feature)
   }
 
+  shiftEntries(feature) {
+    let newEntries = feature.entries.map(function(value){
+      if (value.id > 0) {
+        return value
+      }
+      feature.entries = newEntries
+    }.bind(this))
+  }
+
+  saveTitle() {
+    this.props.update(this.props.feature)
+  }
+
   setTitle(e) {
-    const feature = this.props.feature
-    feature.title = e.target.value
-    this.props.update(feature)
+    this.props.updateTitle(e.target.value)
   }
 
   setFormat(format) {
@@ -51,12 +59,12 @@ class FeatureForm extends React.Component {
   }
 
   moveThumb(key, x, y, inc) {
-    const mX = x * inc
-    const mY = y * inc
+    const mX = parseInt(x) * parseInt(inc)
+    const mY = parseInt(y) * parseInt(inc)
     const feature = this.props.feature
     const entry = feature.entries[key]
-    let newX = entry.x + mX
-    let newY = entry.y + mY
+    let newX = parseInt(entry.x) + mX
+    let newY = parseInt(entry.y) + mY
     if (newX > 100) {
       newX = 100
     } else if (newX < 0) {
@@ -77,22 +85,7 @@ class FeatureForm extends React.Component {
 
   applyStory(key, entry) {
     const feature = this.props.feature
-    $.ajax({
-      url: './stories/Entry/' + entry.value,
-      dataType: 'json',
-      type: 'get',
-      success: function (data) {
-        feature.entries[key].story = data.entry
-        feature.entries[key].id = data.entry.id
-        this.props.update(feature)
-      }.bind(this),
-      error: function () {}.bind(this)
-    })
-  }
-
-  clearStory(key) {
-    const feature = this.props.feature
-    feature.entries[key] = SampleEntry
+    feature.entries[key].id = entry.value
     this.props.update(feature)
   }
 
@@ -129,6 +122,7 @@ class FeatureForm extends React.Component {
               className="form-control"
               placeholder="Feature title (not required)"
               value={this.props.feature.title}
+              onBlur={this.saveTitle}
               onChange={this.setTitle}/>
           </div>
           <div className="mb-1 row">
@@ -167,7 +161,7 @@ class FeatureForm extends React.Component {
           <FeatureDisplay
             {...this.props}
             applyStory={this.applyStory}
-            clearStory={this.clearStory}
+            clearStory={this.props.clearStory}
             moveThumb={this.moveThumb}
             holdThumb={this.holdThumb}
             stopMove={this.stopMove}/>
@@ -179,7 +173,9 @@ class FeatureForm extends React.Component {
 
 FeatureForm.propTypes = {
   feature: PropTypes.object,
+  updateTitle: PropTypes.func,
   update: PropTypes.func,
+  clearStory: PropTypes.func,
   srcHttp: PropTypes.string
 }
 
