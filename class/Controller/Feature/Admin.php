@@ -49,7 +49,7 @@ class Admin extends RoleController
 
     protected function listJsonCommand(Request $request)
     {
-        $featureList = $this->factory->listing($request, true);
+        $featureList = $this->factory->listing(array('activeOnly'=>false));
         $entryFactory = new EntryFactory();
         $options = array(
             'vars' => array('id', 'title'),
@@ -57,8 +57,8 @@ class Admin extends RoleController
             'orderBy' => 'title',
             'mustHaveThumbnail'=> true,
             'asResource'=> false,
-            
             'showTagLinks' => false);
+        // select list to fill in empty feature columns
         $stories = $entryFactory->pullList($options);
         return array('featureList' => $featureList, 'stories' => $stories);
     }
@@ -70,8 +70,10 @@ class Admin extends RoleController
     
     protected function putCommand(Request $request)
     {
-        $this->factory->update($this->id, $request);
-        return array('featureId'=>$this->id);
+        $feature = $this->factory->load($this->id);
+        $this->factory->update($feature, $request);
+        $this->factory->loadEntries($feature);
+        return array('featureId'=>$this->id, 'entries'=>$feature->entries);
     }
 
 }
