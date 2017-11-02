@@ -1,4 +1,4 @@
-.story-content h3, .story-title h3 {
+.story-content h4, .story-title h4 {
     margin-top : 6px;
 }
 
@@ -17,7 +17,7 @@ ul.tag-list li {
     margin-right: 5px;
 }
 
-#story-feature-list .story-feature a h3 {
+#story-feature-list .story-feature a h4 {
     font-size : 20px;
     font-weight: bold;
     margin-bottom: 4px;
