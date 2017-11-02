@@ -19,13 +19,15 @@ export default class Feature extends Component {
       currentKey: null,
       featureList: [],
       loading: true,
-      stories: [],
+      stories: []
     }
     this.addRow = this.addRow.bind(this)
     this.closeMessage = this.closeMessage.bind(this)
     this.updateFeature = this.updateFeature.bind(this)
     this.updateActive = this.updateActive.bind(this)
     this.loadCurrentFeature = this.loadCurrentFeature.bind(this)
+    this.clearStory = this.clearStory.bind(this)
+    this.updateTitle = this.updateTitle.bind(this)
   }
 
   componentDidMount() {
@@ -44,9 +46,11 @@ export default class Feature extends Component {
             <a href="stories/Entry/create">Go write some.</a>
           </span>
           message.type = 'warning'
-          this.setState({message: message, loading: false})
+          this.setState({message: message, loading: false,})
         } else {
-          this.setState({featureList: data.featureList, stories: data.stories, loading: false})
+          this.setState(
+            {featureList: data.featureList, stories: data.stories, loading: false,}
+          )
         }
       }.bind(this),
       error: function () {
@@ -54,10 +58,10 @@ export default class Feature extends Component {
           loading: false,
           message: {
             text: 'Error: Could not pull feature list',
-            type: 'danger'
-          }
+            type: 'danger',
+          },
         })
-      }.bind(this)
+      }.bind(this),
     })
   }
 
@@ -70,15 +74,32 @@ export default class Feature extends Component {
     if (feature.title === null) {
       feature.title = ''
     }
-    this.setState({currentFeature: feature, currentKey: key,})
+    this.setState({currentFeature: feature, currentKey: key})
   }
 
   fillEntries(feature) {
+    this.stackEntries(feature)
     for (let i = 0; i < 4; i++) {
-      if (feature.entries[i] === undefined) {
+      if (feature.entries[i] === undefined || i >= feature.columns) {
         feature.entries[i] = SampleEntry()
       }
     }
+  }
+
+  /* Moves active entries into clean stack */
+  stackEntries(feature) {
+    let newEntries = []
+    for (let i = 0; i < 4; i++) {
+      if (feature.entries[i] === undefined) {
+        continue
+      }
+      let value = feature.entries[i]
+
+      if (value.id > 0) {
+        newEntries.push(value)
+      }
+    }
+    feature.entries = newEntries
   }
 
   addRow() {
@@ -93,11 +114,20 @@ export default class Feature extends Component {
         if (featureList === null) {
           featureList = []
         }
+        this.fillEntries(feature)
         featureList.push(feature)
-        this.setState({currentFeature: FeatureObj, currentKey: data.featureId, featureList: featureList})
+        this.setState(
+          {currentFeature: FeatureObj, currentKey: data.featureId, featureList: featureList,}
+        )
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
+  }
+
+  updateTitle(title) {
+    const feature = this.state.currentFeature
+    feature.title = title
+    this.setState({currentFeature: feature})
   }
 
   updateFeature(feature) {
@@ -108,10 +138,12 @@ export default class Feature extends Component {
         entries,
         format,
         columns,
-        sorting
+        sorting,
       } = feature
       let newEntries = entries.map(function (value) {
-        return {id: value.id, x: value.x, y: value.y}
+        if (value.id > 0) {
+          return {id: value.id, x: value.x, y: value.y,}
+        }
       })
       $.ajax({
         url: './stories/Feature/' + feature.id,
@@ -121,12 +153,16 @@ export default class Feature extends Component {
           entries: newEntries,
           format,
           columns,
-          sorting
+          sorting,
         },
         dataType: 'json',
         type: 'put',
-        success: function () {}.bind(this),
-        error: function () {}.bind(this),
+        success: function (data) {
+          feature.entries = data.entries
+          this.fillEntries(feature)
+          this.setState({currentFeature: feature})
+        }.bind(this),
+        error: function () {}.bind(this)
       })
     }
     this.setState({currentFeature: feature})
@@ -134,6 +170,14 @@ export default class Feature extends Component {
 
   closeMessage() {
     this.setState({message: null})
+  }
+
+  clearStory(key) {
+    const feature = this.state.currentFeature
+    delete feature.entries[key]
+    this.stackEntries(feature)
+    this.fillEntries(feature)
+    this.updateFeature(feature)
   }
 
   updateActive(key, value) {
@@ -156,6 +200,8 @@ export default class Feature extends Component {
       return <FeatureForm
         stories={this.state.stories}
         feature={this.state.currentFeature}
+        clearStory={this.clearStory}
+        updateTitle={this.updateTitle}
         srcHttp={this.props.srcHttp}
         update={this.updateFeature}/>
     } else {
@@ -171,7 +217,8 @@ export default class Feature extends Component {
     return (
       <div>
         {this.message()}
-        <button className="btn btn-primary mb-1" onClick={this.addRow}>Add feature row</button>
+        <button className="btn btn-primary mb-1" onClick={this.addRow}>
+          <i className="fa fa-plus"></i>&nbsp;Add feature set</button>
         {this.getListing()}
       </div>
     )
