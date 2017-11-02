@@ -3,11 +3,11 @@
   <?php foreach ($entries as $entry): extract($entry);?>
   <div class="<?=$bsClass?>">
     <div class="<?=$format?>">
-      <div class="story-thumbnail" style="<?=$thumbnailStyle?>"></div>
+      <a href="<?=$urlTitle?>" title="Read this story" class="story-thumbnail" style="<?=$thumbnailStyle?>"></a>
       <div class="story-content">
         <div class="story-title">
-          <a href="<?=$urlTitle?>" title="Link to story">
-            <h3><?=$title?></h3>
+          <a href="<?=$urlTitle?>" title="Read this story">
+            <h4><?=$title?></h4>
           </a>
         </div>
         <div class="story-summary">
