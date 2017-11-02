@@ -19,7 +19,7 @@ class DisplayColumn extends React.Component {
   }
 
   moveButtons() {
-    const {moveThumb, stopMove, holdThumb, entry} = this.props
+    const {moveThumb, stopMove, holdThumb, entry,} = this.props
     if (this.state.showButtons === false) {
       return null
     }
@@ -66,25 +66,30 @@ class DisplayColumn extends React.Component {
       stories,
       applyStory,
       clearStory,
+      previousEmpty
     } = this.props
     const _class = 'story-feature ' + format
     const position = `${entry.x}% ${entry.y}%`
     const thumbnailStyle = {
       backgroundImage: `url('${entry.story.thumbnail}')`,
-      backgroundPosition: position
+      backgroundPosition: position,
     }
 
     let storyList = <em>No published stories available</em>
     if (stories !== undefined) {
       let storyOptions = stories.map(function (value) {
-        return {value: value.id, label: value.title}
+        return {value: value.id, label: value.title,}
       })
-      storyList = (
-        <div>
-          <Select options={storyOptions} value={0} onChange={applyStory}/>
-          <button className="btn btn-primary" onClick={clearStory}>Clear</button>
-        </div>
-      )
+      if (previousEmpty) {
+        storyList = null
+      } else {
+        storyList = (
+          <div>
+            <Select options={storyOptions} value={0} onChange={applyStory}/>
+            {entry.id > 0 ? <button className="btn btn-primary" onClick={clearStory}>Clear</button> : null}
+          </div>
+        )
+      }
     }
 
     return (
@@ -98,7 +103,7 @@ class DisplayColumn extends React.Component {
           <div className="story-content">
             <div className="story-title">
               <a title="Link to story">
-                <h3>{entry.story.title}</h3>
+                <h4>{entry.story.title}</h4>
               </a>
             </div>
             <div className="story-summary">{entry.story.strippedSummary}</div>
@@ -122,6 +127,7 @@ DisplayColumn.propTypes = {
   moveThumb: PropTypes.func,
   stopMove: PropTypes.func,
   holdThumb: PropTypes.func,
+  previousEmpty: PropTypes.bool,
 }
 
 DisplayColumn.defaultTypes = {}
