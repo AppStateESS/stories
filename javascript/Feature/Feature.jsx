@@ -7,6 +7,7 @@ import FeatureForm from './FeatureForm'
 import Message from '../AddOn/Message'
 import Waiting from '../AddOn/Waiting'
 import SampleEntry from './SampleEntry'
+import './style.css'
 
 /* global $ */
 
@@ -28,6 +29,7 @@ export default class Feature extends Component {
     this.loadCurrentFeature = this.loadCurrentFeature.bind(this)
     this.clearStory = this.clearStory.bind(this)
     this.updateTitle = this.updateTitle.bind(this)
+    this.clearFeature = this.clearFeature.bind(this)
   }
 
   componentDidMount() {
@@ -84,6 +86,10 @@ export default class Feature extends Component {
         feature.entries[i] = SampleEntry()
       }
     }
+  }
+
+  clearFeature() {
+    this.setState({currentFeature: null, currentKey: null,})
   }
 
   /* Moves active entries into clean stack */
@@ -160,12 +166,19 @@ export default class Feature extends Component {
         success: function (data) {
           feature.entries = data.entries
           this.fillEntries(feature)
-          this.setState({currentFeature: feature})
+          this.updateCurrentFeature(feature)
         }.bind(this),
         error: function () {}.bind(this)
       })
+    } else {
+      this.updateCurrentFeature(feature)
     }
-    this.setState({currentFeature: feature})
+  }
+
+  updateCurrentFeature(feature) {
+    const {featureList} = this.state
+    featureList[this.state.currentKey] = feature
+    this.setState({currentFeature: feature, featureList: featureList})
   }
 
   closeMessage() {
@@ -214,11 +227,20 @@ export default class Feature extends Component {
   }
 
   render() {
+    let backToList
+
+    if (this.state.currentKey !== null) {
+      backToList = <button className="btn btn-default" onClick={this.clearFeature}>
+        <i className="fa fa-list"></i>Back to list</button>
+    }
     return (
-      <div>
+      <div className="feature-admin">
         {this.message()}
-        <button className="btn btn-primary mb-1" onClick={this.addRow}>
-          <i className="fa fa-plus"></i>&nbsp;Add feature set</button>
+        <div className="buttons">
+          <button className="btn btn-primary mr-1" onClick={this.addRow}>
+            <i className="fa fa-plus"></i>&nbsp;Add feature set</button>
+          {backToList}
+        </div>
         {this.getListing()}
       </div>
     )
