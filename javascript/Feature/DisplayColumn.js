@@ -20,7 +20,8 @@ class DisplayColumn extends React.Component {
 
   moveButtons() {
     const {moveThumb, stopMove, holdThumb, entry,} = this.props
-    if (this.state.showButtons === false) {
+
+    if (this.state.showButtons === false || entry.id == 0) {
       return null
     }
     const cX = entry.x
