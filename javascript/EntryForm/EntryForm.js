@@ -57,8 +57,10 @@ export default class EntryForm {
       dataType: 'json',
       type: 'put',
       success: function () {
+        const ts = new Date()
+        const timestring = ts.toLocaleTimeString('en-US')
         setTimeout(function(){
-          this.status.html('<span class="text-success"><i class="fa fa-check"></i>Saved!</span>')
+          this.status.html(`<span class="text-success"><i class="fa fa-check"></i>Saved @ ${timestring}</span>`)
         }.bind(this), 1000)
       }.bind(this),
       error: function () {
