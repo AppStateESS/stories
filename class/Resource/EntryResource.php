@@ -195,7 +195,7 @@ class EntryResource extends BaseResource
         
         $vars['createDateRelative'] = $factory->relativeTime($this->createDate->get());
         $vars['publishDateRelative'] = $factory->relativeTime($this->publishDate->get());
-        if (!in_array('tags', $hide)) {
+        if (!is_array($hide) || !in_array('tags', $hide)) {
             $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
         }
         return $vars;
