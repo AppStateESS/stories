@@ -97,7 +97,8 @@ class EntryFactory extends BaseFactory
     public function adminListView(Request $request)
     {
         $options = $this->pullOptions($request);
-
+        $options['hideExpired'] = false;
+        $options['publishedOnly'] = false;
         return $this->pullList($options);
     }
 
@@ -105,14 +106,18 @@ class EntryFactory extends BaseFactory
      * Return a list of entries based on options
      * 
      * Options:
-     * hideExpired => true,
-     * orderBy => 'publishDate',
-     * limit => 6,
-     * includeContent => true,
-     * publishedOnly => true,
-     * offset => 0,
-     * tag => null,
-     * showTagLinks => true);
+     * hideExpired: [true] Don't show expired entries
+     * orderBy: [publishDate] Which column to order by
+     * limit: [6] Total number of entries to pull
+     * includeContent: [true] Include content in the pull 
+     * publishedOnly: [true] Only show published entries
+     * offset: [0] Current number of offsets using limit 
+     * tag: [null] Limit by tag association
+     * vars: [null] If array, only pull these variables
+     * mustHaveThumbnail: [false] Only pull entries that have an associate thumbnail
+     * asResource: [true] Return listing as Resource objects
+     * showTagLinks: [true] Pull tags links for entries
+     * 
      * 
      * @param array $options
      * @return array
