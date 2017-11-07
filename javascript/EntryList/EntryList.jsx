@@ -8,6 +8,7 @@ import EntryRow from './EntryRow'
 import ListControls from './ListControls'
 import PublishOverlay from '../AddOn/PublishOverlay'
 import TagOverlay from '../AddOn/TagOverlay'
+import ThumbnailOverlay from './ThumbnailOverlay'
 import {VelocityTransitionGroup} from 'velocity-react'
 import moment from 'moment'
 /* global $ */
@@ -24,8 +25,9 @@ export default class EntryList extends Component {
       sortBy: 'published',
       publishOverlay: false,
       tagOverlay: false,
+      thumbnailOverlay: false,
       sortByTagId: 0,
-      tags: []
+      tags: [],
     }
 
     this.offset = 0
@@ -46,6 +48,15 @@ export default class EntryList extends Component {
     this.setPublishDate = this.setPublishDate.bind(this)
     this.savePublishDate = this.savePublishDate.bind(this)
     this.newOptionClick = this.newOptionClick.bind(this)
+    this.thumbnailForm = this.thumbnailForm.bind(this)
+    this.updateEntry = this.updateEntry.bind(this)
+    this.updateImage = this.updateImage.bind(this)
+  }
+
+  updateImage(image) {
+    const entry = this.state.currentEntry
+    entry.thumbnail = image
+    this.updateEntry(entry)
   }
 
   componentDidMount() {
@@ -65,16 +76,19 @@ export default class EntryList extends Component {
     this.setState({currentEntry: entry})
   }
 
-  updateListing(key, entry) {
-    let listing = this.state.listing
-    listing[key] = entry
-    this.setState({listing: listing})
-  }
-
   updateSort(sortBy) {
     this.setState({
       sortBy: sortBy
     }, this.load)
+  }
+
+  updateEntry(entry) {
+    let currentEntry = this.state.currentEntry
+    currentEntry = entry
+
+    let listing = this.state.listing
+    listing[this.currentKey] = currentEntry
+    this.setState({currentEntry, listing})
   }
 
   tagChange(value) {
@@ -89,12 +103,12 @@ export default class EntryList extends Component {
     $.getJSON('./stories/Listing', {
       search: this.state.search,
       sortBy: this.state.sortBy,
-      sortByTagId: this.state.sortByTagId
+      sortByTagId: this.state.sortByTagId,
     }).done(function (data) {
       if (data.listing == null) {
-        this.setState({listing: false, loading: false, tags: data.tags})
+        this.setState({listing: false, loading: false, tags: data.tags,})
       } else {
-        this.setState({listing: data.listing, loading: false, tags: data.tags})
+        this.setState({listing: data.listing, loading: false, tags: data.tags,})
       }
     }.bind(this))
   }
@@ -113,7 +127,7 @@ export default class EntryList extends Component {
 
   newOptionClick(newTag) {
     delete newTag.className
-    let {tags, currentEntry,} = this.state
+    let {tags, currentEntry} = this.state
     $.ajax({
       url: './stories/Tag',
       data: {
@@ -125,9 +139,9 @@ export default class EntryList extends Component {
         newTag.value = data
         tags.push(newTag)
         currentEntry.tags.push(newTag)
-        this.setState({tags, currentEntry,})
+        this.setState({tags, currentEntry})
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -150,10 +164,10 @@ export default class EntryList extends Component {
         values: [
           {
             param: 'published',
-            value: 1,
+            value: 1
           }, {
             param: 'publishDate',
-            value: this.state.currentEntry.publishDate,
+            value: this.state.currentEntry.publishDate
           },
         ]
       },
@@ -163,16 +177,15 @@ export default class EntryList extends Component {
         this.setState({publishOverlay: false})
         let currentEntry = this.state.currentEntry
         currentEntry.published = 1
-        this.updateListing(this.currentKey, currentEntry)
+        this.updateEntry(currentEntry)
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
   publishStory(key) {
-    this.setState({
-      publishOverlay: true
-    }, this.setCurrentEntry(key))
+    this.setCurrentEntry(key)
+    this.setState({publishOverlay: true})
   }
 
   showTags(key) {
@@ -182,13 +195,22 @@ export default class EntryList extends Component {
   }
 
   closeOverlay() {
-    this.setState({publishOverlay: false, tagOverlay: false, currentEntry: null,})
+    this.setState(
+      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentEntry: null}
+    )
     this.unlockBody()
     this.currentKey = null
   }
 
   unlockBody() {
     $('body').css('overflow', 'inherit')
+  }
+
+  thumbnailForm(key) {
+    this.setCurrentEntry(key)
+    this.setState({
+      thumbnailOverlay: true
+    })
   }
 
   deleteStory(key) {
@@ -203,7 +225,7 @@ export default class EntryList extends Component {
           listing.splice(key, 1)
           this.setState({listing: listing})
         }.bind(this),
-        error: function () {}.bind(this),
+        error: function () {}.bind(this)
       })
     }
   }
@@ -213,15 +235,14 @@ export default class EntryList extends Component {
       url: `./stories/Entry/${this.state.currentEntry.id}`,
       data: {
         param: 'publishDate',
-        value: this.state.currentEntry.publishDate,
+        value: this.state.currentEntry.publishDate
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
         this.closeOverlay()
-        this.updateListing(this.currentKey, this.state.currentEntry)
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -230,15 +251,14 @@ export default class EntryList extends Component {
       url: './stories/Tag/attach',
       data: {
         entryId: this.state.currentEntry.id,
-        tags: this.state.currentEntry.tags,
+        tags: this.state.currentEntry.tags
       },
       dataType: 'json',
       type: 'post',
       success: function () {
-        this.updateListing(this.currentKey, this.state.currentEntry)
         this.closeOverlay()
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
 
   }
@@ -258,6 +278,7 @@ export default class EntryList extends Component {
           sortByTag={this.sortByTag}
           showTags={this.showTags.bind(this, key)}
           publishStory={this.publishStory.bind(this, key)}
+          thumbnailForm={this.thumbnailForm.bind(this, key)}
           key={key}
           publish={this.publish.bind(this, key)}/>
       }.bind(this))
@@ -281,27 +302,37 @@ export default class EntryList extends Component {
     return (
       <div>
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
-          {this.state.publishOverlay
-            ? <PublishOverlay
-                savePublishDate={this.savePublishDate}
-                title={this.state.currentEntry.title}
-                isPublished={this.state.currentEntry.published}
-                publishDate={this.state.currentEntry.publishDate}
-                setPublishDate={this.setPublishDate}
-                publishStory={this.publish}/>
-            : null}
+          {
+            this.state.publishOverlay
+              ? <PublishOverlay
+                  savePublishDate={this.savePublishDate}
+                  title={this.state.currentEntry.title}
+                  isPublished={this.state.currentEntry.published}
+                  publishDate={this.state.currentEntry.publishDate}
+                  setPublishDate={this.setPublishDate}
+                  publishStory={this.publish}/>
+              : null
+          }
         </VelocityTransitionGroup>
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
-          {this.state.tagOverlay
-            ? <TagOverlay
-                tagChange={this.tagChange}
-                entryTags={this.state.currentEntry.tags}
-                tags={this.state.tags}
-                saveTags={this.saveTags}
-                title={this.state.currentEntry.title}
-                newOptionClick={this.newOptionClick}/>
-            : null}
+          {
+            this.state.tagOverlay
+              ? <TagOverlay
+                  tagChange={this.tagChange}
+                  entryTags={this.state.currentEntry.tags}
+                  tags={this.state.tags}
+                  saveTags={this.saveTags}
+                  title={this.state.currentEntry.title}
+                  newOptionClick={this.newOptionClick}/>
+              : null
+          }
         </VelocityTransitionGroup>
+        <ThumbnailOverlay
+          thumbnailOverlay={this.state.thumbnailOverlay}
+          updateEntry={this.updateEntry}
+          updateImage={this.updateImage}
+          entry={this.state.currentEntry}
+          close={this.closeOverlay}/>
         <ListControls
           sortBy={this.state.sortBy}
           search={this.state.search}
@@ -316,7 +347,7 @@ export default class EntryList extends Component {
 }
 
 EntryList.propTypes = {
-  segmentSize : PropTypes.number,
+  segmentSize: PropTypes.number
 }
 
 const NoEntries = () => {
