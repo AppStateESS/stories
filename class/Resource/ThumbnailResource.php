@@ -66,26 +66,36 @@ class ThumbnailResource
     {
         $this->filename = $filename;
         $this->sourceDirectory = $sourceDirectory;
-        $this->thumbDirectory= $this->sourceDirectory . 'thumbnail/';
+        $this->thumbDirectory = $this->sourceDirectory . 'thumbnail/';
     }
-    
+
     /**
      * Creates a thumbnail based on object variables.
      */
     public function createThumbnail()
     {
+        $source = $this->sourceDirectory . $this->filename;
+        if (!is_file($source)) {
+            return false;
+        }
+        list($width, $height) = getimagesize($source);
+        $maxWidth = $width <= STORIES_THUMB_TARGET_WIDTH ? $width : STORIES_THUMB_TARGET_WIDTH;
+        $maxHeight = $height <= STORIES_THUMB_TARGET_HEIGHT ? $height : STORIES_THUMB_TARGET_HEIGHT;
+
         $options = array('image_library' => true, 'upload_dir' => $this->sourceDirectory);
         $upload = new \UploadHandler($options, false);
+
         $scaledOptions = array(
-            'max_width' => STORIES_THUMB_TARGET_WIDTH,
-            'max_height' => STORIES_THUMB_TARGET_HEIGHT,
+            'max_width' => $maxWidth,
+            'max_height' => $maxHeight,
             'crop' => true,
             'jpeg_quality' => 100
         );
 
-        $upload->create_scaled_image($this->filename, 'thumbnail', $scaledOptions);
+        $upload->create_scaled_image($this->filename, 'thumbnail',
+                $scaledOptions);
     }
-    
+
     /**
      * Returns the full path of the thumbnail.
      * @return string
@@ -103,4 +113,5 @@ class ThumbnailResource
     {
         return $this->sourceDirectory . $this->filename;
     }
+
 }
