@@ -169,7 +169,6 @@ class EntryFactory extends BaseFactory
                 $tbl->addField('content');
             }
         }
-
         
         //conditionals
         if ($options['mustHaveThumbnail'] === true) {
@@ -733,7 +732,7 @@ EOF;
      */
     private function cleanEmbed($content)
     {
-        return preg_replace('/<div data-embed-code="[^"]+">/s', '', $content);
+        return preg_replace('/<div data-embed-code="[^"]+">/s', '<div class="medium-insert-active">', $content);
     }
 
     /**
