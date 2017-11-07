@@ -20,7 +20,7 @@ export default class Feature extends Component {
       currentKey: null,
       featureList: [],
       loading: true,
-      stories: []
+      stories: [],
     }
     this.addRow = this.addRow.bind(this)
     this.closeMessage = this.closeMessage.bind(this)
@@ -44,14 +44,16 @@ export default class Feature extends Component {
       success: function (data) {
         if (data.stories == null) {
           const message = {}
-          message.text = <span>No stories available for features.
-            <a href="stories/Entry/create">Go write some.</a>
-          </span>
+          message.text = (
+            <span>No stories available for features.
+              <a href="stories/Entry/create">Go write some.</a>
+            </span>
+          )
           message.type = 'warning'
-          this.setState({message: message, loading: false,})
+          this.setState({message: message, loading: false})
         } else {
           this.setState(
-            {featureList: data.featureList, stories: data.stories, loading: false,}
+            {featureList: data.featureList, stories: data.stories, loading: false}
           )
         }
       }.bind(this),
@@ -60,10 +62,10 @@ export default class Feature extends Component {
           loading: false,
           message: {
             text: 'Error: Could not pull feature list',
-            type: 'danger',
-          },
+            type: 'danger'
+          }
         })
-      }.bind(this),
+      }.bind(this)
     })
   }
 
@@ -76,7 +78,7 @@ export default class Feature extends Component {
     if (feature.title === null) {
       feature.title = ''
     }
-    this.setState({currentFeature: feature, currentKey: key})
+    this.setState({currentFeature: feature, currentKey: key,})
   }
 
   fillEntries(feature) {
@@ -89,7 +91,7 @@ export default class Feature extends Component {
   }
 
   clearFeature() {
-    this.setState({currentFeature: null, currentKey: null,})
+    this.setState({currentFeature: null, currentKey: null})
   }
 
   /* Moves active entries into clean stack */
@@ -123,10 +125,10 @@ export default class Feature extends Component {
         this.fillEntries(feature)
         featureList.push(feature)
         this.setState(
-          {currentFeature: FeatureObj, currentKey: data.featureId, featureList: featureList,}
+          {currentFeature: FeatureObj, currentKey: data.featureId, featureList: featureList}
         )
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -144,11 +146,11 @@ export default class Feature extends Component {
         entries,
         format,
         columns,
-        sorting,
+        sorting
       } = feature
       let newEntries = entries.map(function (value) {
         if (value.id > 0) {
-          return {id: value.id, x: value.x, y: value.y,}
+          return {id: value.id, x: value.x, y: value.y}
         }
       })
       $.ajax({
@@ -159,7 +161,7 @@ export default class Feature extends Component {
           entries: newEntries,
           format,
           columns,
-          sorting,
+          sorting
         },
         dataType: 'json',
         type: 'put',
@@ -168,7 +170,7 @@ export default class Feature extends Component {
           this.fillEntries(feature)
           this.updateCurrentFeature(feature)
         }.bind(this),
-        error: function () {}.bind(this)
+        error: function () {}.bind(this),
       })
     } else {
       this.updateCurrentFeature(feature)
@@ -178,7 +180,7 @@ export default class Feature extends Component {
   updateCurrentFeature(feature) {
     const {featureList} = this.state
     featureList[this.state.currentKey] = feature
-    this.setState({currentFeature: feature, featureList: featureList})
+    this.setState({currentFeature: feature, featureList: featureList,})
   }
 
   closeMessage() {
@@ -239,6 +241,8 @@ export default class Feature extends Component {
         <div className="buttons">
           <button className="btn btn-primary mr-1" onClick={this.addRow}>
             <i className="fa fa-plus"></i>&nbsp;Add feature set</button>
+          <a href="./stories/Listing" className="btn btn-default mr-1">
+            <i className="fa fa-list"></i>&nbsp;Story list</a>
           {backToList}
         </div>
         {this.getListing()}
