@@ -29,6 +29,7 @@ namespace stories\Factory;
 use phpws2\Database;
 use Canopy\Request;
 use phpws2\Settings;
+use stories\Factory\EntryPhotoFactory;
 use stories\Resource\EntryResource;
 use stories\Resource\ThumbnailResource;
 
@@ -45,38 +46,84 @@ class EntryPhotoFactory
         
     }
 
-    public function save(Request $request)
+    private function getImageOptions(Request $request)
     {
         $entryId = $request->pullPostInteger('entryId');
         $imageDirectory = "images/stories/$entryId/";
         $imagePath = PHPWS_HOME_DIR . $imageDirectory;
-
         $options = array(
             'max_width' => Settings::get('stories', 'image_max_width'),
             'max_height' => Settings::get('stories', 'image_max_height'),
-            'corrent_image_extensions' => true,
+            'current_image_extensions' => true,
             'upload_dir' => $imagePath,
             'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory,
             'image_versions' => array()
         );
+        return $options;
+    }
+
+    public function save(Request $request)
+    {
+        $options = $this->getImageOptions($request);
         $upload_handler = new \UploadHandler($options, false);
         $result = $upload_handler->post(false);
         return $result;
     }
 
-    public function delete($entryId, Request $request)
+    public function update(Request $request)
     {
-        $file = $request->pullDeleteString('file', true);
-        if ($file === false) {
-            return;
+        $thumbOnly = $request->pullPostBoolean('thumbOnly');
+        $entryFactory = new EntryFactory;
+        $entry = $entryFactory->load($request->pullPostInteger('entryId'));
+        if (!$thumbOnly && isset($entry->leadImage)) {
+            $this->delete($entry->id, $entry->leadImage);
         }
-        $path = \Canopy\Server::getSiteUrl(true) . 'images/stories/' . $entryId . '/';
-        $filenameOnly = urldecode(preg_replace("@$path@", '', $file));
+        $options = $this->getImageOptions($request);
+        $options['param_name'] = 'image';
+        $filename = $request->getUploadedFileArray('image');
+        $upload_handler = new \UploadHandler($options, false);
+        $result = $upload_handler->post(false);
+        $imageFile = $result['image'][0]->name;
+        $imageDirectory = $this->getImagePath($entry->id);
+
+        // if leadImage is already set delete the file 
+        if (!$thumbOnly) {
+            $entry->leadImage = $imageDirectory . $imageFile;
+        }
+        $thumbnail = new ThumbnailResource($imageDirectory, $imageFile);
+        $thumbnail->createThumbnail();
+        $entry->thumbnail = $thumbnail->getPath();
+        $entryFactory->save($entry);
+        return $thumbnail->getPath();
+    }
+
+    public function delete($entryId, $file, $thumb = true)
+    {
+        $entryFactory = new EntryFactory;
+        $entry = $entryFactory->load($entryId);
+        $entryUpdated = false;
+
+        $path = explode('/', $file);
+        $filenameOnly = array_pop($path);
         $cleanName = "images/stories/$entryId/$filenameOnly";
+        if ($entry->leadImage == $cleanName) {
+            $entryUpdated = true;
+            $entry->leadImage = null;
+        }
         if (is_file($cleanName)) {
             unlink($cleanName);
         }
-        $this->deleteThumbnail($entryId, $filenameOnly);
+        if ($thumb) {
+            $thumbpath = $this->getThumbnailPath($entryId) . $filenameOnly;
+            if ($entry->thumbnail == $thumbpath) {
+                $entryUpdated = true;
+                $entry->thumbnail = null;
+            }
+            $this->deleteThumbnail($entryId, $filenameOnly);
+        }
+        if ($entryUpdated) {
+            $entryFactory->save($entry);
+        }
         return true;
     }
 
@@ -163,4 +210,5 @@ EOF;
         $imagePath = $this->getImagePath($entryId);
         \phpws\PHPWS_File::rmdir($imagePath);
     }
+
 }
