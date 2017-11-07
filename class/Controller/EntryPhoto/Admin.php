@@ -27,6 +27,7 @@ use stories\Controller\RoleController;
 
 class Admin extends RoleController
 {
+
     /**
      *
      * @var \stories\Factory\EntryPhotoFactory factory
@@ -42,9 +43,19 @@ class Admin extends RoleController
     {
         return $this->factory->save($request);
     }
-    
+
+    protected function updatePostCommand(Request $request)
+    {
+        return array('thumbnail' => $this->factory->update($request));
+    }
+
     protected function deleteCommand(Request $request)
     {
-        return $this->factory->delete($this->id, $request);
+        $file = $request->pullDeleteString('file', true);
+        if ($file === false) {
+            return;
+        }
+        return $this->factory->delete($this->id, $file);
     }
+
 }
