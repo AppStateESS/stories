@@ -46,7 +46,7 @@ class Admin extends RoleController
 
     protected function updatePostCommand(Request $request)
     {
-        return array('thumbnail' => $this->factory->update($request));
+        return array('thumbnail' => $this->factory->postThumbnail($request));
     }
 
     protected function deleteCommand(Request $request)
