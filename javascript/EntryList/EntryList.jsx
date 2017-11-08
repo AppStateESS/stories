@@ -174,10 +174,10 @@ export default class EntryList extends Component {
       dataType: 'json',
       type: 'patch',
       success: function () {
-        this.setState({publishOverlay: false})
         let currentEntry = this.state.currentEntry
         currentEntry.published = 1
         this.updateEntry(currentEntry)
+        this.closeOverlay()
       }.bind(this),
       error: function () {}.bind(this)
     })
