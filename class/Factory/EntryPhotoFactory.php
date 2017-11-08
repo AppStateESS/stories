@@ -61,6 +61,22 @@ class EntryPhotoFactory
         );
         return $options;
     }
+    
+    private function getThumbOptions(Request $request)
+    {
+        $entryId = $request->pullPostInteger('entryId');
+        $imageDirectory = "images/stories/$entryId/thumbnail/";
+        $imagePath = PHPWS_HOME_DIR . $imageDirectory;
+        $options = array(
+            'max_width' => STORIES_THUMB_TARGET_WIDTH,
+            'max_height' => STORIES_THUMB_TARGET_HEIGHT,
+            'current_image_extensions' => true,
+            'upload_dir' => $imagePath,
+            'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory,
+            'image_versions' => array()
+        );
+        return $options;
+    }
 
     public function save(Request $request)
     {
@@ -70,31 +86,52 @@ class EntryPhotoFactory
         return $result;
     }
 
-    public function update(Request $request)
+    public function postThumbnail(Request $request)
     {
-        $thumbOnly = $request->pullPostBoolean('thumbOnly');
         $entryFactory = new EntryFactory;
         $entry = $entryFactory->load($request->pullPostInteger('entryId'));
-        if (!$thumbOnly && isset($entry->leadImage)) {
-            $this->delete($entry->id, $entry->leadImage);
-        }
-        $options = $this->getImageOptions($request);
+        
+        $options = $this->getThumbOptions($request);
         $options['param_name'] = 'image';
         $filename = $request->getUploadedFileArray('image');
         $upload_handler = new \UploadHandler($options, false);
         $result = $upload_handler->post(false);
         $imageFile = $result['image'][0]->name;
-        $imageDirectory = $this->getImagePath($entry->id);
+        $imageDirectory = $this->getThumbnailPath($entry->id);
 
-        // if leadImage is already set delete the file 
-        if (!$thumbOnly) {
-            $entry->leadImage = $imageDirectory . $imageFile;
-        }
-        $thumbnail = new ThumbnailResource($imageDirectory, $imageFile);
-        $thumbnail->createThumbnail();
-        $entry->thumbnail = $thumbnail->getPath();
+        $this->deleteThumbnail($entry->id, $entry->thumbnail);
+        
+        $entry->thumbnail = $imageDirectory . $imageFile;
         $entryFactory->save($entry);
-        return $thumbnail->getPath();
+        return $entry->thumbnail;
+    }
+    
+    /**
+     * Creates a thumbnail based on object variables.
+     */
+    public function createThumbnail($sourceDirectory, $filename)
+    {
+        $source = $sourceDirectory . $filename;
+        if (!is_file($source)) {
+            return false;
+        }
+        list($width, $height) = getimagesize($source);
+        $maxWidth = $width <= STORIES_THUMB_TARGET_WIDTH ? $width : STORIES_THUMB_TARGET_WIDTH;
+        $maxHeight = $height <= STORIES_THUMB_TARGET_HEIGHT ? $height : STORIES_THUMB_TARGET_HEIGHT;
+
+        $options = array('image_library' => true, 'upload_dir' => $sourceDirectory);
+        $upload = new \UploadHandler($options, false);
+
+        $scaledOptions = array(
+            'max_width' => $maxWidth,
+            'max_height' => $maxHeight,
+            'crop' => true,
+            'jpeg_quality' => 100
+        );
+
+        $upload->create_scaled_image($filename, 'thumbnail',
+                $scaledOptions);
+        return $sourceDirectory . 'thumbnail/' . $filename;
     }
 
     public function delete($entryId, $file, $thumb = true)
@@ -102,9 +139,8 @@ class EntryPhotoFactory
         $entryFactory = new EntryFactory;
         $entry = $entryFactory->load($entryId);
         $entryUpdated = false;
-
-        $path = explode('/', $file);
-        $filenameOnly = array_pop($path);
+        
+        $filenameOnly = $this->getImageFilename($file);
         $cleanName = "images/stories/$entryId/$filenameOnly";
         if ($entry->leadImage == $cleanName) {
             $entryUpdated = true;
@@ -136,6 +172,7 @@ class EntryPhotoFactory
     {
         return 'images/stories/' . $entryId . '/thumbnail/';
     }
+    
 
     private function deleteThumbnail($entryId, $filename)
     {
