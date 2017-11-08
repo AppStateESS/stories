@@ -163,6 +163,7 @@ class FeatureForm extends React.Component {
             applyStory={this.applyStory}
             clearStory={this.props.clearStory}
             moveThumb={this.moveThumb}
+            thumbnailForm={this.props.thumbnailForm}
             holdThumb={this.holdThumb}
             stopMove={this.stopMove}/>
         </div>
@@ -174,6 +175,7 @@ class FeatureForm extends React.Component {
 FeatureForm.propTypes = {
   feature: PropTypes.object,
   updateTitle: PropTypes.func,
+  thumbnailForm: PropTypes.func,
   update: PropTypes.func,
   clearStory: PropTypes.func,
   srcHttp: PropTypes.string

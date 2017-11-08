@@ -7,6 +7,7 @@ import FeatureForm from './FeatureForm'
 import Message from '../AddOn/Message'
 import Waiting from '../AddOn/Waiting'
 import SampleEntry from './SampleEntry'
+import ThumbnailOverlay from '../EntryList/ThumbnailOverlay'
 import './style.css'
 
 /* global $ */
@@ -17,9 +18,12 @@ export default class Feature extends Component {
     this.state = {
       message: null,
       currentFeature: null,
+      currentEntry: null,
       currentKey: null,
+      currentEntryKey: null,
       featureList: [],
       loading: true,
+      thumbnailOverlay: false,
       stories: [],
     }
     this.addRow = this.addRow.bind(this)
@@ -30,6 +34,10 @@ export default class Feature extends Component {
     this.clearStory = this.clearStory.bind(this)
     this.updateTitle = this.updateTitle.bind(this)
     this.clearFeature = this.clearFeature.bind(this)
+    this.thumbnailForm = this.thumbnailForm.bind(this)
+    this.closeOverlay = this.closeOverlay.bind(this)
+    this.updateEntry = this.updateEntry.bind(this)
+    this.updateImage = this.updateImage.bind(this)
   }
 
   componentDidMount() {
@@ -69,6 +77,24 @@ export default class Feature extends Component {
     })
   }
 
+  updateImage(image) {
+    const story = this.state.currentEntry.story
+    story.thumbnail = image
+    this.updateEntry(story)
+  }
+
+  updateEntry(story) {
+    let currentEntry = this.state.currentEntry
+    currentEntry.story = story
+
+    const currentFeature = this.state.currentFeature
+    currentFeature.entries[this.state.currentEntryKey] = currentEntry
+
+    const featureList = this.state.featureList
+    featureList[this.state.currentKey] = currentFeature
+    this.setState({currentEntry, currentFeature, featureList})
+  }
+
   loadCurrentFeature(key) {
     const feature = this.state.featureList[key]
     if (feature.entries === null || feature.entries === 'null') {
@@ -79,6 +105,24 @@ export default class Feature extends Component {
       feature.title = ''
     }
     this.setState({currentFeature: feature, currentKey: key,})
+  }
+
+  unlockBody() {
+    $('body').css('overflow', 'inherit')
+  }
+
+  closeOverlay() {
+    this.setState(
+      {thumbnailOverlay: false, currentEntry: null, currentEntryKey: null}
+    )
+    this.unlockBody()
+  }
+
+  thumbnailForm(key) {
+    const entry = this.state.currentFeature.entries[key]
+    this.setState(
+      {thumbnailOverlay: true, currentEntryKey: key, currentEntry: entry}
+    )
   }
 
   fillEntries(feature) {
@@ -214,6 +258,7 @@ export default class Feature extends Component {
     } else if (this.state.currentKey !== null) {
       return <FeatureForm
         stories={this.state.stories}
+        thumbnailForm={this.thumbnailForm}
         feature={this.state.currentFeature}
         clearStory={this.clearStory}
         updateTitle={this.updateTitle}
@@ -235,14 +280,22 @@ export default class Feature extends Component {
       backToList = <button className="btn btn-default" onClick={this.clearFeature}>
         <i className="fa fa-list"></i>Back to list</button>
     }
+
+    let story
+    if (this.state.currentEntry !== null) {
+      story = this.state.currentEntry.story
+    }
     return (
       <div className="feature-admin">
-        {this.message()}
+        <ThumbnailOverlay
+          thumbnailOverlay={this.state.thumbnailOverlay}
+          updateEntry={this.updateEntry}
+          updateImage={this.updateImage}
+          entry={story}
+          close={this.closeOverlay}/> {this.message()}
         <div className="buttons">
           <button className="btn btn-primary mr-1" onClick={this.addRow}>
             <i className="fa fa-plus"></i>&nbsp;Add feature set</button>
-          <a href="./stories/Listing" className="btn btn-default mr-1">
-            <i className="fa fa-list"></i>&nbsp;Story list</a>
           {backToList}
         </div>
         {this.getListing()}

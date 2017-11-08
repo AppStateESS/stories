@@ -44,6 +44,7 @@ const FeatureDisplay = (props) => {
         applyStory={applyStory.bind(null, i)}
         clearStory={clearStory.bind(null, i)}
         stopMove={stopMove}
+        thumbnailForm={props.thumbnailForm.bind(null, i)}
         moveThumb={moveThumb.bind(null, i)}
         holdThumb={holdThumb.bind(null, i)}/>
     )
@@ -64,6 +65,7 @@ FeatureDisplay.propTypes = {
   clearStory: PropTypes.func,
   holdThumb: PropTypes.func,
   moveThumb: PropTypes.func,
+  thumbnailForm: PropTypes.func,
   stopMove: PropTypes.func
 }
 
