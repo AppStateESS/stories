@@ -12,10 +12,7 @@ export default class Settings extends Component {
     this.state = {
       listStories: 0,
       listStoryAmount: 3,
-      showFeatures: 0,
-      featureNumber: 6,
       listStoryFormat: 0,
-      featureFormat: 0,
       commentCode: '',
       showComments: 0,
     }
@@ -90,20 +87,6 @@ export default class Settings extends Component {
       },
     ]
 
-    const featureFormat = [
-      {
-        value: 0,
-        label: 'Dynamic based on image',
-      }, {
-        value: 1,
-        label: 'Stacked landscape image',
-      }, {
-        value: 2,
-        label: 'Side-by-side portrait image',
-      },
-
-    ]
-
     return (
       <div>
         <h2>Stories Settings</h2>
@@ -131,35 +114,6 @@ export default class Settings extends Component {
                     handle={this.saveSetting.bind(this, 'listStoryFormat')}
                     match={this.state.listStoryFormat}/>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="settings">
-          <div>
-            <BigCheckbox
-              handle={this.saveSetting.bind(this, 'showFeatures')}
-              checked={this.state.showFeatures}
-              label="Show features on front page"/>
-          </div>
-          <div className="indent">
-            <div className="row">
-              <div className="col-sm-6">
-                <div>
-                  Features displayed
-                </div>
-                <ButtonGroup
-                  buttons={amountButtons}
-                  handle={this.saveSetting.bind(this, 'featureNumber')}
-                  match={this.state.featureNumber}/>
-              </div>
-              <div className="col-sm-6">
-                <div>Feature format</div>
-                <ButtonGroup
-                  buttons={featureFormat}
-                  vertical={true}
-                  handle={this.saveSetting.bind(this, 'featureFormat')}
-                  match={this.state.featureFormat}/>
               </div>
             </div>
           </div>

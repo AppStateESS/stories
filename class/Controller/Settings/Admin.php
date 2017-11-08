@@ -46,14 +46,11 @@ class Admin extends RoleController
     {
         $settings = new \phpws2\Settings();
         $settingObj = new \stdClass;
-        $settingObj->showFeatures = $settings->get('stories', 'showFeatures');
-        $settingObj->featureNumber = $settings->get('stories', 'featureNumber');
         $settingObj->listStories = $settings->get('stories', 'listStories');
         $settingObj->listStoryAmount = $settings->get('stories', 'listStoryAmount');
         $settingObj->listStoryFormat = $settings->get('stories', 'listStoryFormat');
         $settingObj->commentCode = $settings->get('stories', 'commentCode');
         $settingObj->showComments = $settings->get('stories', 'showComments');
-        $settingObj->featureFormat = $settings->get('stories', 'featureFormat');
         $settingsJson = json_encode($settingObj);
         $script = <<<EOF
 <script>const settings = $settingsJson;</script>
