@@ -77,7 +77,7 @@ const EntryRow = (props) => {
   return (
     <div className="entry-row mb-1">
       <div className="row">
-        <div className="col-sm-3">
+        <div className="col-sm-2">
           <div className="entry-image" onClick={props.thumbnailForm}>
             {image}
           </div>
@@ -86,7 +86,7 @@ const EntryRow = (props) => {
           {titleLink}
           <div className="summary">{strippedSummary}</div>
         </div>
-        <div className="col-sm-3 story-data">
+        <div className="col-sm-4 story-data">
           <div>
             <strong>Author:</strong>&nbsp;<a href={mailto}>{authorName}</a>
           </div>
