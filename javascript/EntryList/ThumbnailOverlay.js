@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 import {VelocityTransitionGroup} from 'velocity-react'
 import Overlay from '../AddOn/Overlay'
 import Dropzone from 'react-dropzone'
-import BigCheckbox from '../AddOn/BigCheckbox'
 
 /* global $ */
 
@@ -15,16 +14,10 @@ class ThumbnailOverlay extends React.Component {
     this.state = {
       photo: null,
       leadUpdate: false,
-      thumbOnly: false,
     }
     this.saveThumbnail = this.saveThumbnail.bind(this)
-    this.updateThumb = this.updateThumb.bind(this)
     this.updateImage = this.updateImage.bind(this)
     this.close = this.close.bind(this)
-  }
-
-  updateThumb(value) {
-    this.setState({thumbOnly: value})
   }
 
   close() {
@@ -91,18 +84,13 @@ class ThumbnailOverlay extends React.Component {
       <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
         {
           this.props.thumbnailOverlay
-            ? <Overlay close={this.close} width="500px" height="420px" title="Change image">
+            ? <Overlay close={this.close} width="500px" height="420px" title="Change thumbnail">
                 <Dropzone
                   onDrop={this.updateImage}
                   className="dropzone text-center pointer">
                   {photo}
                 </Dropzone>
-                <div>
-                  <BigCheckbox
-                    label="Update thumbnail only"
-                    checked={this.state.thumbOnly}
-                    handle={this.updateThumb}/>
-                </div>
+                <div className="text-muted mb-1"><small><strong>Note:</strong> changing images in story may change thumbnail.</small></div>
                 <div>
                   <button
                     className="btn btn-primary btn-block"
