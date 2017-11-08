@@ -227,8 +227,7 @@ EOF;
         }
 
         if (file_put_contents($fullPath, $content) !== false) {
-            $thumbnail = new ThumbnailResource($imagePath, $imageName);
-            $thumbnail->createThumbnail();
+            $thumbnail = $this->createThumbnail($imagePath, $imageName);
             return array('thumbnail' => $thumbnail, 'image' => $fullPath);
         } else {
             return false;

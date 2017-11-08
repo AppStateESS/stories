@@ -458,9 +458,7 @@ EOF;
             $imageDirectory = $photoFactory->getImagePath($entry->id);
             $imageFile = $photoFactory->getImageFilename($src);
             $entry->leadImage = $imageDirectory . $imageFile;
-            $thumbnail = new ThumbnailResource($imageDirectory, $imageFile);
-            $thumbnail->createThumbnail();
-            $entry->thumbnail = $thumbnail->getPath();
+            $entry->thumbnail = $photoFactory->createThumbnail($imageDirectory, $imageFile);
         } elseif ($iframe->length > 0) {
             $iframeNode = $iframe->item(0);
             $src = $iframeNode->getAttribute('src');
@@ -468,7 +466,7 @@ EOF;
                 $imgResult = $photoFactory->saveYouTubeImage($entry->id, $src);
                 if (!empty($imgResult)) {
                     $entry->leadImage = $imgResult['image'];
-                    $entry->thumbnail = $imgResult['thumbnail']->getPath();
+                    $entry->thumbnail = $imgResult['thumbnail'];
                 }
             }
         }
