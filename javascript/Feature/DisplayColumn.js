@@ -27,34 +27,41 @@ class DisplayColumn extends React.Component {
     const cX = entry.x
     const cY = entry.y
     return (
-      <div className="move-buttons">
-        <table>
-          <tbody>
-            <tr>
-              <td></td>
-              <td>
-                <MoveButton dir="up" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>
-                <MoveButton dir="left" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
-              </td>
-              <td></td>
-              <td>
-                <MoveButton dir="right" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>
-                <MoveButton dir="down" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
-              </td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+      <div>
+        <button
+          className="btn btn-primary btn-sm upload-button"
+          onClick={this.props.thumbnailForm}>
+          <i className="fa fa-upload"></i>
+        </button>
+        <div className="move-buttons">
+          <table>
+            <tbody>
+              <tr>
+                <td></td>
+                <td>
+                  <MoveButton dir="up" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <MoveButton dir="left" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+                <td></td>
+                <td>
+                  <MoveButton dir="right" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <MoveButton dir="down" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     )
   }
@@ -76,6 +83,17 @@ class DisplayColumn extends React.Component {
       backgroundPosition: position,
     }
 
+    let clearButton
+    if (entry.id > 0) {
+      clearButton = <button className="btn btn-primary btn-sm" onClick={clearStory}>Clear</button>
+    }
+
+    const selectCss = {
+      width: '80%',
+      float: 'left',
+      marginRight: '10px'
+    }
+
     let storyList = <em>No published stories available</em>
     if (stories !== undefined) {
       let storyOptions = stories.map(function (value) {
@@ -85,9 +103,10 @@ class DisplayColumn extends React.Component {
         storyList = null
       } else {
         storyList = (
-          <div>
-            <Select options={storyOptions} value={0} onChange={applyStory}/>
-            {entry.id > 0 ? <button className="btn btn-primary" onClick={clearStory}>Clear</button> : null}
+          <div className="mb-1">
+            <div style={selectCss}>
+              <Select options={storyOptions} value={0} onChange={applyStory}/>
+            </div>{clearButton}
           </div>
         )
       }
@@ -128,6 +147,7 @@ DisplayColumn.propTypes = {
   moveThumb: PropTypes.func,
   stopMove: PropTypes.func,
   holdThumb: PropTypes.func,
+  thumbnailForm: PropTypes.func,
   previousEmpty: PropTypes.bool,
 }
 
