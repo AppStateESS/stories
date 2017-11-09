@@ -75,7 +75,7 @@ class FeatureFactory extends BaseFactory
 
         $db = Database::getDB();
         $tbl = $db->addTable('storiesFeature');
-        if (!$options['activeOnly']) {
+        if ($options['activeOnly']) {
             $tbl->addFieldConditional('active', 1);
         }
         $tbl->addOrderBy('sorting');
@@ -84,19 +84,23 @@ class FeatureFactory extends BaseFactory
             return null;
         }
 
-        array_walk($result, array($this, 'encodeEntry'), $options['hiddenVars']);
+        array_walk($result, array($this, 'addEntries'), $options['hiddenVars']);
         return $result;
     }
 
-    private function encodeEntry(&$feature, $key, $hiddenVars)
+    private function addEntries(&$feature, $key, $hiddenVars)
     {
         $entryFactory = new EntryFactory;
-        $entries = json_decode($feature['entries']);
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl->addFieldConditional('featureId', $feature['id']);
+        $tbl->addOrderBy('sorting');
+        $entries = $db->select();
         if (!empty($entries)) {
-            foreach ($entries as $k => $e) {
-                $entry = $entryFactory->load($e->id);
+            foreach ($entries as $k => $entry) {
+                $entry = $entryFactory->load($entry['entryId']);
                 $vars = $entry->getStringVars(true, $hiddenVars);
-                $entries[$k]->story = $vars;
+                $entries[$k]['story'] = $vars;
             }
         }
         $feature['entries'] = $entries;
@@ -104,16 +108,16 @@ class FeatureFactory extends BaseFactory
 
     private function featureColumn($entry)
     {
-        $vars = $entry->story;
+        $vars = $entry['story'];
         $vars['thumbnailStyle'] = $this->thumbnailStyle($entry);
         return $vars;
     }
 
     private function thumbnailStyle($entry)
     {
-        $thumbnail = $entry->story['thumbnail'];
-        $x = $entry->x;
-        $y = $entry->y;
+        $thumbnail = $entry['story']['thumbnail'];
+        $x = $entry['x'];
+        $y = $entry['y'];
         return <<<EOF
 background-image : url('$thumbnail');background-position: {$x}% {$y}%;
 EOF;
@@ -150,8 +154,8 @@ EOF;
             return;
         }
         $entryFactory = new EntryFactory;
-        foreach ($feature->entries as $k=>$e) {
-            $entryObj = $entryFactory->load($e['id']);
+        foreach ($feature->entries as $k => $e) {
+            $entryObj = $entryFactory->load($e['entryId']);
             $vars = $entryObj->getStringVars(true,
                     $this->defaultHiddenEntryVars());
             $entries[$k]['story'] = $vars;
@@ -179,15 +183,59 @@ EOF;
         return '<div id="story-feature-list">' . implode('', $featureStack) . '</div>';
     }
 
+    public function deleteEntry($entryId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl->addFieldConditional('entryId', $entryId);
+        return $db->delete();
+    }
+    
+    public function delete($featureId) {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesFeature');
+        $tbl->addFieldConditional('id', $featureId);
+        $db->delete();
+        $this->deleteEntryList($featureId);
+    }
+    
+    public function deleteEntryList($featureId) {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl->addFieldConditional('featureId', $featureId);
+        $db->delete();
+    }
+            
+
     public function update(Resource $feature, Request $request)
     {
         $feature->loadPutByType($request, array('id'));
         $entries = $feature->entries;
+
+        // new code
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl->addFieldConditional('featureId', $feature->id);
+        $db->delete();
+        $db->clearConditional();
+
+        $count = 1;
         foreach ($entries as $key => $entry) {
-            if ($entry['id'] == 0) {
+            if ($entry['entryId'] == 0) {
                 unset($entries[$key]);
             }
+            // new code
+            else {
+                $tbl->addValue('entryId', $entry['entryId']);
+                $tbl->addValue('featureId', $feature->id);
+                $tbl->addValue('x', $entry['x']);
+                $tbl->addValue('y', $entry['y']);
+                $tbl->addValue('sorting', $count);
+                $db->insert();
+                $count++;
+            }
         }
+
         $feature->entries = $entries;
         self::saveResource($feature);
         return $feature;
