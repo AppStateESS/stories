@@ -52,10 +52,11 @@ class FeatureResource extends BaseResource
         $this->format = new \phpws2\Variable\Attribute('landscape', 'format');
         $this->format->setLimit(20);
         $this->active = new \phpws2\Variable\BooleanVar(true, 'active');
-        $this->entries = new \phpws2\Variable\ArrayVar(null, 'entries');
         $this->columns = new \phpws2\Variable\SmallInteger(2, 'columns');
         $this->sorting = new \phpws2\Variable\SmallInteger(0, 'sorting');
         $this->stories = new \phpws2\Variable\ArrayVar(null, 'stories');
+        $this->entries = new \phpws2\Variable\ArrayVar(null, 'entries');
+        $this->entries->setIsTableColumn(false);
         $this->stories->setIsTableColumn(false);
     }
 }
