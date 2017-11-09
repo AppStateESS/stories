@@ -52,3 +52,6 @@ ul.format-selection li img {
   padding : 20px;
   margin-bottom: 10px;
 }
+ .features td button.btn-sm {
+   margin-right: 6px;
+ }
