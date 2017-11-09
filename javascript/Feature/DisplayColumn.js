@@ -21,7 +21,7 @@ class DisplayColumn extends React.Component {
   moveButtons() {
     const {moveThumb, stopMove, holdThumb, entry,} = this.props
 
-    if (this.state.showButtons === false || entry.id == 0) {
+    if (this.state.showButtons === false || entry.entryId == 0) {
       return null
     }
     const cX = entry.x
@@ -84,7 +84,7 @@ class DisplayColumn extends React.Component {
     }
 
     let clearButton
-    if (entry.id > 0) {
+    if (entry.entryId > 0) {
       clearButton = <button className="btn btn-primary btn-sm" onClick={clearStory}>Clear</button>
     }
 
