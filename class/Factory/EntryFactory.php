@@ -528,10 +528,20 @@ EOF;
         return $entry->getStringVars(true);
     }
 
+    /**
+     * Flips the deleted flag on the entry. Tags are not touched as the 
+     * entry will not be pulled. Features will be purged however.
+     * @param integer $id
+     */
     public function delete($id)
     {
         $entry = $this->load($id);
         $entry->deleted = true;
+        
+        // Feature will bug out if the entry is deleted
+        //
+        $featureFactory = new FeatureFactory;
+        $featureFactory->deleteEntry($id);
         self::saveResource($entry);
     }
 
