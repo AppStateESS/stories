@@ -25,6 +25,8 @@ function stories_uninstall(&$content)
     $db->buildTable('storiesAuthor')->drop(true);
     $db->buildTable('storiesEntry')->drop(true);
     $db->buildTable('storiesTag')->drop(true);
+    $db->buildTable('storiesFeature')->drop(true);
     $db->buildTable('storiesTagToEntry')->drop(true);
+    $db->buildTable('storiesEntryToFeature')->drop(true);
     return true;
 }
