@@ -44,8 +44,14 @@ function stories_install(&$content)
         $tagToEntry->addDataType('entryId', 'int');
         $tagToEntry->addDataType('tagId', 'int');
         $tagToEntry->create();
-        
-        
+
+        $entryToFeature = $db->buildTable('storiesEntryToFeature');
+        $entryToFeature->addDataType('entryId', 'int');
+        $entryToFeature->addDataType('featureId', 'int');
+        $entryToFeature->addDataType('x', 'smallint');
+        $entryToFeature->addDataType('y', 'smallint');
+        $entryToFeature->addDataType('sorting', 'smallint');
+        $entryToFeature->create();
         
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
