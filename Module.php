@@ -38,8 +38,8 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         $settings = array(
             'image_max_width' => 1920,
             'image_max_height' => 1080,
-            'segmentSize'=> 10,
-            'showComments'=> 0,
+            'segmentSize' => 10,
+            'showComments' => 0,
             'commentCode' => '',
             'showFeatures' => 0,
             'featureNumber' => 3,
@@ -105,11 +105,13 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         $featureFactory = new \stories\Factory\FeatureFactory();
         $settings = new \phpws2\Settings;
         if ($settings->get('stories', 'showFeatures')) {
-            \Layout::add($featureFactory->show($request), 'stories', 'features', true);
+            \Layout::add($featureFactory->show($request), 'stories', 'features',
+                    true);
         }
 
         if ($settings->get('stories', 'listStories')) {
-            \Layout::add($entryFactory->showStories($request), 'stories', 'stories', true);
+            \Layout::add($entryFactory->showStories($request), 'stories',
+                    'stories', true);
         }
     }
 
