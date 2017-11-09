@@ -27,7 +27,7 @@ class FeatureForm extends React.Component {
 
   shiftEntries(feature) {
     let newEntries = feature.entries.map(function(value){
-      if (value.id > 0) {
+      if (value.entryId > 0) {
         return value
       }
       feature.entries = newEntries
@@ -85,7 +85,7 @@ class FeatureForm extends React.Component {
 
   applyStory(key, entry) {
     const feature = this.props.feature
-    feature.entries[key].id = entry.value
+    feature.entries[key].entryId = entry.value
     this.props.update(feature)
   }
 
