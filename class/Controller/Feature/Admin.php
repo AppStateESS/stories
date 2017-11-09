@@ -68,6 +68,11 @@ class Admin extends RoleController
         return array('featureId' => $this->factory->post($request));
     }
     
+    protected function deleteCommand(Request $request)
+    {
+        $this->factory->delete($this->id);
+    }
+    
     protected function putCommand(Request $request)
     {
         $feature = $this->factory->load($this->id);
