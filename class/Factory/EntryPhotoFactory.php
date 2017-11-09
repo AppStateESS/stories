@@ -83,6 +83,7 @@ class EntryPhotoFactory
         $options = $this->getImageOptions($request);
         $upload_handler = new \UploadHandler($options, false);
         $result = $upload_handler->post(false);
+        
         return $result;
     }
 
@@ -237,7 +238,7 @@ EOF;
     public function getImageFilename($url)
     {
         $urlArray = explode('/', $url);
-        return array_pop($urlArray);
+        return urldecode(array_pop($urlArray));
     }
 
     public function purgeEntry($entryId)
