@@ -38,6 +38,7 @@ export default class Feature extends Component {
     this.closeOverlay = this.closeOverlay.bind(this)
     this.updateEntry = this.updateEntry.bind(this)
     this.updateImage = this.updateImage.bind(this)
+    this.deleteFeature = this.deleteFeature.bind(this)
   }
 
   componentDidMount() {
@@ -60,9 +61,15 @@ export default class Feature extends Component {
           message.type = 'warning'
           this.setState({message: message, loading: false})
         } else {
-          this.setState(
-            {featureList: data.featureList, stories: data.stories, loading: false}
-          )
+          this.setState({
+            featureList: data.featureList,
+            stories: data.stories,
+            loading: false,
+            currentFeature: null,
+            currentKey: null,
+            currentEntry: null,
+            currentEntryKey: null,
+          })
         }
       }.bind(this),
       error: function () {
@@ -93,6 +100,19 @@ export default class Feature extends Component {
     const featureList = this.state.featureList
     featureList[this.state.currentKey] = currentFeature
     this.setState({currentEntry, currentFeature, featureList})
+  }
+
+  deleteFeature(key) {
+    const feature = this.state.featureList[key]
+    $.ajax({
+      url: 'stories/Feature/' + feature.id,
+      dataType: 'json',
+      type: 'delete',
+      success: function () {
+        this.load()
+      }.bind(this),
+      error: function () {}.bind(this),
+    })
   }
 
   loadCurrentFeature(key) {
@@ -146,8 +166,7 @@ export default class Feature extends Component {
         continue
       }
       let value = feature.entries[i]
-
-      if (value.id > 0) {
+      if (value.entryId > 0) {
         newEntries.push(value)
       }
     }
@@ -193,8 +212,8 @@ export default class Feature extends Component {
         sorting
       } = feature
       let newEntries = entries.map(function (value) {
-        if (value.id > 0) {
-          return {id: value.id, x: value.x, y: value.y}
+        if (value.entryId > 0) {
+          return {entryId: value.entryId, x: value.x, y: value.y}
         }
       })
       $.ajax({
@@ -269,16 +288,16 @@ export default class Feature extends Component {
         list={this.state.featureList}
         srcHttp={this.props.srcHttp}
         updateActive={this.updateActive}
+        deleteFeature={this.deleteFeature}
         loadCurrentFeature={this.loadCurrentFeature}/>
     }
   }
 
   render() {
     let backToList
-
     if (this.state.currentKey !== null) {
       backToList = <button className="btn btn-default" onClick={this.clearFeature}>
-        <i className="fa fa-list"></i>Back to list</button>
+        <i className="fa fa-list"></i>&nbsp;Back to feature list</button>
     }
 
     let story
