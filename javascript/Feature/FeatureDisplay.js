@@ -31,8 +31,19 @@ const FeatureDisplay = (props) => {
   let columnContent = []
   let previousEmpty = false
   let currentEntry = {}
+
+  let tempStoryList = []
+  for (let x = 0; x < stories.length; x++) {
+    tempStoryList[x] = stories[x]
+  }
+
   for (let i = 0; i < columns; i++) {
     currentEntry = feature.entries[i]
+    for (let j = 0; j < tempStoryList.length; j++) {
+      if(tempStoryList[j].id == currentEntry.entryId) {
+        tempStoryList.splice(j,1)
+      }
+    }
     columnContent.push(
       <DisplayColumn
         key={i}
@@ -40,7 +51,7 @@ const FeatureDisplay = (props) => {
         previousEmpty={previousEmpty}
         format={feature.format}
         entry={currentEntry}
-        stories={stories}
+        stories={tempStoryList}
         applyStory={applyStory.bind(null, i)}
         clearStory={clearStory.bind(null, i)}
         stopMove={stopMove}
@@ -48,11 +59,10 @@ const FeatureDisplay = (props) => {
         moveThumb={moveThumb.bind(null, i)}
         holdThumb={holdThumb.bind(null, i)}/>
     )
-    if (currentEntry.id == 0) {
+    if (currentEntry.entryId == 0) {
       previousEmpty = true
     }
   }
-
   return (<div className="row">
     {columnContent}
   </div>)
