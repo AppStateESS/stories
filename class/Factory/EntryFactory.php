@@ -458,7 +458,12 @@ EOF;
             $imageDirectory = $photoFactory->getImagePath($entry->id);
             $imageFile = $photoFactory->getImageFilename($src);
             $entry->leadImage = $imageDirectory . $imageFile;
-            $entry->thumbnail = $photoFactory->createThumbnail($imageDirectory, $imageFile);
+            if ($entry->leadImage) {
+                $thumbnail = $photoFactory->createThumbnail($imageDirectory, $imageFile);
+                if ($thumbnail !== false) {
+                    $entry->thumbnail = $thumbnail;
+                }
+            }
         } elseif ($iframe->length > 0) {
             $iframeNode = $iframe->item(0);
             $src = $iframeNode->getAttribute('src');
