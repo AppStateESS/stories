@@ -19,10 +19,10 @@ const FeatureList = (props) => {
   const buttons = [
     {
       value: '1',
-      label: 'Yes',
+      label: 'Yes'
     }, {
       value: '0',
-      label: 'No',
+      label: 'No'
     },
   ]
 
@@ -43,8 +43,9 @@ const FeatureList = (props) => {
       <tr key={key}>
         <td>
           <button
-            className="btn btn-primary"
-            onClick={props.loadCurrentFeature.bind(null, key)}>Edit</button>
+            className="btn btn-primary btn-sm"
+            onClick={props.loadCurrentFeature.bind(null, key)}><i className="fa fa-edit"></i></button>
+          <button className="btn btn-danger btn-sm" onClick={props.deleteFeature.bind(null, key)}><i className="fa fa-trash-o"></i></button>
         </td>
         <td>{value.title}</td>
         <td>{value.columns}</td>
@@ -58,7 +59,7 @@ const FeatureList = (props) => {
   })
   return (
     <div>
-      <table className="table table-striped">
+      <table className="table table-striped features">
         <tbody>
           <tr>
             <th>&nbsp;</th>
@@ -78,7 +79,8 @@ FeatureList.propTypes = {
   list: PropTypes.array,
   loadCurrentFeature: PropTypes.func,
   updateActive: PropTypes.func,
-  srcHttp: PropTypes.string
+  deleteFeature: PropTypes.func,
+  srcHttp: PropTypes.string,
 }
 
 FeatureList.defaultTypes = {}
