@@ -712,9 +712,9 @@ EOF;
     private function loadTwitterScript($include = true)
     {
         $includeFile = '<script src="//platform.twitter.com/widgets.js"></script>';
-        $homeHttp = PHPWS_HOME_HTTP;
+        $homeHttp = PHPWS_SOURCE_HTTP;
         $script = <<<EOF
-<script src="$homeHttp/mod/stories/javascript/MediumEditor/loadTwitter.js"></script>
+<script src="{$homeHttp}mod/stories/javascript/MediumEditor/loadTwitter.js"></script>
 EOF;
         if ($include) {
             return $includeFile . $script;
