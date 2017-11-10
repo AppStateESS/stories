@@ -9,7 +9,7 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-define('STORIES_FRIENDLY_ERROR', false);
+define('STORIES_FRIENDLY_ERROR', true);
 
 define('STORIES_REACT_DEV', false);
 
