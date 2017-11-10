@@ -88,24 +88,30 @@ EOF;
 
     protected function getStoriesRootDirectory()
     {
+        return PHPWS_SOURCE_DIR . 'mod/stories/';
+    }
+
+    protected function getStoriesRootUrl()
+    {
         return PHPWS_SOURCE_HTTP . 'mod/stories/';
     }
 
     private function getScript($scriptName)
     {
-        $root_directory = $this->getStoriesRootDirectory() . 'javascript/';
+        $jsDirectory = $this->getStoriesRootUrl() . 'javascript/';
         if (STORIES_REACT_DEV) {
-            $path = "dev/$scriptName.js";
+            $path = "{$jsDirectory}dev/$scriptName.js";
         } else {
-            $path = $this->getAssetPath($scriptName);
+            $path = $jsDirectory . 'build/' . $this->getAssetPath($scriptName);
         }
-        $script = "<script type='text/javascript' src='{$root_directory}$path'></script>";
+        $script = "<script type='text/javascript' src='$path'></script>";
         return $script;
     }
 
     private function getAssetPath($scriptName)
     {
-        $jsonRaw = file_get_contents($this->getStoriesRootDirectory() . 'assets.json');
+        $rootDirectory = $this->getStoriesRootDirectory();
+        $jsonRaw = file_get_contents($rootDirectory . 'assets.json');
         $json = json_decode($jsonRaw, true);
         if (!isset($json[$scriptName]['js'])) {
             throw new \Exception('Script file not found among assets.');
