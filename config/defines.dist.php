@@ -11,21 +11,17 @@
  */
 define('STORIES_FRIENDLY_ERROR', false);
 
-define('STORIES_REACT_DEV', true);
+define('STORIES_REACT_DEV', false);
 
 define('STORIES_CONTENT_TAGS',
-        'b,strong,em,i,p,img,iframe,h2,h3,h4,h5,a,style,blockquote,ul,ol,li,figure,figcaption,div,twitterwidget');
+        'b,strong,em,i,p,img,iframe,h2,h3,h4,h5,a,style,blockquote,ul,ol,li,figure,figcaption,div,twitterwidget,script');
 
 define('STORIES_SUMMARY_TAGS', 'b,strong,em,i,a,style,ul,ol,li,p');
 
 define('STORIES_DAY_THRESHOLD', 3);
 
-// pics with the width:height ratio below will cropped to landscape
-define('STORIES_ORIENTATION_RATIO', 1.3);
+// Max width should be greater if you want a landscape-centric feature list
+// Hint: you do.
+define('STORIES_THUMB_TARGET_WIDTH', 800);
+define('STORIES_THUMB_TARGET_HEIGHT', 400);
 
-// width/height on thumb ratios
-define('STORIES_LANDSCAPE_THUMB_WIDTH', 340);
-define('STORIES_LANDSCAPE_THUMB_HEIGHT', 100);
-
-define('STORIES_PORTRAIT_THUMB_WIDTH', 180);
-define('STORIES_PORTRAIT_THUMB_HEIGHT', 260);
