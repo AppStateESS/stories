@@ -137,6 +137,7 @@ class EntryFactory extends BaseFactory
             'offset' => 0,
             'tag' => null,
             'vars' => null,
+            'titleRequired' => false,
             'mustHaveThumbnail' => false,
             'asResource' => true,
             'showTagLinks' => true);
@@ -169,12 +170,16 @@ class EntryFactory extends BaseFactory
                 $tbl->addField('content');
             }
         }
-        
+
+        if ($options['titleRequired']) {
+            $tbl->addFieldConditional('title', '', '!=');
+        }
+
         //conditionals
         if ($options['mustHaveThumbnail'] === true) {
             $tbl->addFieldConditional('thumbnail', null, 'is not');
         }
-        
+
         $tbl->addFieldConditional('deleted', 0);
         if ($options['publishedOnly']) {
             $tbl->addFieldConditional('published', 1);
@@ -459,7 +464,8 @@ EOF;
             $imageFile = $photoFactory->getImageFilename($src);
             $entry->leadImage = $imageDirectory . $imageFile;
             if ($entry->leadImage) {
-                $thumbnail = $photoFactory->createThumbnail($imageDirectory, $imageFile);
+                $thumbnail = $photoFactory->createThumbnail($imageDirectory,
+                        $imageFile);
                 if ($thumbnail !== false) {
                     $entry->thumbnail = $thumbnail;
                 }
@@ -476,23 +482,52 @@ EOF;
             }
         }
 
-        if ($h3->length > 0) {
-            $h3Node = $h3->item(0);
-            $entry->title = $h3Node->textContent;
-        } elseif ($h4->length > 0) {
-            $h4Node = $h4->item(0);
-            $entry->title = $h4Node->textContent;
-        } elseif ($p->length > 0) {
-            $pNode = $p->item(0);
-            $entry->title = $pNode->textContent;
-            $pStart = 1;
+        $titleFound = false;
+        // Give up after searching 5 blank tags
+        $titleCount = 0;
+        while (!$titleFound && $titleCount < 5) {
+            if ($h3->length > 0 && $h3->length >= $titleCount) {
+                $h3Node = $h3->item($titleCount);
+                $title = trim($h3Node->textContent);
+            } elseif ($h4->length > 0 && $h4->length >= $titleCount) {
+                $h4Node = $h4->item($titleCount);
+                $title = trim($h4Node->textContent);
+            } elseif ($p->length > 0 && $p->length >= $titleCount) {
+                $pNode = $p->item($titleCount);
+                $title = trim($pNode->textContent);
+                $pStart = $titleCount + 1;
+            }
+            if (!empty($title)) {
+                $titleFound = true;
+                $entry->title = $title;
+            }
+            $titleCount++;
+        }
+        if ($titleFound == false) {
+            $entry->title = '';
         }
 
-        if ($p->length > $pStart) {
-            $pNode = $p->item($pStart);
-            $pHtml = $doc->saveHtml($pNode);
-            $entry->summary = $pHtml;
+        $summaryFound = false;
+        $summaryCount = $pStart;
+        $summaryLimit = $summaryCount + 3;
+        while (!$summaryFound && $summaryCount < $summaryLimit) {
+            if ($p->length > $summaryCount) {
+                $pNode = $p->item($summaryCount);
+                //$pHtml = $doc->saveHtml($pNode);
+                $pContent = trim($pNode->textContent);
+                if (!empty($pContent)) {
+                    $entry->summary = "<p>$pContent</p>";
+                    $summaryFound = true;
+                }
+            } else {
+                $summaryFound = true;
+            }
+            $summaryCount++;
         }
+        if ($summaryFound == false) {
+            $entry->summary = '<p></p>';
+        }
+        
     }
 
     public function patch($entryId, Request $request)
@@ -542,7 +577,7 @@ EOF;
     {
         $entry = $this->load($id);
         $entry->deleted = true;
-        
+
         // Feature will bug out if the entry is deleted
         //
         $featureFactory = new FeatureFactory;
@@ -745,7 +780,8 @@ EOF;
      */
     private function cleanEmbed($content)
     {
-        return preg_replace('/<div data-embed-code="[^"]+">/s', '<div class="medium-insert-active">', $content);
+        return preg_replace('/<div data-embed-code="[^"]+">/s',
+                '<div class="medium-insert-active">', $content);
     }
 
     /**
