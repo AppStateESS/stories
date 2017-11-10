@@ -55,6 +55,7 @@ class Admin extends RoleController
             'vars' => array('id', 'title'),
             'includeContent' => false,
             'orderBy' => 'title',
+            'titleRequired' => true,
             'mustHaveThumbnail'=> true,
             'asResource'=> false,
             'showTagLinks' => false);
