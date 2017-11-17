@@ -1,7 +1,6 @@
 var setup = require('./exports.js')
 var webpack = require('webpack')
 var Promise = require('es6-promise').polyfill()
-var Shared = require('./Shared.js')
 
 module.exports = {
   entry: setup.entry,
