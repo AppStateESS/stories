@@ -6,10 +6,11 @@ import moment from 'moment'
 const PublishOverlay = ({
   publishDate,
   isPublished,
+  unpublish,
   savePublishDate,
   title,
-  publishStory,
-  setPublishDate,
+  publish,
+  setPublishDate
 }) => {
   let formattedDate = moment().format('YYYY-MM-DDThh:mm')
   if (publishDate.length !== 0) {
@@ -26,7 +27,9 @@ const PublishOverlay = ({
   )
 
   if (isPublished == 0) {
-    publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publishStory}>Publish</button>
+    publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publish}>Publish</button>
+  } else {
+    publishButton = <button className="btn btn-warning btn-block mb-1" onClick={unpublish}>Unpublish</button>
   }
 
   return (
@@ -54,10 +57,12 @@ const PublishOverlay = ({
 PublishOverlay.propTypes = {
   savePublishDate: PropTypes.func,
   title: PropTypes.string,
-  isPublished: PropTypes.string,
+  isPublished: PropTypes.oneOfType([PropTypes.number,PropTypes.string,]),
+  unpublish: PropTypes.func,
+  publish: PropTypes.func,
   publishDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
   setPublishDate: PropTypes.func,
-  publishStory: PropTypes.func,
+  publishStory: PropTypes.func
 }
 
 export default PublishOverlay
