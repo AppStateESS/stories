@@ -4,7 +4,7 @@
 
 #EntryList .entry-row {
   border-bottom : 1px dotted #A9A9A9;
-  padding : 1em 0;
+  padding : 1em;
 }
 
 .entry-row a.admin {
@@ -102,4 +102,39 @@ ul.tag-list li {
 
 .update-label {
   font-size: 20px;
+}
+
+.pointer:hover {
+  cursor: pointer;
+}
+
+#EntryList .entry-row.active {
+  border : 2px solid #C1C1C1;
+  border-radius : 6px;
+}
+
+.dropdown-menu>li>a.text-danger {
+  color: #a94442;
+}
+
+.options {
+  padding-top : 1em;
+}
+
+.entry-title h3 {
+  display: inline;
+}
+
+.stories-navbar .navbar {
+  background-color: #f8f8f8;
+  margin-top : 55px;
+  border-bottom : 3px solid #e3e3e3;
+  border-top : 3px solid #e3e3e3;
+}
+
+.stories-navbar .navbar-default .navbar-toggle {
+  background-color : black;
+}
+
+#EntryList {
 }
