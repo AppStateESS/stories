@@ -488,14 +488,20 @@ EOF;
         while (!$titleFound && $titleCount < 5) {
             if ($h3->length > 0 && $h3->length >= $titleCount) {
                 $h3Node = $h3->item($titleCount);
-                $title = trim($h3Node->textContent);
+                if ($h3Node) {
+                    $title = trim($h3Node->textContent);
+                }
             } elseif ($h4->length > 0 && $h4->length >= $titleCount) {
                 $h4Node = $h4->item($titleCount);
-                $title = trim($h4Node->textContent);
+                if ($h4Node) {
+                    $title = trim($h4Node->textContent);
+                }
             } elseif ($p->length > 0 && $p->length >= $titleCount) {
                 $pNode = $p->item($titleCount);
-                $title = trim($pNode->textContent);
-                $pStart = $titleCount + 1;
+                if ($pNode) {
+                    $title = trim($pNode->textContent);
+                    $pStart = $titleCount + 1;
+                }
             }
             if (!empty($title)) {
                 $titleFound = true;
@@ -527,7 +533,6 @@ EOF;
         if ($summaryFound == false) {
             $entry->summary = '<p></p>';
         }
-        
     }
 
     public function patch($entryId, Request $request)
@@ -802,7 +807,7 @@ EOF;
 
     private function removeExtraParagraphs($content)
     {
-        return preg_replace('/(<p class=""><\/p>)\n?|(<p class="medium-insert-active"><\/p>|<p><\/p>)\n/',
+        return preg_replace('/(<p class="">(<br>)?<\/p>)\n?|(<p class="medium-insert-active">(<br>)?<\/p>|<p>(<br>)?<\/p>)\n/',
                 '', $content);
     }
 
@@ -819,7 +824,7 @@ EOF;
         // Removes extra medium paragraphs padded to end of content
         $content = $this->removeExtraParagraphs($content);
         // Removes extra headers sometimes padded on end
-        $content = preg_replace('/<h[34]><\/h[34]>/', '', $content);
+        $content = preg_replace('/<h[34]>\s+<\/h[34]>/', '', $content);
         // Removes the overlay left on embeds (e.g. youtube)
         $content = $this->removeMediumOverlay($content);
         $content = $this->cleanEmbed($content);
