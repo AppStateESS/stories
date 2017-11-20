@@ -48,6 +48,8 @@ class Admin extends RoleController
 
     protected function listHtmlCommand(Request $request)
     {
+        \Menu::disableMenu();
+
         $settings = new \phpws2\Settings();
         $segmentSize = $settings->get('stories', 'segmentSize');
         $script = <<<EOF
