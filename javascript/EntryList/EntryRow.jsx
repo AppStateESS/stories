@@ -2,6 +2,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
+import Options from './Options.js'
 
 const EntryRow = (props) => {
   const noImage = () => {
@@ -103,7 +104,7 @@ const EntryRow = (props) => {
   }
 
   return (
-    <div className={rowClass} onClick={props.setCurrentEntry}>
+    <div className={rowClass} onMouseOver={props.setCurrentEntry}>
       <div className="row">
         <div className="col-sm-2">
           <div className="entry-image" onClick={props.thumbnailForm}>
@@ -146,30 +147,6 @@ EntryRow.propTypes = {
 }
 
 export default EntryRow
-
-const Options = ({entryId, deleteStory, publishStory, published}) => {
-  let publishLabel = 'Publish'
-  if (published) {
-    publishLabel = 'Unpublish'
-  }
-  return (
-    <div>
-      <a
-        className="btn btn-sm btn-default mr-1"
-        href={`./stories/Entry/${entryId}/edit`}>Edit</a>
-      <a className="btn btn-sm btn-default mr-1" onClick={publishStory}>{publishLabel}</a>
-      <a className="btn btn-sm btn-default mr-1" onClick={deleteStory}>
-        Delete</a>
-    </div>
-  )
-}
-
-Options.propTypes = {
-  entryId: PropTypes.string,
-  deleteStory: PropTypes.func,
-  isPublished: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
-  publishStory: PropTypes.func,
-}
 
 const TagList = ({tags, showTags, sortByTag}) => {
   let tagList
