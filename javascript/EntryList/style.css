@@ -108,9 +108,13 @@ ul.tag-list li {
   cursor: pointer;
 }
 
+#EntryList .entry-row {
+  border-radius : 6px;
+  border : 2px solid transparent;
+}
+
 #EntryList .entry-row.active {
   border : 2px solid #C1C1C1;
-  border-radius : 6px;
 }
 
 .dropdown-menu>li>a.text-danger {
@@ -127,14 +131,23 @@ ul.tag-list li {
 
 .stories-navbar .navbar {
   background-color: #f8f8f8;
-  margin-top : 55px;
-  border-bottom : 3px solid #e3e3e3;
-  border-top : 3px solid #e3e3e3;
+  border-bottom : 2px solid #e3e3e3;
+  border-top : 2px solid #e3e3e3;
+  margin-top : 0px;
 }
 
 .stories-navbar .navbar-default .navbar-toggle {
   background-color : black;
 }
 
-#EntryList {
+@media screen and (max-width : 992px) {
+  #stories-navbar-toggle form.navbar-form {
+    margin : 0px;
+    padding: 0px 15px;
+  }
+
+  #stories-navbar-toggle form.navbar-form div.input-group {
+    width : 100%;
+  }
+
 }
