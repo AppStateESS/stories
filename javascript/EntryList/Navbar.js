@@ -5,47 +5,7 @@ import SortBy from './SortBy'
 import './style.css'
 
 const Navbar = (props) => {
-  const {search, handleChange, clearSearch, entry, showPublish} = props
-
-  let actions = <span className="navbar-text">Click story to manage...</span>
-  if (props.entry != null) {
-    const title = (
-      <span><em><strong>{props.entry.title.substr(0, 15)}</strong></em></span>
-    )
-
-    let publishLabel = 'Publish'
-    if (entry.published) {
-      publishLabel = 'Unpublish'
-    }
-
-    actions = (
-      <li className="dropdown">
-        <a
-          className="dropdown-toggle pointer"
-          data-toggle="dropdown"
-          role="button"
-          aria-haspopup="true"
-          aria-expanded="false">Action: {title}&nbsp;
-          <i className="fa fa-chevron-down"></i>
-        </a>
-        <ul className="dropdown-menu">
-          <li>
-            <a href={`./stories/Entry/${entry.id}/edit`}><i className="fa fa-edit"></i>&nbsp;Edit</a>
-          </li>
-          <li>
-            <a className="pointer" onClick={showPublish}><i className="fa fa-book"></i>&nbsp;{publishLabel}</a>
-          </li>
-          <li>
-            <a href="#"><i className="fa fa-tags"></i>&nbsp;Tags</a>
-          </li>
-          <li role="separator" className="divider"></li>
-          <li>
-            <a className="text-danger" href="#"><i className="fa fa-trash-o"></i>&nbsp;Delete</a>
-          </li>
-        </ul>
-      </li>
-    )
-  }
+  const {search, handleChange, clearSearch} = props
 
   return (
     <div className="stories-navbar">
@@ -56,7 +16,7 @@ const Navbar = (props) => {
               type="button"
               className="navbar-toggle collapsed"
               data-toggle="collapse"
-              data-target="#bs-example-navbar-collapse-1"
+              data-target="#stories-navbar-toggle"
               aria-expanded="false">
               <span className="sr-only">Toggle navigation</span>
               <span className="icon-bar"></span>
@@ -65,9 +25,8 @@ const Navbar = (props) => {
             </button>
             <a className="navbar-brand" href="./stories/Listing">Stories list</a>
           </div>
-          <div className="collapse navbar-collapse">
+          <div className="collapse navbar-collapse" id="stories-navbar-toggle">
             <ul className="nav navbar-nav">
-              <li className="navbar-text">|</li>
               <li className="dropdown">
                 <a
                   className="dropdown-toggle pointer"
@@ -91,15 +50,21 @@ const Navbar = (props) => {
                     <a href="./stories/Feature">
                       <span className="glyphicon glyphicon-th-large" aria-hidden="true"></span>&nbsp; Features</a>
                   </li>
+                  <li>
+                    <a href="./stories/Settings">
+                      <i className="fa fa-gear"></i>&nbsp; Settings</a>
+                  </li>
+                  <li role="separator" className="divider"></li>
+                  <li>
+                    <a href="index.php?module=controlpanel">Control panel</a>
+                  </li>
                 </ul>
               </li>
-              {actions}
-
             </ul>
             <ul className="nav navbar-nav navbar-right">
               <SortBy {...props}/>
               <li>
-                <form className="navbar-form  search" role="search">
+                <form className="navbar-form search" role="search">
                   <div className="input-group">
                     <input
                       className="form-control"
@@ -128,6 +93,7 @@ Navbar.propTypes = {
   updateSort: PropTypes.func,
   sortBy: PropTypes.string,
   publishStory: PropTypes.func,
+  showPublish: PropTypes.func,
   currentKey: PropTypes.number,
   deleteStory: PropTypes.func,
   showTags: PropTypes.func,
