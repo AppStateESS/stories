@@ -7,6 +7,9 @@ var editor = new MediumEditor('.entry-form', {
     text: 'Start your story here...',
     hideOnClick: false,
   },
+  disableDoubleReturn : true,
+  autoLink: true,
+  imageDragging: false,
   toolbar: {
     buttons: [
       'bold',
@@ -85,3 +88,44 @@ const triggerAutoSave = function (event, editable) {
 const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 3000)
 editor.subscribe('editableInput', throttledAutoSave)
 editor.subscribe('blur', blurContentSave)
+
+editor.subscribe('editableDrop', function(e, element) {
+  if (e.dataTransfer.files.length < 1) {
+    return true
+  } else {
+    return handleImageDropped(e, element)
+  }
+})
+
+var handleImageDropped = function(e, element) {
+  var data, file, fileUploadOptions, imagePlugin
+  data = e.dataTransfer.files
+  imagePlugin = $.data(element, 'plugin_mediumInsertImages')
+  file = $(imagePlugin.templates['src/js/templates/images-fileupload.hbs']())
+  fileUploadOptions = {
+    url: imagePlugin.options.fileUploadOptions.url,
+    dataType: 'json',
+    acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+    formData: imagePlugin.options.fileUploadOptions.formData,
+    dropZone: null,
+    add: function(e, data) {
+      $.proxy(imagePlugin, 'uploadAdd', e, data)()
+    },
+    done: function(e, data) {
+      $.proxy(imagePlugin, 'uploadDone', e, data)()
+    }
+  }
+  if (new XMLHttpRequest().upload) {
+    fileUploadOptions.progress = function(e, data) {
+      return $.proxy(imagePlugin, 'uploadProgress', e, data)()
+    }
+    fileUploadOptions.progressall = function(e, data) {
+      return $.proxy(imagePlugin, 'uploadProgressall', e, data)()
+    }
+  }
+  file.fileupload(fileUploadOptions)
+  file.fileupload('add', {
+    files: data
+  })
+  return false
+}
