@@ -29,6 +29,8 @@ require_once PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
 class EntryFactory extends BaseFactory
 {
 
+    public $more_rows = true;
+    
     public function build()
     {
         return new Resource;
@@ -56,7 +58,7 @@ class EntryFactory extends BaseFactory
         // if offset not set, default 0
         $offset = (int) $request->pullGetString('offset', true);
         $offsetSize = $segmentSize * $offset;
-
+        
         $orderBy = $request->pullGetString('sortBy', true);
         if (!in_array($orderBy, array('publishDate', 'title', 'updateDate'))) {
             $orderBy = 'publishDate';
@@ -99,7 +101,9 @@ class EntryFactory extends BaseFactory
         $options = $this->pullOptions($request);
         $options['hideExpired'] = false;
         $options['publishedOnly'] = false;
-        return $this->pullList($options);
+        $result['listing'] = $this->pullList($options);
+        $result['more_rows'] = $this->more_rows;
+        return $result;
     }
 
     /**
@@ -131,7 +135,7 @@ class EntryFactory extends BaseFactory
         $defaultOptions = array('publishedOnly' => false,
             'hideExpired' => true,
             'orderBy' => 'publishDate',
-            'limit' => 6,
+            'limit' => 5,
             'includeContent' => true,
             'publishedOnly' => true,
             'offset' => 0,
@@ -252,6 +256,9 @@ class EntryFactory extends BaseFactory
             }
         } else {
             $listing = $db->select();
+        }
+        if (count($listing) < $options['limit']) {
+            $this->more_rows = false;
         }
         return $listing;
     }

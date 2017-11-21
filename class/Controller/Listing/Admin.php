@@ -61,7 +61,9 @@ EOF;
     protected function listJsonCommand(Request $request)
     {
         $tagFactory = new TagFactory;
-        return array('listing'=>$this->factory->adminListView($request), 'tags'=> $tagFactory->listTags(true));
+        $result = $this->factory->adminListView($request);
+        $result['tags'] = $tagFactory->listTags(true);
+        return $result;
     }
 
 }

@@ -26,12 +26,14 @@ export default class EntryList extends Component {
       tagOverlay: false,
       thumbnailOverlay: false,
       sortByTagId: 0,
-      tags: []
+      moreRows: true,
+      tags: [],
     }
 
     this.offset = 0
     this.delay
     this.publish = this.publish.bind(this)
+    this.showMore = this.showMore.bind(this)
     this.saveTags = this.saveTags.bind(this)
     this.showTags = this.showTags.bind(this)
     this.unpublish = this.unpublish.bind(this)
@@ -58,6 +60,11 @@ export default class EntryList extends Component {
       return null
     }
     return this.state.listing[this.state.currentKey]
+  }
+
+  showMore() {
+    this.offset = this.offset + 1
+    this.load()
   }
 
   unpublish() {
@@ -117,18 +124,28 @@ export default class EntryList extends Component {
 
   load() {
     let tags = []
-    $.getJSON('./stories/Listing', {
+    const sendData = {
       search: this.state.search,
       sortBy: this.state.sortBy,
-      sortByTagId: this.state.sortByTagId
-    }).done(function (data) {
+      sortByTagId: this.state.sortByTagId,
+    }
+    if (this.offset > 0) {
+      sendData.offset = this.offset
+    }
+    $.getJSON('./stories/Listing', sendData).done(function (data) {
       if (data.listing == null) {
         if (data.tags != null) {
           tags = data.tags
         }
-        this.setState({listing: false, loading: false, tags: tags})
+        this.setState({listing: false, loading: false, tags: tags, moreRows: false})
       } else {
-        this.setState({listing: data.listing, loading: false, tags: tags})
+        let listing
+        if (this.offset > 0) {
+          listing = this.state.listing.concat(data.listing)
+        } else {
+          listing = data.listing
+        }
+        this.setState({listing: listing, loading: false, tags: tags, moreRows: data.more_rows})
       }
     }.bind(this))
   }
@@ -162,7 +179,7 @@ export default class EntryList extends Component {
         entry.tags.push(newTag)
         this.setState({tags})
         this.updateEntry(entry)
-      }.bind(this),
+      }.bind(this)
     })
   }
 
@@ -183,15 +200,15 @@ export default class EntryList extends Component {
         values: [
           {
             param: 'published',
-            value: this.currentEntry().published,
+            value: this.currentEntry().published
           }, {
             param: 'publishDate',
-            value: this.currentEntry().publishDate,
+            value: this.currentEntry().publishDate
           },
         ]
       },
       dataType: 'json',
-      type: 'patch',
+      type: 'patch'
     })
   }
 
@@ -212,7 +229,7 @@ export default class EntryList extends Component {
 
   closeOverlay() {
     this.setState(
-      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null,}
+      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null}
     )
     this.unlockBody()
   }
@@ -238,7 +255,7 @@ export default class EntryList extends Component {
           listing.splice(key, 1)
           this.setState({listing: listing})
         }.bind(this),
-        error: function () {}.bind(this),
+        error: function () {}.bind(this)
       })
     }
   }
@@ -248,13 +265,13 @@ export default class EntryList extends Component {
       url: `./stories/Entry/${this.currentEntry().id}`,
       data: {
         param: 'publishDate',
-        value: this.currentEntry().publishDate,
+        value: this.currentEntry().publishDate
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
         this.closeOverlay()
-      }.bind(this),
+      }.bind(this)
     })
   }
 
@@ -263,13 +280,13 @@ export default class EntryList extends Component {
       url: './stories/Tag/attach',
       data: {
         entryId: this.currentEntry().id,
-        tags: this.currentEntry().tags,
+        tags: this.currentEntry().tags
       },
       dataType: 'json',
       type: 'post',
       success: function () {
         this.closeOverlay()
-      }.bind(this),
+      }.bind(this)
     })
   }
 
@@ -281,7 +298,7 @@ export default class EntryList extends Component {
       listing = <NoEntries/>
     } else {
       let isCurrent = false
-      listing = this.state.listing.map(function (entry, key) {
+      let listResult = this.state.listing.map(function (entry, key) {
         isCurrent = (this.currentEntry() != null && this.currentEntry().id == entry.id)
 
         return <EntryRow
@@ -296,6 +313,9 @@ export default class EntryList extends Component {
           key={key}
           publish={this.publish.bind(this, key)}/>
       }.bind(this))
+      listing = <div>
+        <p>Click on a story to edit.</p>
+        <div>{listResult}</div></div>
     }
 
     const fadeIn = {
@@ -306,12 +326,13 @@ export default class EntryList extends Component {
       animation: "fadeOut"
     }
 
-    let showMore
-    if (this.state.listing.length > this.props.segmentSize) {
-      showMore = (
-        <button className="btn btn-primary" onClick={this.showMore}>Show more rows</button>
-      )
-    }
+    const showMore = (
+      this.state.moreRows === true
+        ? <div className="text-center">
+          <button className="btn btn-primary" onClick={this.showMore}>Show more results</button>
+        </div>
+        : null
+    )
 
     return (
       <div className="stories-listing">

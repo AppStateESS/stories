@@ -61,6 +61,7 @@ class Admin extends RoleController
             'showTagLinks' => false);
         // select list to fill in empty feature columns
         $stories = $entryFactory->pullList($options);
+        
         return array('featureList' => $featureList, 'stories' => $stories);
     }
 
