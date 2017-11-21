@@ -64,7 +64,7 @@ const Navbar = (props) => {
             <ul className="nav navbar-nav navbar-right">
               <SortBy {...props}/>
               <li>
-                <form className="navbar-form search" role="search">
+                <form className="navbar-form search" role="search" onSubmit={function(e){e.preventDefault()}}>
                   <div className="input-group">
                     <input
                       className="form-control"
