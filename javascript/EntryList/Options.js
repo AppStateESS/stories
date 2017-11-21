@@ -24,7 +24,7 @@ Options.propTypes = {
   deleteStory: PropTypes.func,
   isPublished: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
   publishStory: PropTypes.func,
-  published: PropTypes.bool,
+  published: PropTypes.oneOfType([PropTypes.bool,PropTypes.string,])
 }
 
 export default Options
