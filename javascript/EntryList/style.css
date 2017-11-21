@@ -47,8 +47,12 @@ ul.sortby {
 }
 
 ul.sortby li {
-  font-size : 14px;
+  font-size : 18px;
   font-family : sans-serif;
+}
+
+#stories-navbar-toggle ul.sortby li:hover {
+  background-color : #e3e3e3;
 }
 
 .relative  {
