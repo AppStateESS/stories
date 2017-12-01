@@ -8,7 +8,10 @@ import TagOverlay from '../AddOn/TagOverlay'
 import ThumbnailOverlay from './ThumbnailOverlay'
 import {VelocityTransitionGroup} from 'velocity-react'
 import moment from 'moment'
-import Navbar from './Navbar'
+import Navbar from '../AddOn/Navbar'
+import SearchBar from '../AddOn/SearchBar'
+import SortBy from './SortBy'
+import './style.css'
 
 /* global $ */
 
@@ -27,7 +30,7 @@ export default class EntryList extends Component {
       thumbnailOverlay: false,
       sortByTagId: 0,
       moreRows: true,
-      tags: [],
+      tags: []
     }
 
     this.offset = 0
@@ -127,7 +130,7 @@ export default class EntryList extends Component {
     const sendData = {
       search: this.state.search,
       sortBy: this.state.sortBy,
-      sortByTagId: this.state.sortByTagId,
+      sortByTagId: this.state.sortByTagId
     }
     if (this.offset > 0) {
       sendData.offset = this.offset
@@ -137,7 +140,7 @@ export default class EntryList extends Component {
         if (data.tags != null) {
           tags = data.tags
         }
-        this.setState({listing: false, loading: false, tags: tags, moreRows: false})
+        this.setState({listing: false, loading: false, tags: tags, moreRows: false,})
       } else {
         let listing
         if (this.offset > 0) {
@@ -145,7 +148,9 @@ export default class EntryList extends Component {
         } else {
           listing = data.listing
         }
-        this.setState({listing: listing, loading: false, tags: tags, moreRows: data.more_rows})
+        this.setState(
+          {listing: listing, loading: false, tags: tags, moreRows: data.more_rows,}
+        )
       }
     }.bind(this))
   }
@@ -179,7 +184,7 @@ export default class EntryList extends Component {
         entry.tags.push(newTag)
         this.setState({tags})
         this.updateEntry(entry)
-      }.bind(this)
+      }.bind(this),
     })
   }
 
@@ -200,15 +205,15 @@ export default class EntryList extends Component {
         values: [
           {
             param: 'published',
-            value: this.currentEntry().published
+            value: this.currentEntry().published,
           }, {
             param: 'publishDate',
-            value: this.currentEntry().publishDate
+            value: this.currentEntry().publishDate,
           },
         ]
       },
       dataType: 'json',
-      type: 'patch'
+      type: 'patch',
     })
   }
 
@@ -229,7 +234,7 @@ export default class EntryList extends Component {
 
   closeOverlay() {
     this.setState(
-      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null}
+      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null,}
     )
     this.unlockBody()
   }
@@ -255,7 +260,7 @@ export default class EntryList extends Component {
           listing.splice(key, 1)
           this.setState({listing: listing})
         }.bind(this),
-        error: function () {}.bind(this)
+        error: function () {}.bind(this),
       })
     }
   }
@@ -265,13 +270,13 @@ export default class EntryList extends Component {
       url: `./stories/Entry/${this.currentEntry().id}`,
       data: {
         param: 'publishDate',
-        value: this.currentEntry().publishDate
+        value: this.currentEntry().publishDate,
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
         this.closeOverlay()
-      }.bind(this)
+      }.bind(this),
     })
   }
 
@@ -280,13 +285,13 @@ export default class EntryList extends Component {
       url: './stories/Tag/attach',
       data: {
         entryId: this.currentEntry().id,
-        tags: this.currentEntry().tags
+        tags: this.currentEntry().tags,
       },
       dataType: 'json',
       type: 'post',
       success: function () {
         this.closeOverlay()
-      }.bind(this)
+      }.bind(this),
     })
   }
 
@@ -315,7 +320,8 @@ export default class EntryList extends Component {
       }.bind(this))
       listing = <div>
         <p>Click on a story to edit.</p>
-        <div>{listResult}</div></div>
+        <div>{listResult}</div>
+      </div>
     }
 
     const fadeIn = {
@@ -333,6 +339,16 @@ export default class EntryList extends Component {
         </div>
         : null
     )
+
+    let rightSide = [
+      <SortBy updateSort={this.updateSort} sortBy={this.state.sortBy} key="0"/>,
+      <SearchBar key="1"
+        search={this.state.search}
+        clearSearch={this.clearSearch}
+        handleChange={this.searchChange}/>,
+    ]
+
+    const header = {title: 'Stories list', url: './stories/Listing'}
 
     return (
       <div className="stories-listing">
@@ -369,15 +385,7 @@ export default class EntryList extends Component {
           updateImage={this.updateImage}
           entry={this.currentEntry()}
           close={this.closeOverlay}/>
-        <Navbar
-          sortBy={this.state.sortBy}
-          search={this.state.search}
-          entry={this.currentEntry()}
-          showPublish={this.showPublishOverlay}
-          currentKey={this.state.currentKey}
-          clearSearch={this.clearSearch}
-          handleChange={this.searchChange}
-          updateSort={this.updateSort}/>
+        <Navbar rightSide={rightSide} header={header}/>
         <div>{listing}</div>
         <div>{showMore}</div>
       </div>
