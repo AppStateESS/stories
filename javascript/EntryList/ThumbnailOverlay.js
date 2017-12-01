@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import {VelocityTransitionGroup} from 'velocity-react'
 import Overlay from '../AddOn/Overlay'
 import Dropzone from 'react-dropzone'
+import EmptyPhoto from '../AddOn/EmptyPhoto'
+import '../AddOn/imageOverlay.css'
 
 /* global $ */
 
@@ -21,7 +23,7 @@ class ThumbnailOverlay extends React.Component {
   }
 
   close() {
-    this.setState({photo: null, thumbOnly: false,})
+    this.setState({photo: null})
     this.props.close()
   }
 
@@ -34,7 +36,6 @@ class ThumbnailOverlay extends React.Component {
     let formData = new FormData()
     formData.append('image', this.file)
     formData.append('entryId', this.props.entry.id)
-    formData.append('thumbOnly', this.state.thumbOnly)
     $.ajax({
       url: './stories/EntryPhoto/update',
       data: formData,
@@ -64,7 +65,7 @@ class ThumbnailOverlay extends React.Component {
     let photo = <EmptyPhoto/>
     if (entry && entry.thumbnail != '') {
       photo = <img
-        src={this.props.entry.thumbnail}
+        src={entry.thumbnail}
       style={{maxWidth: '100%', maxHeight: '100%'}}/>
     }
 
@@ -111,18 +112,10 @@ ThumbnailOverlay.propTypes = {
   updateEntry: PropTypes.func,
   updateImage: PropTypes.func,
   entry: PropTypes.object,
-  close: PropTypes.func
+  close: PropTypes.func,
+  saveThumbnail: PropTypes.func,
 }
 
 ThumbnailOverlay.defaultTypes = {}
 
 export default ThumbnailOverlay
-
-const EmptyPhoto = () => {
-  return (
-    <div>
-      <i className="fa fa-camera fa-4x"></i><br/>
-      <div>Click to browse<br/>- or -<br/>drag image here</div>
-    </div>
-  )
-}
