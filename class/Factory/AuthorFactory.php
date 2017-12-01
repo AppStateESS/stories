@@ -28,6 +28,7 @@ namespace stories\Factory;
 
 use stories\Resource\AuthorResource as Resource;
 use phpws2\Database;
+use Canopy\Request;
 
 /**
  * Description of AuthorFactory
@@ -36,6 +37,8 @@ use phpws2\Database;
  */
 class AuthorFactory extends BaseFactory
 {
+
+    public $moreRows = false;
 
     public function build($data = null)
     {
@@ -60,7 +63,7 @@ class AuthorFactory extends BaseFactory
             return $author;
         }
     }
-    
+
     public function createFromCurrentUser()
     {
         $author = $this->build();
@@ -78,6 +81,60 @@ class AuthorFactory extends BaseFactory
         $tbl->addFieldConditional('userId', $userId);
         $data = $db->selectOneRow();
         return !empty($data) ? $this->build($data) : null;
+    }
+
+    public function listing(Request $request)
+    {
+        $offset = (int) $request->pullGetString('offset', true);
+        $offsetSize = 10 * $offset;
+
+        $search = $request->pullGetString('search', true);
+
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesAuthor');
+        $userTbl = $db->addTable('users', null, false);
+        $userTbl->addField('last_logged');
+        $db->joinResources($tbl, $userTbl,
+                $db->createConditional($tbl->getField('userId'),
+                        $userTbl->getField('id')));
+        $tbl->addOrderBy('name');
+        $db->setLimit(10, $offset);
+        if ($search) {
+            $tbl->addFieldConditional('name', "%$search%", 'like');
+        }
+        $result = $db->select();
+        if (count($result) == 10) {
+            $this->moreRows = true;
+        }
+        return $result;
+    }
+
+    private function getImageOptions($request)
+    {
+        $authorId = $request->pullPostInteger('authorId');
+        $imageDirectory = "images/stories/author/$authorId/";
+        $imagePath = PHPWS_HOME_DIR . $imageDirectory;
+        $options = array(
+            'max_width' => 200,
+            'max_height' => 300,
+            'current_image_extensions' => true,
+            'upload_dir' => $imagePath,
+            'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory,
+            'image_versions' => array()
+        );
+        return $options;
+    }
+    
+    public function savePhoto(Request $request)
+    {
+        if (!is_dir(PHPWS_HOME_DIR . 'images/stories/author/')) {
+            mkdir(PHPWS_HOME_DIR . 'images/stories/author/');
+        }
+        $options = $this->getImageOptions($request);
+        $upload_handler = new \UploadHandler($options, false);
+        $result = $upload_handler->post(false);
+
+        return $result;
     }
 
 }
