@@ -28,14 +28,14 @@ export default class Publish extends Component {
     this.setState({publishDate: publishDate})
   }
 
-  publishStory() {
+  publishStory(value) {
     $.ajax({
       url: `./stories/Entry/${this.state.id}`,
       data: {
         values: [
           {
             param: 'published',
-            value: 1
+            value: value
           }, {
             param: 'publishDate',
             value: this.state.publishDate
@@ -45,7 +45,7 @@ export default class Publish extends Component {
       dataType: 'json',
       type: 'patch',
       success: function () {
-        this.setState({published: 1, publishOverlay: false})
+        this.setState({published: value, publishOverlay: false})
       }.bind(this),
       error: function () {}.bind(this)
     })
@@ -89,7 +89,8 @@ export default class Publish extends Component {
         isPublished={this.state.published}
         publishDate={this.state.publishDate}
         setPublishDate={this.setPublishDate}
-        publishStory={this.publishStory}/>
+        publish={this.publishStory.bind(this, 1)}
+        unpublish={this.publishStory.bind(this, 0)}/>
     }
 
     let publishLink
