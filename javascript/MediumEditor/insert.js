@@ -7,7 +7,7 @@ var editor = new MediumEditor('.entry-form', {
     text: 'Start your story here...',
     hideOnClick: false,
   },
-  disableDoubleReturn : true,
+  disableDoubleReturn : false,
   autoLink: true,
   imageDragging: false,
   toolbar: {
