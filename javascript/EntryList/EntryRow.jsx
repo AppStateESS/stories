@@ -104,7 +104,7 @@ const EntryRow = (props) => {
   }
 
   return (
-    <div className={rowClass} onClick={props.setCurrentEntry}>
+    <div className={rowClass} onMouseOver={props.setCurrentEntry}>
       <div className="row">
         <div className="col-sm-2">
           <div className="entry-image" onClick={props.thumbnailForm}>
