@@ -42,9 +42,11 @@ class Admin extends User
 
     protected function editHtmlCommand(Request $request)
     {
+        \Menu::disableMenu();
         $entry = $this->factory->load($this->id);
         StoryMenu::viewStoryLink($entry);
-        return $this->factory->form($entry, $request->pullGetBoolean('new', true));
+        return $this->factory->form($entry,
+                        $request->pullGetBoolean('new', true));
     }
 
     protected function postCommand(Request $request)
@@ -65,9 +67,9 @@ class Admin extends User
     protected function deleteCommand(Request $request)
     {
         $this->factory->delete($this->id);
-        return array('success'=>true);
+        return array('success' => true);
     }
-    
+
     protected function viewJsonCommand(Request $request)
     {
         $entry = $this->factory->load($this->id);
@@ -79,5 +81,5 @@ class Admin extends User
         StoryMenu::editStoryLink($this->id);
         return parent::viewHtmlCommand($request);
     }
-    
+
 }
