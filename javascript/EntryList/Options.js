@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 const Options = ({entryId, deleteStory, publishStory, published,}) => {
   let publishLabel = 'Publish'
-  if (published) {
+  if (published == 1) {
     publishLabel = 'Unpublish'
   }
   return (
