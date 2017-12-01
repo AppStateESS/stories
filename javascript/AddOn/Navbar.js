@@ -1,11 +1,23 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import SortBy from './SortBy'
-import './style.css'
+import './nav.css'
 
 const Navbar = (props) => {
-  const {search, handleChange, clearSearch} = props
+  const {rightSide, leftSide, header} = props
+
+  let url = './'
+  let title
+  if (header != null) {
+    if (header.title != undefined) {
+      if (header.url != null) {
+        url = header.url
+      }
+      title = header.title
+    } else {
+      title = header
+    }
+  }
 
   return (
     <div className="stories-navbar">
@@ -23,7 +35,7 @@ const Navbar = (props) => {
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <a className="navbar-brand" href="./stories/Listing">Stories list</a>
+            <a className="navbar-brand" href={url}>{title}</a>
           </div>
           <div className="collapse navbar-collapse" id="stories-navbar-toggle">
             <ul className="nav navbar-nav">
@@ -48,11 +60,15 @@ const Navbar = (props) => {
                   </li>
                   <li>
                     <a href="./stories/Feature">
-                      <span className="glyphicon glyphicon-th-large" aria-hidden="true"></span>&nbsp; Features</a>
+                      <span className="glyphicon glyphicon-th-large" aria-hidden="true"></span>&nbsp;Features</a>
+                  </li>
+                  <li>
+                    <a href="./stories/Author">
+                      <i className="fa fa-user"></i>&nbsp;Authors</a>
                   </li>
                   <li>
                     <a href="./stories/Settings">
-                      <i className="fa fa-gear"></i>&nbsp; Settings</a>
+                      <i className="fa fa-gear"></i>&nbsp;Settings</a>
                   </li>
                   <li role="separator" className="divider"></li>
                   <li>
@@ -60,24 +76,10 @@ const Navbar = (props) => {
                   </li>
                 </ul>
               </li>
+              {leftSide}
             </ul>
             <ul className="nav navbar-nav navbar-right">
-              <SortBy {...props}/>
-              <li>
-                <form className="navbar-form search" role="search" onSubmit={function(e){e.preventDefault()}}>
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      value={search}
-                      type="text"
-                      placeholder="Search for stories..."
-                      onChange={handleChange}/>
-                    <span className="input-group-btn">
-                      <button className="btn btn-default" type="button" onClick={clearSearch}>Clear</button>
-                    </span>
-                  </div>
-                </form>
-              </li>
+              {rightSide}
             </ul>
           </div>
         </div>
@@ -86,17 +88,8 @@ const Navbar = (props) => {
   )
 }
 Navbar.propTypes = {
-  entry: PropTypes.object,
-  search: PropTypes.string,
-  clearSearch: PropTypes.func,
-  handleChange: PropTypes.func,
-  updateSort: PropTypes.func,
-  sortBy: PropTypes.string,
-  publishStory: PropTypes.func,
-  showPublish: PropTypes.func,
-  currentKey: PropTypes.number,
-  deleteStory: PropTypes.func,
-  showTags: PropTypes.func,
+  rightSide: PropTypes.oneOfType([PropTypes.array,PropTypes.object,]),
+  header: PropTypes.oneOfType([PropTypes.object, PropTypes.string,])
 }
 
 Navbar.defaultTypes = {}
