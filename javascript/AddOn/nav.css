@@ -1,0 +1,39 @@
+ul.sortby {
+  padding : 8px;
+}
+
+ul.sortby li {
+  font-size : 18px;
+  font-family : sans-serif;
+}
+
+#stories-navbar-toggle ul.sortby li:hover {
+  background-color : #e3e3e3;
+}
+
+.relative  {
+  position : relative;
+}
+
+.stories-navbar .navbar {
+  background-color: #f8f8f8;
+  border-bottom : 2px solid #e3e3e3;
+  border-top : 2px solid #e3e3e3;
+  margin-top : 0px;
+}
+
+.stories-navbar .navbar-default .navbar-toggle {
+  background-color : black;
+}
+
+@media screen and (max-width : 992px) {
+  #stories-navbar-toggle form.navbar-form {
+    margin : 0px;
+    padding: 0px 15px;
+  }
+
+  #stories-navbar-toggle form.navbar-form div.input-group {
+    width : 100%;
+  }
+
+}
