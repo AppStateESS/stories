@@ -30,7 +30,7 @@ class EntryFactory extends BaseFactory
 {
 
     public $more_rows = true;
-    
+
     public function build()
     {
         return new Resource;
@@ -58,7 +58,7 @@ class EntryFactory extends BaseFactory
         // if offset not set, default 0
         $offset = (int) $request->pullGetString('offset', true);
         $offsetSize = $segmentSize * $offset;
-        
+
         $orderBy = $request->pullGetString('sortBy', true);
         if (!in_array($orderBy, array('publishDate', 'title', 'updateDate'))) {
             $orderBy = 'publishDate';
@@ -293,6 +293,7 @@ class EntryFactory extends BaseFactory
         $vars['entry'] = json_encode($entryVars);
         $vars['publishBar'] = $this->scriptView('PublishBar');
         $vars['tagBar'] = $this->scriptView('TagBar');
+        $vars['navbar'] = $this->scriptView('Navbar');
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
 
@@ -364,9 +365,24 @@ EOF;
         $entry->stamp();
         $content = $request->pullPutVar('content');
         $content = $this->filterMedium($content);
-        $entry->content = $content;
-        $this->siftContent($entry);
+        if (empty($content)) {
+            $this->clearOutEntry($entry);
+        } else {
+            $entry->content = $content;
+            $this->siftContent($entry);
+        }
         return $this->save($entry);
+    }
+
+    private function clearOutEntry(Resource $entry)
+    {
+        $this->title = '';
+        $this->content = '';
+        $this->summary = '';
+        $photoFactory = new EntryPhotoFactory();
+        $photoFactory->purgeEntry($entry->id);
+        $this->leadImage = null;
+        $this->thumbnail = null;
     }
 
     public function save(Resource $entry)
@@ -522,8 +538,8 @@ EOF;
 
         $summaryFound = false;
         $summaryCount = $pStart;
-        $summaryLimit = $summaryCount + 3;
-        while (!$summaryFound && $summaryCount < $summaryLimit) {
+        $summaryLimit = $p->length - $pStart;
+        while (!$summaryFound && $summaryCount <= $summaryLimit) {
             if ($p->length > $summaryCount) {
                 $pNode = $p->item($summaryCount);
                 //$pHtml = $doc->saveHtml($pNode);
@@ -532,13 +548,11 @@ EOF;
                     $entry->summary = "<p>$pContent</p>";
                     $summaryFound = true;
                 }
-            } else {
-                $summaryFound = true;
             }
             $summaryCount++;
         }
         if ($summaryFound == false) {
-            $entry->summary = '<p></p>';
+            $entry->summary = '';
         }
     }
 
