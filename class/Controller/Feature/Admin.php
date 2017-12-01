@@ -42,6 +42,7 @@ class Admin extends RoleController
 
     protected function listHtmlCommand(Request $request)
     {
+        \Menu::disableMenu();
         $this->factory->addStoryCss();
         return $this->factory->scriptView('Feature', true,
                         array('srcHttp' => PHPWS_SOURCE_HTTP));
@@ -49,19 +50,19 @@ class Admin extends RoleController
 
     protected function listJsonCommand(Request $request)
     {
-        $featureList = $this->factory->listing(array('activeOnly'=>false));
+        $featureList = $this->factory->listing(array('activeOnly' => false));
         $entryFactory = new EntryFactory();
         $options = array(
             'vars' => array('id', 'title'),
             'includeContent' => false,
             'orderBy' => 'title',
             'titleRequired' => true,
-            'mustHaveThumbnail'=> true,
-            'asResource'=> false,
+            'mustHaveThumbnail' => true,
+            'asResource' => false,
             'showTagLinks' => false);
         // select list to fill in empty feature columns
         $stories = $entryFactory->pullList($options);
-        
+
         return array('featureList' => $featureList, 'stories' => $stories);
     }
 
@@ -69,18 +70,18 @@ class Admin extends RoleController
     {
         return array('featureId' => $this->factory->post($request));
     }
-    
+
     protected function deleteCommand(Request $request)
     {
         $this->factory->delete($this->id);
     }
-    
+
     protected function putCommand(Request $request)
     {
         $feature = $this->factory->load($this->id);
         $this->factory->update($feature, $request);
         $this->factory->loadEntries($feature);
-        return array('featureId'=>$this->id, 'entries'=>$feature->entries);
+        return array('featureId' => $this->id, 'entries' => $feature->entries);
     }
 
 }

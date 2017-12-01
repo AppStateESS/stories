@@ -88,10 +88,9 @@ const Navbar = (props) => {
   )
 }
 Navbar.propTypes = {
+  leftSide: PropTypes.oneOfType([PropTypes.array,PropTypes.object,]),
   rightSide: PropTypes.oneOfType([PropTypes.array,PropTypes.object,]),
   header: PropTypes.oneOfType([PropTypes.object, PropTypes.string,])
 }
-
-Navbar.defaultTypes = {}
 
 export default Navbar

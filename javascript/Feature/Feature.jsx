@@ -8,6 +8,7 @@ import Message from '../AddOn/Message'
 import Waiting from '../AddOn/Waiting'
 import SampleEntry from './SampleEntry'
 import ThumbnailOverlay from '../EntryList/ThumbnailOverlay'
+import Navbar from '../AddOn/Navbar'
 import './style.css'
 
 /* global $ */
@@ -294,29 +295,30 @@ export default class Feature extends Component {
   }
 
   render() {
-    let backToList
+    let leftSide = []
+
     if (this.state.currentKey !== null) {
-      backToList = <button className="btn btn-default" onClick={this.clearFeature}>
-        <i className="fa fa-list"></i>&nbsp;Back to feature list</button>
+      leftSide.push(<li><form className="navbar-form"><button type="button" className="btn btn-default" onClick={this.clearFeature}>
+        <i className="fa fa-list"></i>&nbsp;Back to feature list</button></form></li>)
     }
+
+    leftSide = [<li><form className="navbar-form"><button type="button" className="btn btn-primary mr-1" onClick={this.addRow}>
+      <i className="fa fa-plus"></i>&nbsp;Add feature set</button></form></li>]
 
     let story
     if (this.state.currentEntry !== null) {
       story = this.state.currentEntry.story
     }
+
     return (
       <div className="feature-admin">
+        <Navbar header="Features" leftSide={leftSide}/>
         <ThumbnailOverlay
           thumbnailOverlay={this.state.thumbnailOverlay}
           updateEntry={this.updateEntry}
           updateImage={this.updateImage}
           entry={story}
           close={this.closeOverlay}/> {this.message()}
-        <div className="buttons">
-          <button className="btn btn-primary mr-1" onClick={this.addRow}>
-            <i className="fa fa-plus"></i>&nbsp;Add feature set</button>
-          {backToList}
-        </div>
         {this.getListing()}
       </div>
     )
