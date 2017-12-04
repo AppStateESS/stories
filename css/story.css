@@ -97,3 +97,29 @@ ul.tag-list li {
     right: 6px;
     font-size : 14px;
 }
+
+.circle-frame {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 50%;
+    border : 1px solid #e3e3e3;
+}
+
+.circle-frame img {
+    width: 100%;
+    height: auto;
+}
+
+.publish-info {
+    padding: 8px;
+    float: left;
+    margin-right: 10px;
+    width: 300px;
+}
+
+.publish-info .circle-frame {
+    margin-right : 8px;
+}
