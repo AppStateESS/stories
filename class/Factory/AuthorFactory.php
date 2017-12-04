@@ -115,8 +115,9 @@ class AuthorFactory extends BaseFactory
         $imageDirectory = "images/stories/author/$authorId/";
         $imagePath = PHPWS_HOME_DIR . $imageDirectory;
         $options = array(
-            'max_width' => 200,
-            'max_height' => 300,
+            'param_name' => 'image',
+            'max_width' => 150,
+            'max_height' => 150,
             'current_image_extensions' => true,
             'upload_dir' => $imagePath,
             'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory,
