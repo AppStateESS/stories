@@ -319,7 +319,6 @@ export default class EntryList extends Component {
           publish={this.publish.bind(this, key)}/>
       }.bind(this))
       listing = <div>
-        <p>Click on a story to edit.</p>
         <div>{listResult}</div>
       </div>
     }
