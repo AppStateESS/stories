@@ -20,22 +20,28 @@
 <script src="<?=$home?>mod/stories/node_modules/jquery-sortable/source/js/jquery-sortable-min.js"></script>
 <script>const entry = <?=$entry?>; const tags = <?=$tags?>;const status='<?=$status?>';</script>
 <div class="well well-sm">
-  <div class="row">
-    <div class="col-sm-6">
+  <div class="row mb-1">
+    <div class="col-sm-5">
       <?=$publishBar?>
     </div>
-    <div class="col-sm-6">
-      <?=$tagBar?>
+    <div class="col-sm-7">
+      <div class="row">
+        <div class="col-sm-3">Author:</div>
+        <div class="col-sm-9"><?=$authorBar?></div>
+      </div>
     </div>
   </div>
+  <?=$tagBar?>
+</div>
+<div>
 </div>
 <?=$navbar?>
 <div class="entry">
   <div class="entry-form"></div>
   <?=$MediumEditorPack,$EntryForm,$insert,$cssOverride?>
-  <script>
-  editor.setContent(entry.content)
-  </script>
+      <script>
+      editor.setContent(entry.content)
+</script>
   <hr />
 </div>
 <?=$twitter?>
