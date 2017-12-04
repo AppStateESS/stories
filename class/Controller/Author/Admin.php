@@ -35,20 +35,25 @@ use Canopy\Request;
 class Admin extends User
 {
 
-    public function listHtmlCommand(Request $request)
+    protected function listHtmlCommand(Request $request)
     {
         \Menu::disableMenu();
         return $this->factory->scriptView('AuthorList');
     }
 
-    public function listJsonCommand(Request $request)
+    protected function listJsonCommand(Request $request)
     {
         $data['listing'] = $this->factory->listing($request);
         $data['moreRows'] = $this->factory->moreRows;
         return $data;
     }
     
-    public function photoPostCommand(Request $request)
+    protected function selectJsonCommand(Request $request)
+    {
+        return array('listing'=>$this->factory->jsonSelectList());
+    }
+    
+    protected function photoPostCommand(Request $request)
     {
         return $this->factory->savePhoto($request);
     }
