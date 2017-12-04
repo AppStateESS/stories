@@ -52,7 +52,7 @@ export default class PictureOverlay extends Component {
       processData: false,
       contentType: false,
       success: function (data) {
-        author.pic = data.pic
+        author.pic = data.image[0].url
         this.props.updateAuthor(author)
         this.close()
       }.bind(this),

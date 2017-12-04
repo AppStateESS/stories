@@ -36,7 +36,7 @@ const AuthorRow = (props) => {
     </div>
   )
   if (pic != null) {
-    picture = (<img src={pic} onClick={props.thumbnail} />)
+    picture = (<div className="circle-frame"><img src={pic} onClick={props.thumbnail} /></div>)
   }
   return (
     <tr>

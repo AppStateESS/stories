@@ -5,6 +5,7 @@ import Waiting from '../AddOn/Waiting'
 import Navbar from '../AddOn/Navbar'
 import SearchBar from '../AddOn/SearchBar'
 import PictureOverlay from './PictureOverlay'
+import './style.css'
 
 /* global $ */
 
@@ -29,6 +30,7 @@ export default class AuthorList extends Component {
     this.updateImage = this.updateImage.bind(this)
     this.clearSearch = this.clearSearch.bind(this)
     this.searchChange = this.searchChange.bind(this)
+    this.updateAuthor = this.updateAuthor.bind(this)
   }
 
   componentDidMount() {
