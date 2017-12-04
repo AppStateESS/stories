@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import BigCheckbox from '../AddOn/BigCheckbox'
 import ButtonGroup from '../AddOn/ButtonGroup'
+import Navbar from '../AddOn/Navbar'
 
 /* global $ */
 
@@ -15,6 +16,7 @@ export default class Settings extends Component {
       listStoryFormat: 0,
       commentCode: '',
       showComments: 0,
+      showAuthor: 0,
     }
     this.setCommentCode = this.setCommentCode.bind(this)
     this.setShowComments = this.setShowComments.bind(this)
@@ -89,6 +91,7 @@ export default class Settings extends Component {
 
     return (
       <div>
+        <Navbar header={'Stories settings'} />
         <h2>Stories Settings</h2>
         <div className="settings">
           <div className="mb-1">
@@ -133,6 +136,12 @@ export default class Settings extends Component {
             <button className="btn btn-primary" onClick={this.saveCommentCode}>
               <i className="fa fa-save"></i>&nbsp;Save comment code</button>
           </div>
+        </div>
+        <div className="settings">
+          <BigCheckbox
+            handle={this.saveSetting.bind(this, 'showAuthor')}
+            checked={this.state.showAuthor}
+            label="Show author profile on story"/>
         </div>
       </div>
     )
