@@ -1,16 +1,23 @@
 <?=$style?>
 <?php foreach ($list as $entry):?>
-<div class="story-list-entry">
-    <div>Published <?=$entry['publishDateRelative']?></div>
-    <?php if ($isAdmin):?>
-        <a class="pull-right btn btn-default btn-sm" href="./stories/Entry/<?=$entry['id']?>/edit">Edit</a>
+<div class="story-list-entry clearfix">
+  <?php if ($isAdmin):?>
+  <a class="pull-right btn btn-default btn-sm" href="./stories/Entry/<?=$entry['id']?>/edit">Edit</a>
+  <?php endif;?>
+  <div class="story-content">
+    <?=$entry['content']?>
+  </div>
+  <?php if ($showAuthor):?>
+  <div class="publish-info">
+    <div class="circle-frame pull-left"><img src="<?=$entry['authorPic']?>" /></div>
+    <?=$entry['authorName']?>
     <?php endif;?>
-    <div class="story-content">
-        <?=$entry['content']?>
-    </div>
-    <div class="story-tags">
-        <?=$entry['tagLinks']?>
-    </div>
+    <div class="clearfix">Published <?=$entry['publishDateRelative']?></div>
+  </div>
+  <div class="story-tags">
+    <?=$entry['tagLinks']?>
+  </div>
+  
 </div>
 <?php endforeach; ?>
 <?=$twitter?>
