@@ -82,7 +82,7 @@ class EntryFactory extends BaseFactory
     {
         $this->addStoryCss();
         $options = $this->pullOptions($request);
-
+        $options['showAuthor'] = \phpws2\Settings::get('stories', 'showAuthor');
         $list = $this->pullList($options);
         if (empty($list)) {
             return null;
@@ -138,6 +138,7 @@ class EntryFactory extends BaseFactory
             'limit' => 5,
             'includeContent' => true,
             'publishedOnly' => true,
+            'showAuthor' => false,
             'offset' => 0,
             'tag' => null,
             'vars' => null,
@@ -170,6 +171,7 @@ class EntryFactory extends BaseFactory
             $tbl->addField('updateDate');
             $tbl->addField('urlTitle');
             $tbl->addField('leadImage');
+            $tbl->addField('authorId');
             if ($options['includeContent']) {
                 $tbl->addField('content');
             }
@@ -214,17 +216,12 @@ class EntryFactory extends BaseFactory
                             $tagIdTable->getField('entryId'), '='));
         }
 
-        if (!$limitedVars ||
-                (
-                in_array('authorName', $options['vars']) ||
-                in_array('authorEmail', $options['vars'])
-                )
-        ) {
-
+        if (!$limitedVars && $options['showAuthor']) {
             $tbl2 = $db->addTable('storiesAuthor');
 
             $tbl2->addField('name', 'authorName');
             $tbl2->addField('email', 'authorEmail');
+            $tbl2->addField('pic', 'authorPic');
             $db->joinResources($tbl, $tbl2,
                     $db->createConditional($tbl->getField('authorId'),
                             $tbl2->getField('id')), 'left');
@@ -293,6 +290,7 @@ class EntryFactory extends BaseFactory
         $vars['entry'] = json_encode($entryVars);
         $vars['publishBar'] = $this->scriptView('PublishBar');
         $vars['tagBar'] = $this->scriptView('TagBar');
+        $vars['authorBar'] = $this->scriptView('AuthorBar');
         $vars['navbar'] = $this->scriptView('Navbar');
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
@@ -706,23 +704,23 @@ EOF;
      */
     public function showStories(Request $request)
     {
-        $list = $this->pullList();
-
+        $options = $this->pullOptions($request);
+        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
+        $options['showAuthor'] = $showAuthor;
+        $list = $this->pullList($options);
         if (empty($list)) {
             return null;
         }
-
-        $settings = new \phpws2\Settings;
         //listStoryFormat  - 0 is summary, 1 full
         $this->addStoryCss();
         $data['list'] = $list;
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $data['isAdmin'] = \Current_User::allow('stories');
-
+        $data['showAuthor'] = $showAuthor;
         $data['twitter'] = $this->loadTwitterScript();
         $template = new \phpws2\Template($data);
 
-        $templateFile = $settings->get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary.html';
+        $templateFile = Settings::get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary.html';
         $template->setModuleTemplate('stories', $templateFile);
         return $template->get();
     }
