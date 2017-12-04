@@ -11,5 +11,6 @@ exports.entry = {
   Settings: exports.APP_DIR + '/Settings/index.jsx',
   Feature: exports.APP_DIR + '/Feature/index.jsx',
   Navbar: exports.APP_DIR + '/Navbar/index.jsx',
+  AuthorBar: exports.APP_DIR + '/AuthorBar/index.jsx',
   vendor: ['react', 'react-dom']
 }
