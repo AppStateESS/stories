@@ -84,7 +84,12 @@ class BaseController extends \phpws2\Http\Controller
             return parent::execute($request);
         } catch (\Exception $e) {
             // Friendly error catch here if needed.
-            throw $e;
+            $friendly = new FriendlyError($this->getModule());
+            if (STORIES_FRIENDLY_ERROR) {
+                return $friendly->execute($request);
+            } else {
+                throw $e;
+            }
         }
     }
     
