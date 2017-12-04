@@ -148,8 +148,7 @@ class UploadHandler
                   'max_width' => 800,
                   'max_height' => 600
                   ),
-                */
-                
+                 */
                 'thumbnail' => array(
                     // Uncomment the following to use a defined directory for the thumbnails
                     // instead of a subdirectory based on the version identifier.
@@ -444,14 +443,14 @@ class UploadHandler
             // dimension error occurs, we never get to resize code. I am
             // just commenting this all out.
             /*
-            if ($max_width && $img_width > $max_width) {
-                $file->error = $this->get_error_message('max_width');
-                return false;
-            }
-            if ($max_height && $img_height > $max_height) {
-                $file->error = $this->get_error_message('max_height');
-                return false;
-            }
+              if ($max_width && $img_width > $max_width) {
+              $file->error = $this->get_error_message('max_width');
+              return false;
+              }
+              if ($max_height && $img_height > $max_height) {
+              $file->error = $this->get_error_message('max_height');
+              return false;
+              }
              * 
              */
             if ($min_width && $img_width < $min_width) {
@@ -647,7 +646,7 @@ class UploadHandler
             return false;
         }
     }
-    
+
     protected function gd_orient_image($file_path, $src_img)
     {
         if (!function_exists('exif_read_data')) {
@@ -1068,25 +1067,24 @@ class UploadHandler
     protected function handle_image_file($file_path, $file)
     {
         $failed_versions = array();
-        foreach ($this->options['image_versions'] as $version => $options) {
-            // not sure how this version component is supposed to work outside
-            // of the thumbnail. Forcing in the options makes the default image
-            // resize work.
-            if ($version == "") {
-                $options = array_merge($options, $this->options);
-            }
-            if ($this->create_scaled_image($file->name, $version, $options)) {
-                if (!empty($version)) {
-                    $file->{$version . 'Url'} = $this->get_download_url(
-                            $file->name, $version
-                    );
-                } else {
-                    $file->size = $this->get_file_size($file_path, true);
-                }
+        //foreach ($this->options['image_versions'] as $version => $options) {
+        // not sure how this version component is supposed to work outside
+        // of the thumbnail. Forcing in the options makes the default image
+        // resize work.
+        $options = $this->options;
+        $version = '';
+        if ($this->create_scaled_image($file->name, $version, $options)) {
+            if (!empty($version)) {
+                $file->{$version . 'Url'} = $this->get_download_url(
+                        $file->name, $version
+                );
             } else {
-                $failed_versions[] = $version ? $version : 'original';
+                $file->size = $this->get_file_size($file_path, true);
             }
+        } else {
+            $failed_versions[] = $version ? $version : 'original';
         }
+        //}
         if (count($failed_versions)) {
             $file->error = $this->get_error_message('image_resize')
                     . ' (' . implode($failed_versions, ', ') . ')';
