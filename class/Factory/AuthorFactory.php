@@ -125,7 +125,7 @@ class AuthorFactory extends BaseFactory
         );
         return $options;
     }
-    
+
     public function savePhoto(Request $request)
     {
         if (!is_dir(PHPWS_HOME_DIR . 'images/stories/author/')) {
@@ -134,8 +134,30 @@ class AuthorFactory extends BaseFactory
         $options = $this->getImageOptions($request);
         $upload_handler = new \UploadHandler($options, false);
         $result = $upload_handler->post(false);
+        if (isset($result['files'][0]->error)) {
+            return array('error' => $result['files'][0]->error);
+        } else {
+            $authorId = $request->pullPostInteger('authorId');
+            $imageFile = $result['image'][0]->name;
+            $imageDirectory = "images/stories/author/$authorId/";
 
-        return $result;
+            $author = $this->load($authorId);
+            if (!empty($author->pic) && is_file($author->pic)) {
+                unlink($author->pic);
+            }
+            $author->pic = $imageDirectory . $imageFile;
+            self::saveResource($author);
+            return $result;
+        }
+    }
+    
+    public function jsonSelectList() {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesAuthor');
+        $tbl->addField('id', 'value');
+        $tbl->addField('name', 'label');
+        $tbl->addOrderBy('name');
+        return $db->select();
     }
 
 }
