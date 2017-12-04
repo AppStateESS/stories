@@ -77,7 +77,7 @@ const saveContent = function (editor) {
 // Without this, the throttle will run save twice.
 let delaySave = true
 
-const triggerAutoSave = function (event, editable) {
+const triggerAutoSave = () => {
   if (delaySave) {
     delaySave = false
     return
