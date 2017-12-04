@@ -44,6 +44,7 @@ class Admin extends RoleController
     
     public function listHtmlCommand(Request $request)
     {
+        \Menu::disableMenu();
         $settings = new \phpws2\Settings();
         $settingObj = new \stdClass;
         $settingObj->listStories = $settings->get('stories', 'listStories');
@@ -51,6 +52,8 @@ class Admin extends RoleController
         $settingObj->listStoryFormat = $settings->get('stories', 'listStoryFormat');
         $settingObj->commentCode = $settings->get('stories', 'commentCode');
         $settingObj->showComments = $settings->get('stories', 'showComments');
+        $settingObj->showAuthor = $settings->get('stories', 'showAuthor');
+        
         $settingsJson = json_encode($settingObj);
         $script = <<<EOF
 <script>const settings = $settingsJson;</script>
