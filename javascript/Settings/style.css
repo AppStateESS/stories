@@ -9,3 +9,7 @@
 .indent {
   padding-left : 2.5em;
 }
+
+div.settings h3 {
+  margin-top : 0;
+}
