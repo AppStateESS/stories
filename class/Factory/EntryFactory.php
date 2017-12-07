@@ -43,12 +43,24 @@ class EntryFactory extends BaseFactory
      */
     public function load($id)
     {
-        $entry = parent::load($id);
+        $db = Database::getDB();
+        $entryTbl = $db->addTable('storiesEntry');
+        $authorTbl = $db->addTable('storiesAuthor');
+        $authorTbl->addField('name', 'authorName');
+        $authorTbl->addField('pic', 'authorPic');
+        $authorTbl->addField('email', 'authorEmail');
+        $db->joinResources($entryTbl, $authorTbl, $db->createConditional($entryTbl->getField('authorId'), $authorTbl->getField('id')));
+        $entryTbl->addFieldConditional(('id'), $id);
+        $entry = $this->build();
+        $db->selectInto($entry);
+        
         if ($entry->deleted) {
             throw new ResourceNotFound;
         }
         $tagFactory = new TagFactory;
         $entry->tags = $tagFactory->getTagsByEntryId($id);
+        
+        $authorFactory = new AuthorFactory;
         return $entry;
     }
 
