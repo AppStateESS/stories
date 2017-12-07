@@ -41,6 +41,8 @@ use phpws2\Template;
 class FeatureFactory extends BaseFactory
 {
 
+    const SUMMARY_TRIM = 150;
+
     public function build()
     {
         return new Resource;
@@ -88,6 +90,12 @@ class FeatureFactory extends BaseFactory
         return $result;
     }
 
+    /**
+     * 
+     * @param array $feature
+     * @param type $key Not used
+     * @param type $hiddenVars
+     */
     private function addEntries(&$feature, $key, $hiddenVars)
     {
         $entryFactory = new EntryFactory;
@@ -100,17 +108,72 @@ class FeatureFactory extends BaseFactory
             foreach ($entries as $k => $entry) {
                 $entry = $entryFactory->load($entry['entryId']);
                 $vars = $entry->getStringVars(true, $hiddenVars);
+                $trimCharacters = $this->trimCharactersCount($feature['format'], $feature['columns']);
+
+                $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
+                        $trimCharacters);
                 $entries[$k]['story'] = $vars;
             }
         }
         $feature['entries'] = $entries;
     }
 
-    private function featureColumn($entry)
+    private function featureColumn($entry, $format, $columns)
     {
         $vars = $entry['story'];
+        $trimCharacters = $this->trimCharactersCount($format, $columns);
+
+        $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
+                $trimCharacters);
         $vars['thumbnailStyle'] = $this->thumbnailStyle($entry);
         return $vars;
+    }
+
+    private function trimCharactersCount($format, $columns)
+    {
+
+        $columnAllowed = floor(120 / $columns);
+
+        switch ($format) {
+            case 'landscape':
+                return $columnAllowed + 50;
+
+            case 'topbottom':
+                return $columnAllowed + 60;
+
+            case 'leftright':
+                return $columnAllowed + 90;
+        }
+    }
+
+    private function trimSummary($summary, $sTrim = self::SUMMARY_TRIM)
+    {
+        $sLength = strlen($summary);
+
+        if ($sLength < $sTrim) {
+            return $summary;
+        }
+        $tooLong = true;
+        $count = 0;
+        $firstPop = false;
+        while ($tooLong && $count < 100) {
+
+            $sArray = preg_split('/([\?\.\!]\s?)/', $summary, null,
+                    PREG_SPLIT_DELIM_CAPTURE);
+            if (!$firstPop) {
+                //Removes space
+                array_pop($sArray);
+                $firstPop;
+            }
+            array_pop($sArray);
+            array_pop($sArray);
+            $summary = implode('', $sArray);
+            if (strlen($summary) < $sTrim) {
+                $tooLong = false;
+            }
+            $count++;
+        }
+        return $summary;
     }
 
     private function thumbnailStyle($entry)
@@ -123,10 +186,11 @@ background-image : url('$thumbnail');background-position: {$x}% {$y}%;
 EOF;
     }
 
-    private function featureRow($feature)
+    private function featureRow($feature, $showAuthor)
     {
         foreach ($feature['entries'] as $entry) {
-            $vars['entries'][] = $this->featureColumn($entry);
+            $vars['entries'][] = $this->featureColumn($entry,
+                    $feature['format'], $feature['columns']);
         }
         switch ($feature['columns']) {
             case '2':
@@ -142,6 +206,7 @@ EOF;
         $vars['bsClass'] = $bsClass;
         $vars['format'] = 'story-feature ' . $feature['format'];
         $vars['featureTitle'] = $feature['title'];
+        $vars['showAuthor'] = $showAuthor;
         $template = new \phpws2\Template($vars);
         $template->setModuleTemplate('stories', 'Feature.html');
         return $template->get();
@@ -158,6 +223,11 @@ EOF;
             $entryObj = $entryFactory->load($e['entryId']);
             $vars = $entryObj->getStringVars(true,
                     $this->defaultHiddenEntryVars());
+            $trimCharacters = $this->trimCharactersCount($feature->format,
+                    $feature->columns);
+            $vars['trim'] = $trimCharacters;
+            $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
+                    $trimCharacters);
             $entries[$k]['story'] = $vars;
         }
         $feature->entries = $entries;
@@ -170,11 +240,13 @@ EOF;
             return;
         }
 
+        $showAuthor = Settings::get('stories', 'showAuthor');
+
         foreach ($features as $f) {
             if (empty($f['entries'])) {
                 continue;
             }
-            $featureStack[] = $this->featureRow($f);
+            $featureStack[] = $this->featureRow($f, $showAuthor);
         }
         if (empty($featureStack)) {
             return null;
@@ -190,22 +262,23 @@ EOF;
         $tbl->addFieldConditional('entryId', $entryId);
         return $db->delete();
     }
-    
-    public function delete($featureId) {
+
+    public function delete($featureId)
+    {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesFeature');
         $tbl->addFieldConditional('id', $featureId);
         $db->delete();
         $this->deleteEntryList($featureId);
     }
-    
-    public function deleteEntryList($featureId) {
+
+    public function deleteEntryList($featureId)
+    {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesEntryToFeature');
         $tbl->addFieldConditional('featureId', $featureId);
         $db->delete();
     }
-            
 
     public function update(Resource $feature, Request $request)
     {
