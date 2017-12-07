@@ -63,7 +63,7 @@ const FeatureDisplay = (props) => {
       previousEmpty = true
     }
   }
-  return (<div className="row">
+  return (<div className="feature-row row">
     {columnContent}
   </div>)
 }
