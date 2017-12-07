@@ -298,11 +298,11 @@ export default class Feature extends Component {
     let leftSide = []
 
     if (this.state.currentKey !== null) {
-      leftSide.push(<li><form className="navbar-form"><button type="button" className="btn btn-default" onClick={this.clearFeature}>
+      leftSide.push(<li key="1"><form className="navbar-form"><button type="button" className="btn btn-default" onClick={this.clearFeature}>
         <i className="fa fa-list"></i>&nbsp;Back to feature list</button></form></li>)
     }
 
-    leftSide = [<li><form className="navbar-form"><button type="button" className="btn btn-primary mr-1" onClick={this.addRow}>
+    leftSide = [<li key="2"><form className="navbar-form"><button type="button" className="btn btn-primary mr-1" onClick={this.addRow}>
       <i className="fa fa-plus"></i>&nbsp;Add feature set</button></form></li>]
 
     let story
