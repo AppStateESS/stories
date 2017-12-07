@@ -131,18 +131,29 @@ class FeatureFactory extends BaseFactory
 
     private function trimCharactersCount($format, $columns)
     {
+        switch ($columns) {
+            case 2:
+            $columnAllowed = 100;
+                break;
 
-        $columnAllowed = floor(120 / $columns);
+            case 3:
+            $columnAllowed = 50;
+                break;
+
+            case 4:
+            $columnAllowed = 0;
+                break;
+        }
 
         switch ($format) {
             case 'landscape':
-                return $columnAllowed + 50;
+                return $columnAllowed + 60;
 
             case 'topbottom':
                 return $columnAllowed + 60;
 
             case 'leftright':
-                return $columnAllowed + 90;
+                return $columnAllowed + 70;
         }
     }
 
