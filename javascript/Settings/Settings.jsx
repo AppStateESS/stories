@@ -91,57 +91,69 @@ export default class Settings extends Component {
 
     return (
       <div>
-        <Navbar header={'Stories settings'} />
+        <Navbar header={'Stories settings'}/>
         <h2>Stories Settings</h2>
-        <div className="settings">
-          <div className="mb-1">
-            <BigCheckbox
-              handle={this.saveSetting.bind(this, 'listStories')}
-              checked={this.state.listStories}
-              label="List stories on front page"/>
-          </div>
-          <div className="indent clearfix">
-            <div className="row">
-              <div className="row">
-                <div className="col-sm-6">
-                  <div>Number of stories per page</div>
-                  <ButtonGroup
-                    buttons={amountButtons}
-                    handle={this.saveSetting.bind(this, 'listStoryAmount')}
-                    match={this.state.listStoryAmount}/>
-                </div>
-                <div className="col-sm-6">
-                  <div>Story display type</div>
-                  <ButtonGroup
-                    buttons={formatButton}
-                    handle={this.saveSetting.bind(this, 'listStoryFormat')}
-                    match={this.state.listStoryFormat}/>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>Front page</h3>
+              <div className="mb-1">
+                <BigCheckbox
+                  handle={this.saveSetting.bind(this, 'listStories')}
+                  checked={this.state.listStories}
+                  label="List stories on front page"/>
+              </div>
+              <div className="indent clearfix">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div>Number of stories per page</div>
+                    <ButtonGroup
+                      buttons={amountButtons}
+                      handle={this.saveSetting.bind(this, 'listStoryAmount')}
+                      match={this.state.listStoryAmount}/>
+                  </div>
+                  <div className="col-md-6">
+                    <div>Story display type</div>
+                    <ButtonGroup
+                      buttons={formatButton}
+                      handle={this.saveSetting.bind(this, 'listStoryFormat')}
+                      match={this.state.listStoryFormat}/>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="settings">
-          <BigCheckbox
-            handle={this.saveSetting.bind(this, 'showComments')}
-            checked={this.state.showComments}
-            label="Show comments on story"/>
-          <div className="indent">
-            <span>Comment embed code</span>
-            <textarea
-              className="form-control"
-              value={this.state.commentCode}
-              onChange={this.setCommentCode}
-              placeholder="e.g. Muut, StaticMan, Disqus, Isso"/>
-            <button className="btn btn-primary" onClick={this.saveCommentCode}>
-              <i className="fa fa-save"></i>&nbsp;Save comment code</button>
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>Comments</h3>
+              <BigCheckbox
+                handle={this.saveSetting.bind(this, 'showComments')}
+                checked={this.state.showComments}
+                label="Show comments on story"/>
+              <div className="indent">
+                <span>Comment embed code</span>
+                <textarea
+                  className="form-control"
+                  value={this.state.commentCode}
+                  onChange={this.setCommentCode}
+                  placeholder="e.g. Muut, StaticMan, Disqus, Isso"/>
+                <button className="btn btn-primary" onClick={this.saveCommentCode}>
+                  <i className="fa fa-save"></i>&nbsp;Save comment code</button>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="settings">
-          <BigCheckbox
-            handle={this.saveSetting.bind(this, 'showAuthor')}
-            checked={this.state.showAuthor}
-            label="Show author profile on story"/>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>Authors</h3>
+              <BigCheckbox
+                handle={this.saveSetting.bind(this, 'showAuthor')}
+                checked={this.state.showAuthor}
+                label="Show author profile on story"/>
+            </div>
+          </div>
+          <div className="col-md-6"></div>
         </div>
       </div>
     )
