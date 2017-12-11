@@ -1,5 +1,5 @@
-<div class="feature-title row">
-  <h3><?=$featureTitle?></h3>
+<div class="feature-row row">
+  <h3 class="feature-title"><?=$featureTitle?></h3>
   <?php foreach ($entries as $entry): extract($entry);?>
   <div class="<?=$bsClass?>">
     <div class="<?=$format?>">
@@ -13,7 +13,13 @@
         <div class="story-summary">
           <?=$strippedSummary?>
         </div>
-        <div class="published-date">Published
+      </div>
+      <div class="publish-info">
+        <?php if ($showAuthor):?>
+        <div class="circle-frame"><img src="<?=$authorPic?>" /></div>
+        <span class="author-name"><?=$authorName?></span>
+        <?php endif;?>
+        <div class="publish-date clearfix">Published
           <?=$publishDateRelative?>
         </div>
       </div>
