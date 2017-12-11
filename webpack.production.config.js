@@ -2,7 +2,7 @@ var setup = require('./exports.js')
 var webpack = require('webpack')
 var WebpackStripLoader = require('strip-loader')
 var Promise = require('es6-promise').polyfill()
-var AssetsPlugin = require('assets-webpack-plugin');
+var AssetsPlugin = require('assets-webpack-plugin')
 
 module.exports = {
   entry: setup.entry,
@@ -32,7 +32,6 @@ module.exports = {
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         screw_ie8: true,
@@ -46,7 +45,6 @@ module.exports = {
         screw_ie8: true
       }
     }),
-
     new AssetsPlugin({filename: 'assets.json', prettyPrint: true}),
   ],
   module: {
