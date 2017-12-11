@@ -681,6 +681,7 @@ EOF;
     {
         $tagFactory = new TagFactory;
         $showComments = \phpws2\Settings::get('stories', 'showComments');
+        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         try {
             $entry = $this->load($id);
             $data = $this->data($entry, !$isAdmin);
@@ -691,6 +692,7 @@ EOF;
             $data['twitter'] = $this->loadTwitterScript(true);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
+            $data['showAuthor'] = $showAuthor;
             $data['tagList'] = $tagFactory->getTagLinks($entry->tags);
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
