@@ -1,17 +1,30 @@
 <?=$cssOverride?>
 <?php if (!$published):?>
 <div class="alert alert-warning">This story is currently unpublished. <a href="./stories/Entry/<?=$id?>/edit">Edit this story to publish it.</a></div>
-<?php else:?>
-<div class="published-info">Published <?=$publishDateRelative?></div>
 <?php endif;?>
+
 <div class="story-entry">
-    <div class="story-content"><?=$content?></div>
+  <div class="story-content"><?=$content?></div>
 </div>
 <?=$tagList?>
+<div class="publish-info">
+  <?php if ($showAuthor):?>
+  <div class="circle-frame"><img src="<?=$authorPic?>" /></div>
+  <span class="author-name"><?=$authorName?></span>
+  <?php endif;?>
+  <?php if ($published):?>
+  <div class="publish-date clearfix">Published
+    <?=$publishDateRelative?>
+  </div>
+  <?php else: ?>
+  <div><em>Unpublished</em></div>
+  <?php endelse: ?>
+  <?php endif;?>
+</div>
 <?=$twitter?>
 <?php if ($isAdmin):?>
-<hr />
+<hr class="clearfix"/>
 <div>
-<a class="btn btn-primary" href="./stories/Entry/<?=$id?>/edit">Edit this story</a>
+  <a class="btn btn-primary" href="./stories/Entry/<?=$id?>/edit">Edit this story</a>
 </div>
 <?php endif; ?>
