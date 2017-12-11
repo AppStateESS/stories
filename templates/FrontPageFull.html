@@ -7,8 +7,8 @@
   <div class="story-content">
     <?=$entry['content']?>
   </div>
-  <?php if ($showAuthor):?>
   <div class="publish-info">
+    <?php if ($showAuthor):?>
     <div class="circle-frame pull-left"><img src="<?=$entry['authorPic']?>" /></div>
     <?=$entry['authorName']?>
     <?php endif;?>
@@ -17,7 +17,7 @@
   <div class="story-tags">
     <?=$entry['tagLinks']?>
   </div>
-  
+
 </div>
 <?php endforeach; ?>
 <?=$twitter?>
