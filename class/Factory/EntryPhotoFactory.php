@@ -67,12 +67,13 @@ class EntryPhotoFactory
         $entryId = $request->pullPostInteger('entryId');
         $imageDirectory = "images/stories/$entryId/thumbnail/";
         $imagePath = PHPWS_HOME_DIR . $imageDirectory;
+        $imageUrl = './' . $imageDirectory;
         $options = array(
             'max_width' => STORIES_THUMB_TARGET_WIDTH,
             'max_height' => STORIES_THUMB_TARGET_HEIGHT,
             'current_image_extensions' => true,
             'upload_dir' => $imagePath,
-            'upload_url' => \Canopy\Server::getSiteUrl(true) . $imageDirectory,
+            'upload_url' => $imageUrl,
             'image_versions' => array()
         );
         return $options;
