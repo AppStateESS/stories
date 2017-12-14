@@ -114,7 +114,6 @@ class EntryFactory extends BaseFactory
      * tag: [null] Limit by tag association
      * vars: [null] If array, only pull these variables
      * mustHaveThumbnail: [false] Only pull entries that have an associate thumbnail
-     * asResource: [true] Return listing as Resource objects
      * showTagLinks: [true] Pull tags links for entries
      * 
      * 
@@ -139,7 +138,6 @@ class EntryFactory extends BaseFactory
             'vars' => null,
             'titleRequired' => false,
             'mustHaveThumbnail' => false,
-            'asResource' => true,
             'showTagLinks' => true);
 
         if (is_array($options)) {
@@ -233,13 +231,18 @@ class EntryFactory extends BaseFactory
                 $db->setLimit($options['limit']);
             }
         }
-        if ($options['asResource']) {
-            $listing = $db->selectAsResources('\stories\Resource\EntryResource');
-            if (empty($listing)) {
-                return null;
+        $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
+        if (empty($objectList)) {
+            return null;
+        }
+        $tagFactory = new TagFactory;
+        foreach ($objectList as $entry) {
+            $row = $entry->getStringVars();
+            if ($options['showTagLinks']) {
+                $row['tagLinks'] = $tagFactory->getTagLinks($row['tags'],
+                        $row['id']);
             }
-        } else {
-            $listing = $db->select();
+            $listing[] = $row;
         }
         if (count($listing) < $options['limit']) {
             $this->more_rows = false;
@@ -725,7 +728,7 @@ EOF;
         //listStoryFormat  - 0 is summary, 1 full
         $this->addStoryCss();
         $data['title'] = $title;
-        $data['list'] = $this->objectListToArray($list);
+        $data['list'] = $this->addPublishBlock($list);
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $data['isAdmin'] = \Current_User::allow('stories');
         $data['showAuthor'] = $showAuthor;
@@ -744,17 +747,16 @@ EOF;
 
         return $template->get();
     }
-    
-    private function objectListToArray($list)
+
+    private function addPublishBlock($list)
     {
-        foreach ($list as $key=>$value) {
-            $strValue = $value->getStringVars();
-            $newlist[$key] = $strValue;
-            $newlist[$key]['publishInfo'] = $this->publishBlock($strValue);
+        foreach ($list as $key => $value) {
+            $newlist[$key] = $value;
+            $newlist[$key]['publishInfo'] = $this->publishBlock($value);
         }
-        return  $newlist;
+        return $newlist;
     }
-    
+
     /**
      * Medium editor insert doesn't initialize the Twitter embed. Has to be done
      * manually. The editor includes a script call to widgets BUT that is stripped
