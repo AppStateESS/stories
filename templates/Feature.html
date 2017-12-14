@@ -14,15 +14,7 @@
           <?=$strippedSummary?>
         </div>
       </div>
-      <div class="publish-info">
-        <?php if ($showAuthor):?>
-        <div class="circle-frame"><img src="<?=$authorPic?>" /></div>
-        <span class="author-name"><?=$authorName?></span>
-        <?php endif;?>
-        <div class="publish-date clearfix">Published
-          <?=$publishDateRelative?>
-        </div>
-      </div>
+      <?=$publishInfo?>
     </div>
   </div>
   <?php endforeach; ?>
