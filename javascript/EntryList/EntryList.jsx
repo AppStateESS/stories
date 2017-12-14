@@ -136,10 +136,10 @@ export default class EntryList extends Component {
       sendData.offset = this.offset
     }
     $.getJSON('./stories/Listing', sendData).done(function (data) {
+      if (data.tags != null) {
+        tags = data.tags
+      }
       if (data.listing == null) {
-        if (data.tags != null) {
-          tags = data.tags
-        }
         this.setState({listing: false, loading: false, tags: tags, moreRows: false,})
       } else {
         let listing
@@ -349,6 +349,8 @@ export default class EntryList extends Component {
 
     const header = {title: 'Stories list', url: './stories/Listing'}
 
+    const leftSide = (<li><a href="./stories/Entry/create"><i className="fa fa-book"></i>&nbsp;Create a new story</a></li>)
+
     return (
       <div className="stories-listing">
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
@@ -384,7 +386,7 @@ export default class EntryList extends Component {
           updateImage={this.updateImage}
           entry={this.currentEntry()}
           close={this.closeOverlay}/>
-        <Navbar rightSide={rightSide} header={header}/>
+        <Navbar leftSide={leftSide} rightSide={rightSide} header={header}/>
         <div>{listing}</div>
         <div>{showMore}</div>
       </div>
