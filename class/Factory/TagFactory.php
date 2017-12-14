@@ -194,20 +194,37 @@ class TagFactory extends BaseFactory
         return $result;
     }
 
-    public function getTagLinks($tags)
+    public function getTagLinks($tags, $entryId)
     {
         if (empty($tags)) {
             return null;
         }
-        foreach ($tags as $tag) {
-            if (isset($tag['title'])) {
-                $tag = $this->selectValuesFromArray($tag);
-            }
-            $content[] = <<<EOF
-<li><a class="btn btn-sm btn-default" href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
+        $firstTag = $tags[0]['label'];
+        unset($tags[0]);
+        
+        if (count($tags) == 0) {
+            return <<<EOF
+<span class="tagged" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag</a></span>
 EOF;
         }
-        return 'Tagged: <ul class="tag-list">' . implode('', $content) . '</ul>';
+        
+        foreach ($tags as $tag) {
+            $options[] = <<<EOF
+<li><a href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
+EOF;
+        }
+        $tags = implode('', $options);
+        $content = <<<EOF
+    <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag <i class="fa fa-caret-down"></i></a></span>
+    <div class="invisible">
+         <div id="entry-$entryId">
+                <ul>
+                $tags
+                </ul>
+         </div>
+    </div>
+EOF;
+        return $content;
     }
 
     public function purgeEntry($entryId)
