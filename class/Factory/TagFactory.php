@@ -210,14 +210,14 @@ EOF;
         
         foreach ($tags as $tag) {
             $options[] = <<<EOF
-<li><a href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
+<li><a class="tag-link" href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
 EOF;
         }
         $tags = implode('', $options);
         $content = <<<EOF
     <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag <i class="fa fa-caret-down"></i></a></span>
     <div class="invisible">
-         <div id="entry-$entryId">
+         <div id="entry-$entryId" class="tag-list">
                 <ul>
                 $tags
                 </ul>
