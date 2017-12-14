@@ -121,6 +121,8 @@ class FeatureFactory extends BaseFactory
     private function featureColumn($entry, $format, $columns)
     {
         $vars = $entry['story'];
+        $entryFactory = new EntryFactory;
+        $vars['publishInfo'] = $entryFactory->publishBlock($vars);
         $trimCharacters = $this->trimCharactersCount($format, $columns);
 
         $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
