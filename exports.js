@@ -12,5 +12,7 @@ exports.entry = {
   Feature: exports.APP_DIR + '/Feature/index.jsx',
   Navbar: exports.APP_DIR + '/Navbar/index.jsx',
   AuthorBar: exports.APP_DIR + '/AuthorBar/index.jsx',
+  Tooltip: exports.APP_DIR + '/Tooltip/index.js',
+  Caption: exports.APP_DIR + '/Caption/index.js',
   vendor: ['react', 'react-dom']
 }
