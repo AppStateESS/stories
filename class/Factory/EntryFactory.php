@@ -679,8 +679,9 @@ EOF;
             $data['publishInfo'] = $this->publishBlock($data);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
+            
             $data['caption'] = $this->scriptView('Caption', false);
-            $data['tooltip'] = $this->scriptView('Tooltip', false);
+            $data['tooltip'] = $this->tooltipScript();
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             $this->addStoryCss();
@@ -689,12 +690,22 @@ EOF;
             return $this->notFound();
         }
     }
+    
+    private function tooltipScript() {
+        return <<<EOF
+<script src="mod/stories/javascript/Tooltip/index.js"></script>
+EOF;
+    }
 
-    private function publishBlock($data)
+    public function publishBlock($data)
     {
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         $tagFactory = new TagFactory;
-        $data['tagList'] = $tagFactory->getTagLinks($data['tags'], $data['id']);
+        if (!empty($data['tags'])) {
+            $data['tagList'] = $tagFactory->getTagLinks($data['tags'], $data['id']);
+        } else {
+            $data['tagList'] = null;
+        }
         $data['showAuthor'] = $showAuthor;
         $data['publishDateRelative'] = ucfirst($data['publishDateRelative']);
 
