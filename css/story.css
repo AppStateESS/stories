@@ -8,15 +8,6 @@
     border-bottom : 2px solid #e3e3e3;
 }
 
-ul.tag-list {
-    display: inline;
-}
-
-ul.tag-list li {
-    display: inline;
-    margin-right: 5px;
-}
-
 #story-feature-list .story-feature a h4 {
     font-size : 20px;
     font-weight: bold;
@@ -86,7 +77,7 @@ ul.tag-list li {
         float: left;
         margin: 0px 8px 10px 0px;
     }
-    
+
     #story-feature-list .leftright {
         height: 200px;
     }
@@ -107,35 +98,48 @@ ul.tag-list li {
     line-height : 1.4em;
 }
 
-.published-date {
-    position: absolute;
-    bottom: 0px;
-    right: 6px;
-    font-size : 14px;
+
+
+/* start publish info */
+.publish-info {
+    padding: 0px 8px 0 8px;
+    border : 1px solid #d1d1d1;
+    border-radius : 5px;
+    max-width : 300px;
+    white-space: nowrap;
+    height: 100px;
+    display: flex;
+    align-items: center
 }
 
-.circle-frame {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
+
+.publish-info .circle-frame {
+    width: 74px;
+    height: 74px;
     overflow: hidden;
     border-radius: 50%;
     border : 1px solid #e3e3e3;
     float: left;
-    margin-right : 8px;
-    margin-bottom : 10px;
+    margin-right : 6px;
 }
 
-.circle-frame img {
+.publish-info .circle-frame img {
     width: 100%;
-    height: auto;
 }
 
-.publish-info {
-    padding: 8px 8px 0 8px;
-    background-color : #fff;
-    width : 100%;
+.col-sm-3 .leftright .publish-info .circle-frame {
+    float: none;
+    margin:0;
+    display:block;
+}
+
+.feature-row .publish-info .circle-frame {
+    position: absolute;
+    bottom : 0px;
+}
+.feature-row .circle-frame {
+    width : 50px;
+    height: 50px;
 }
 
 .leftright .publish-info {
@@ -143,30 +147,43 @@ ul.tag-list li {
     right: 0;
 }
 
-.col-sm-3 .leftright .circle-frame {
-    float: none;
-    margin:0;
-    display:block;
+.publish-info .author-name {
+    font-size : 16px;
 }
 
-.publish-info .circle-frame {
-    margin-right : 8px;
-}
-
-.feature-row .circle-frame {
-    width : 50px;
-    height: 50px;
-}
-.feature-row .publish-info {
-    position: absolute;
-    bottom : 0px;
-}
-
-.feature-row .author-name {
-    font-weight : bold;
-}
-
-.publish-date {
+.publish-info .publish-date {
     color: #828282;
+    font-size : 14px;
+}
+
+
+/* end publish info */
+
+.tooltipster-content ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    min-width : 150px;
+}
+
+.tooltipster-content ul li {
+    font-family : arial, sans;
+    font-size: 14px;
+    padding : 4px;
+}
+.tooltipster-content ul li:hover {
+    background-color : #e3e3e3;
+}
+
+.tooltipster-content ul li a {
+    display: block;
+    color : #525252;
+}
+
+.label.label-primary a {
+    color: white;
+}
+
+.tagged {
     font-size : 14px;
 }
