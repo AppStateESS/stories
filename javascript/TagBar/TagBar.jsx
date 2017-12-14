@@ -18,6 +18,7 @@ export default class TagBar extends Component {
     this.tagChange = this.tagChange.bind(this)
     this.saveTags = this.saveTags.bind(this)
     this.newOptionClick = this.newOptionClick.bind(this)
+    this.forceToLower = this.forceToLower.bind(this)
   }
 
   componentDidMount() {
@@ -49,9 +50,22 @@ export default class TagBar extends Component {
     })
   }
 
+  forceToLower(tag) {
+    tag.value = tag.value.toLowerCase()
+    tag.label = tag.label.toLowerCase()
+  }
+
   newOptionClick(newTag) {
     delete newTag.className
     let {tags, entryTags,} = this.state
+    this.forceToLower(newTag)
+    // prevent repeats
+    for (var key in tags) {
+      const tagVal = tags[key].label
+      if (tagVal == newTag.value || tagVal == newTag.label) {
+        return
+      }
+    }
     $.ajax({
       url: './stories/Tag',
       data: {
@@ -61,6 +75,9 @@ export default class TagBar extends Component {
       type: 'post',
       success: function (data) {
         newTag.value = data
+        if (tags == null) {
+          tags = []
+        }
         tags.push(newTag)
         entryTags.push(newTag)
         this.setState({tags, entryTags,})
@@ -75,7 +92,7 @@ export default class TagBar extends Component {
 
   render() {
     let tagListing = <span>No tags</span>
-    if (this.props.entryTags[0] != undefined) {
+    if (this.state.entryTags[0] != undefined) {
       tagListing = this.state.entryTags.map(function (value, key) {
         return (
           <span className="btn btn-default btn-sm mr-1" disabled key={key}>{value.label}</span>
