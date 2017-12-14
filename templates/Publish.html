@@ -1,0 +1,23 @@
+<div class="publish-info">
+  <?php if ($showAuthor && !empty($authorPic)):?>
+  <div class="circle-frame"><img src="<?=$authorPic?>" /></div>
+  <?php endif;?>
+  <div class="posted">
+    <?php if ($showAuthor):?>
+    <div class="author-name">By <?=$authorName?></div>
+    <?php endif;?>
+    <?php if ($published):?>
+    <div class="publish-date">
+      <?=$publishDateRelative?>
+    </div>
+    <?php else: ?>
+    <div><em>Unpublished</em></div>
+    <?php endelse: ?>
+    <?php endif;?>
+    <?php if (!empty($tagList)):?>
+    <div class="story-tags">
+      <?=$tagList?>
+    </div>
+    <?php endif; ?>
+  </div>
+</div>
