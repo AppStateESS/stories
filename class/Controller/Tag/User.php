@@ -61,7 +61,7 @@ class User extends RoleController
         $vars['tag'] = $this->id;
         $request->setGetVars($vars);
         $title = "Stories for tag <strong>{$this->id}</strong>";
-        $content = $entryFactory->userListView($request, $title);
+        $content = $entryFactory->showStories($request, $title);
         if (empty($content)) {
             return '<p>No stories found for this tag.</p>';
         }
