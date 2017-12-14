@@ -22,7 +22,6 @@ use stories\Exception\ResourceNotFound;
 use phpws2\Database;
 use phpws2\Settings;
 use Canopy\Request;
-use phpws2\Template;
 
 require_once PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
 
@@ -49,17 +48,19 @@ class EntryFactory extends BaseFactory
         $authorTbl->addField('name', 'authorName');
         $authorTbl->addField('pic', 'authorPic');
         $authorTbl->addField('email', 'authorEmail');
-        $db->joinResources($entryTbl, $authorTbl, $db->createConditional($entryTbl->getField('authorId'), $authorTbl->getField('id')));
+        $db->joinResources($entryTbl, $authorTbl,
+                $db->createConditional($entryTbl->getField('authorId'),
+                        $authorTbl->getField('id')));
         $entryTbl->addFieldConditional(('id'), $id);
         $entry = $this->build();
         $db->selectInto($entry);
-        
+
         if ($entry->deleted) {
             throw new ResourceNotFound;
         }
         $tagFactory = new TagFactory;
         $entry->tags = $tagFactory->getTagsByEntryId($id);
-        
+
         $authorFactory = new AuthorFactory;
         return $entry;
     }
@@ -88,24 +89,6 @@ class EntryFactory extends BaseFactory
             'tag' => $tag
         );
         return $options;
-    }
-
-    public function userListView(Request $request, $title = null)
-    {
-        $this->addStoryCss();
-        $options = $this->pullOptions($request);
-        $options['showAuthor'] = \phpws2\Settings::get('stories', 'showAuthor');
-        $list = $this->pullList($options);
-        if (empty($list)) {
-            return null;
-        }
-        $vars['title'] = $title;
-        $vars['list'] = $list;
-        $vars['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
-
-        $template = new \phpws2\Template($vars);
-        $template->setModuleTemplate('stories', 'FrontPageSummary.html');
-        return $template->get();
     }
 
     public function adminListView(Request $request)
@@ -251,17 +234,9 @@ class EntryFactory extends BaseFactory
             }
         }
         if ($options['asResource']) {
-            $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
-            if (empty($objectList)) {
+            $listing = $db->selectAsResources('\stories\Resource\EntryResource');
+            if (empty($listing)) {
                 return null;
-            }
-            $tagFactory = new TagFactory;
-            foreach ($objectList as $entry) {
-                $row = $entry->getStringVars();
-                if ($options['showTagLinks']) {
-                    $row['tagLinks'] = $tagFactory->getTagLinks($row['tags']);
-                }
-                $listing[] = $row;
             }
         } else {
             $listing = $db->select();
@@ -375,6 +350,7 @@ EOF;
         $entry->stamp();
         $content = $request->pullPutVar('content');
         $content = $this->filterMedium($content);
+
         if (empty($content)) {
             $this->clearOutEntry($entry);
         } else {
@@ -382,6 +358,12 @@ EOF;
             $this->siftContent($entry);
         }
         return $this->save($entry);
+    }
+
+    private function relativeImages($content)
+    {
+        return preg_replace('@src="https?://[\w:/]+(images/stories/\d+/[^"]+)"@',
+                'src="./$1"', $content);
     }
 
     private function clearOutEntry(Resource $entry)
@@ -479,7 +461,7 @@ EOF;
         $content = $entry->content;
         libxml_use_internal_errors(true);
         $doc = new \DomDocument;
-        $doc->loadHtml($content);
+        $doc->loadHtml(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
         $doc->preserveWhiteSpace = false;
 
         $image = $doc->getElementsByTagName('img');
@@ -552,7 +534,6 @@ EOF;
         while (!$summaryFound && $summaryCount <= $summaryLimit) {
             if ($p->length > $summaryCount) {
                 $pNode = $p->item($summaryCount);
-                //$pHtml = $doc->saveHtml($pNode);
                 $pContent = trim($pNode->textContent);
                 if (!empty($pContent)) {
                     $entry->summary = "<p>$pContent</p>";
@@ -679,9 +660,7 @@ EOF;
 
     public function view($id, $isAdmin = false)
     {
-        $tagFactory = new TagFactory;
         $showComments = \phpws2\Settings::get('stories', 'showComments');
-        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         try {
             $entry = $this->load($id);
             $data = $this->data($entry, !$isAdmin);
@@ -689,11 +668,16 @@ EOF;
                 throw new ResourceNotFound;
             }
             $this->includeCards($entry);
-            $data['twitter'] = $this->loadTwitterScript(true);
+            if (stristr($entry->content, 'twitter')) {
+                $data['twitter'] = $this->loadTwitterScript(true);
+            } else {
+                $data['twitter'] = '';
+            }
+            $data['publishInfo'] = $this->publishBlock($data);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
-            $data['showAuthor'] = $showAuthor;
-            $data['tagList'] = $tagFactory->getTagLinks($entry->tags);
+            $data['caption'] = $this->scriptView('Caption', false);
+            $data['tooltip'] = $this->scriptView('Tooltip', false);
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             $this->addStoryCss();
@@ -701,6 +685,19 @@ EOF;
         } catch (ResourceNotFound $e) {
             return $this->notFound();
         }
+    }
+
+    private function publishBlock($data)
+    {
+        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
+        $tagFactory = new TagFactory;
+        $data['tagList'] = $tagFactory->getTagLinks($data['tags'], $data['id']);
+        $data['showAuthor'] = $showAuthor;
+        $data['publishDateRelative'] = ucfirst($data['publishDateRelative']);
+
+        $template = new \phpws2\Template($data);
+        $template->setModuleTemplate('stories', 'Publish.html');
+        return $template->get();
     }
 
     public function notFound()
@@ -716,7 +713,7 @@ EOF;
      * @param Request $request
      * @return string
      */
-    public function showStories(Request $request)
+    public function showStories(Request $request, $title = null)
     {
         $options = $this->pullOptions($request);
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
@@ -727,18 +724,37 @@ EOF;
         }
         //listStoryFormat  - 0 is summary, 1 full
         $this->addStoryCss();
-        $data['list'] = $list;
+        $data['title'] = $title;
+        $data['list'] = $this->objectListToArray($list);
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $data['isAdmin'] = \Current_User::allow('stories');
         $data['showAuthor'] = $showAuthor;
-        $data['twitter'] = $this->loadTwitterScript();
-        $template = new \phpws2\Template($data);
+        $data['tooltip'] = $this->scriptView('Tooltip', false);
+        $format = Settings::get('stories', 'listStoryFormat');
 
-        $templateFile = Settings::get('stories', 'listStoryFormat') ? 'FrontPageFull.html' : 'FrontPageSummary.html';
+        // Twitter feeds don't show up in summary view
+        if ($format) {
+            $data['twitter'] = $this->loadTwitterScript();
+        } else {
+            $data['twitter'] = '';
+        }
+        $template = new \phpws2\Template($data);
+        $templateFile = $format ? 'FrontPageFull.html' : 'FrontPageSummary.html';
         $template->setModuleTemplate('stories', $templateFile);
+
         return $template->get();
     }
-
+    
+    private function objectListToArray($list)
+    {
+        foreach ($list as $key=>$value) {
+            $strValue = $value->getStringVars();
+            $newlist[$key] = $strValue;
+            $newlist[$key]['publishInfo'] = $this->publishBlock($strValue);
+        }
+        return  $newlist;
+    }
+    
     /**
      * Medium editor insert doesn't initialize the Twitter embed. Has to be done
      * manually. The editor includes a script call to widgets BUT that is stripped
@@ -759,47 +775,6 @@ EOF;
         } else {
             return $script;
         }
-    }
-
-    /**
-     * Called from Module.php not a controller
-     * 
-     * @param Request $request
-     * @return string
-     */
-    public function showFeatures(Request $request)
-    {
-        \Layout::addToStyleList('mod/stories/css/story.css');
-        $featureNumber = Settings::get('stories', 'featureNumber');
-        $options = array('includeContent' => false, 'limit' => $featureNumber);
-        $list = $this->pullList($options);
-        if (empty($list)) {
-            return null;
-        }
-        $row = array();
-        $count = 0;
-        foreach ($list as $entryVars) {
-            if ($count === 0) {
-                $row[] = '<div class="row">';
-            }
-
-            // new code here
-            if (1) {
-                $templateFile = 'Landscape.html';
-            } else {
-                $templateFile = 'Portrait.html';
-            }
-            $template = new Template($entryVars);
-            $template->setModuleTemplate('stories', 'Feature/' . $templateFile);
-            $row[] = $template->get();
-            if ($count === 2) {
-                $row[] = '</div>';
-                $count = 0;
-            } else {
-                $count++;
-            }
-        }
-        return '<div id="story-feature-list">' . implode('', $row) . '</div>';
     }
 
     /**
@@ -860,6 +835,8 @@ EOF;
         $content = preg_replace('/<h[34]>\s+<\/h[34]>/', '', $content);
         // Removes the overlay left on embeds (e.g. youtube)
         $content = $this->removeMediumOverlay($content);
+        // Removed http:// url from images making them relative
+        $content = $this->relativeImages($content);
         $content = $this->cleanEmbed($content);
         $content = $this->cleanFacebook($content);
         $content = $this->cleanTwitter($content);
