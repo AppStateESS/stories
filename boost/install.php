@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 function stories_install(&$content)
 {
     $db = \phpws2\Database::getDB();
@@ -31,7 +32,7 @@ function stories_install(&$content)
         $author = new \stories\Resource\AuthorResource;
         $author->createTable($db);
         $db->clearTables();
-        
+
         $feature = new \stories\Resource\FeatureResource;
         $feature->createTable($db);
         $db->clearTables();
@@ -39,10 +40,12 @@ function stories_install(&$content)
         $tag = new \stories\Resource\TagResource;
         $tag->createTable($db);
         $db->clearTables();
-        
+
         $tagToEntry = $db->buildTable('storiesTagToEntry');
-        $tagToEntry->addDataType('entryId', 'int');
-        $tagToEntry->addDataType('tagId', 'int');
+        $entryId = $tagToEntry->addDataType('entryId', 'int');
+        $tagId = $tagToEntry->addDataType('tagId', 'int');
+        $unique = new Database\Unique(array($tagId, $entryId));
+        $tagToEntry->addUnique($unique);
         $tagToEntry->create();
 
         $entryToFeature = $db->buildTable('storiesEntryToFeature');
@@ -52,7 +55,6 @@ function stories_install(&$content)
         $entryToFeature->addDataType('y', 'smallint');
         $entryToFeature->addDataType('sorting', 'smallint');
         $entryToFeature->create();
-        
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
         $db->rollback();
