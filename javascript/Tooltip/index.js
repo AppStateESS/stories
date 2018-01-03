@@ -1,14 +1,16 @@
-const $ = jQuery.noConflict()
+require("expose-loader?$!jquery")
+/* global $ */
+$.noConflict()
 let currentDom = ''
 $(function () {
   $(".tagged").popover({
     trigger: "manual",
     html: true,
-    animation: true,
+    animation: false,
     placement: 'bottom',
-    content: function() {
+    content: function () {
       return currentDom
-    }
+    },
   }).on("mouseenter", function () {
     var _this = this
     const entryDom = '#entry-' + $(this).data('entryId')
@@ -23,6 +25,6 @@ $(function () {
       if (!$(".popover:hover").length) {
         $(_this).popover("hide")
       }
-    }, 500)
+    }, 300)
   })
 })
