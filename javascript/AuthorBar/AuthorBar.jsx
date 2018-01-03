@@ -51,6 +51,9 @@ export default class AuthorBar extends Component {
     return (
       <div>
           <Select
+            noResultsText="No authors found"
+            clearable={false}
+            aria-label="Story author"
             name="author"
             styles={{
               width: '100px'
