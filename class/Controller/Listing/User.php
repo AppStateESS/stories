@@ -37,4 +37,11 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
+
+    protected function listHtmlCommand(Request $request)
+    {
+        $entryFactory = new Factory;
+        return $entryFactory->showStories($request);
+    }
+
 }
