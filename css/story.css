@@ -16,7 +16,11 @@
 
 }
 
+.feature-row {
+}
+
 .story-feature {
+    overflow: hidden;
     border : 1px solid #e3e3e3;
     position: relative;
     margin-bottom: 1em;
@@ -96,9 +100,8 @@
 .story-content .story-summary {
     overflow: hidden;
     line-height : 1.4em;
+    font-size : 14px;
 }
-
-
 
 /* start publish info */
 .publish-info {
@@ -196,4 +199,6 @@
     color: white;
 }
 
-
+.story-content {
+  margin-top: 1em;
+}
