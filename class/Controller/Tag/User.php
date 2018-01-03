@@ -58,10 +58,11 @@ class User extends RoleController
     protected function listHtmlCommand(Request $request)
     {   
         $entryFactory = new EntryFactory;
+        $vars = $request->pullGetVars();
         $vars['tag'] = $this->id;
         $request->setGetVars($vars);
-        $title = "Stories for tag <strong>{$this->id}</strong>";
-        $content = $entryFactory->showStories($request, $title);
+       
+        $content = $entryFactory->showStories($request);
         if (empty($content)) {
             return '<p>No stories found for this tag.</p>';
         }
