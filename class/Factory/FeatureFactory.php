@@ -109,8 +109,7 @@ class FeatureFactory extends BaseFactory
                 $entry = $entryFactory->load($entry['entryId']);
                 $vars = $entry->getStringVars(true, $hiddenVars);
                 $trimCharacters = $this->trimCharactersCount($feature['format'],
-                        $feature['columns']);
-
+                        $feature['columns'], $entry->title);
                 $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
                         $trimCharacters);
                 $entries[$k]['story'] = $vars;
@@ -124,23 +123,21 @@ class FeatureFactory extends BaseFactory
         $vars = $entry['story'];
         $entryFactory = new EntryFactory;
         $vars['publishInfo'] = $entryFactory->publishBlock($vars);
-        $trimCharacters = $this->trimCharactersCount($format, $columns);
-
-        $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
-                $trimCharacters);
         $vars['thumbnailStyle'] = $this->thumbnailStyle($entry);
         return $vars;
     }
 
-    private function trimCharactersCount($format, $columns)
+    private function trimCharactersCount($format, $columns, $title)
     {
+        $titleLength = round(strlen($title) * 1.1);
+
         switch ($columns) {
             case 2:
-                $columnAllowed = 100;
+                $columnAllowed = 220;
                 break;
 
             case 3:
-                $columnAllowed = 50;
+                $columnAllowed = 140;
                 break;
 
             case 4:
@@ -148,16 +145,19 @@ class FeatureFactory extends BaseFactory
                 break;
         }
 
+        $baseCutoff = $columnAllowed - $titleLength;
+
         switch ($format) {
             case 'landscape':
-                return $columnAllowed + 60;
+                $finalCount = $baseCutoff + 70;
 
             case 'topbottom':
-                return $columnAllowed + 60;
+                $finalCount = $baseCutoff + 70;
 
             case 'leftright':
-                return $columnAllowed + 70;
+                $finalCount = $baseCutoff + 110;
         }
+        return $finalCount < 0 ? 0 : $finalCount;
     }
 
     private function trimSummary($summary, $sTrim = self::SUMMARY_TRIM)
@@ -171,16 +171,20 @@ class FeatureFactory extends BaseFactory
         $count = 0;
         $firstPop = false;
         while ($tooLong && $count < 100) {
-
             $sArray = preg_split('/([\?\.\!]\s?)/', $summary, null,
                     PREG_SPLIT_DELIM_CAPTURE);
-            if (!$firstPop) {
-                //Removes space
-                array_pop($sArray);
-                $firstPop;
+            if (count($sArray) == 1) {
+                return $this->lastSpaceEllipsis($sArray[0]);
             }
+            //end space
             array_pop($sArray);
+            //punctuation
             array_pop($sArray);
+            //sentence
+            array_pop($sArray);
+            if (empty($sArray)) {
+                return $this->lastSpaceEllipsis($summary);
+            }
             $summary = implode('', $sArray);
             if (strlen($summary) < $sTrim) {
                 $tooLong = false;
@@ -188,6 +192,12 @@ class FeatureFactory extends BaseFactory
             $count++;
         }
         return $summary;
+    }
+
+    private function lastSpaceEllipsis($content)
+    {
+        $lastSpace = strrpos($content, ' ');
+        return substr($content, 0, $lastSpace) . '...';
     }
 
     private function thumbnailStyle($entry)
@@ -238,7 +248,7 @@ EOF;
             $vars = $entryObj->getStringVars(true,
                     $this->defaultHiddenEntryVars());
             $trimCharacters = $this->trimCharactersCount($feature->format,
-                    $feature->columns);
+                    $feature->columns, $entryObj->title);
             $vars['trim'] = $trimCharacters;
             $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
                     $trimCharacters);
