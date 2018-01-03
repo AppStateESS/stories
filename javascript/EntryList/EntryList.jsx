@@ -135,7 +135,7 @@ export default class EntryList extends Component {
     if (this.offset > 0) {
       sendData.offset = this.offset
     }
-    $.getJSON('./stories/Listing', sendData).done(function (data) {
+    $.getJSON('./stories/Listing/admin', sendData).done(function (data) {
       if (data.tags != null) {
         tags = data.tags
       }
