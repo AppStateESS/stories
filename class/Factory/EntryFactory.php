@@ -69,8 +69,18 @@ class EntryFactory extends BaseFactory
     {
         $segmentSize = \phpws2\Settings::get('stories', 'segmentSize');
         // if offset not set, default 0
-        $offset = (int) $request->pullGetString('offset', true);
-        $offsetSize = $segmentSize * $offset;
+        $page = (int) $request->pullGetInteger('page', true);
+        if ($page > 1) {
+            $offsetSize = $segmentSize * ($page - 1);
+        } else {
+            $offset = $request->pullGetInteger('offset', true);
+            if ($offset > 0) {
+                $offsetSize = $segmentSize * $offset;
+            } else {
+                $offsetSize = 0;
+            }
+            $page = 1;
+        }
 
         $orderBy = $request->pullGetString('sortBy', true);
         if (!in_array($orderBy, array('publishDate', 'title', 'updateDate'))) {
@@ -86,6 +96,7 @@ class EntryFactory extends BaseFactory
             'orderBy' => $orderBy,
             'limit' => $segmentSize,
             'offset' => $offsetSize,
+            'page' => $page,
             'tag' => $tag
         );
         return $options;
@@ -115,6 +126,7 @@ class EntryFactory extends BaseFactory
      * vars: [null] If array, only pull these variables
      * mustHaveThumbnail: [false] Only pull entries that have an associate thumbnail
      * showTagLinks: [true] Pull tags links for entries
+     * page: page number of rows. Translated to offset
      * 
      * 
      * @param array $options
@@ -134,6 +146,7 @@ class EntryFactory extends BaseFactory
             'publishedOnly' => true,
             'showAuthor' => false,
             'offset' => 0,
+            'page' => 1,
             'tag' => null,
             'vars' => null,
             'titleRequired' => false,
@@ -224,6 +237,10 @@ class EntryFactory extends BaseFactory
                     $options['orderBy'] === 'title' ? 'asc' : 'desc');
         }
 
+        if ($options['offset'] < 1 && (int) $options['page'] > 1) {
+            $options['offset'] = ((int) $options['page'] - 1) * $options['limit'];
+        }
+
         if (isset($options['limit'])) {
             if (isset($options['offset'])) {
                 $db->setLimit($options['limit'], $options['offset']);
@@ -240,7 +257,7 @@ class EntryFactory extends BaseFactory
             $row = $entry->getStringVars();
             if ($options['showTagLinks']) {
                 $row['tagLinks'] = $tagFactory->getTagLinks($row['tags'],
-                        $row['id']);
+                        $row['id'], $options['tag']);
             }
             $listing[] = $row;
         }
@@ -679,9 +696,9 @@ EOF;
             $data['publishInfo'] = $this->publishBlock($data);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
-            
+
             $data['caption'] = $this->scriptView('Caption', false);
-            $data['tooltip'] = $this->tooltipScript();
+            $data['tooltip'] = $this->scriptView('Tooltip', false);
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             $this->addStoryCss();
@@ -690,19 +707,21 @@ EOF;
             return $this->notFound();
         }
     }
-    
-    private function tooltipScript() {
+
+    private function tooltipScript()
+    {
         return <<<EOF
 <script src="mod/stories/javascript/Tooltip/index.js"></script>
 EOF;
     }
 
-    public function publishBlock($data)
+    public function publishBlock($data, $tag=null)
     {
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         $tagFactory = new TagFactory;
         if (!empty($data['tags'])) {
-            $data['tagList'] = $tagFactory->getTagLinks($data['tags'], $data['id']);
+            $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
+                    $data['id'], $tag);
         } else {
             $data['tagList'] = null;
         }
@@ -727,19 +746,25 @@ EOF;
      * @param Request $request
      * @return string
      */
-    public function showStories(Request $request, $title = null)
+    public function showStories(Request $request)
     {
         $options = $this->pullOptions($request);
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         $options['showAuthor'] = $showAuthor;
+        $tag = empty($options['tag']) ? null: $options['tag'];
         $list = $this->pullList($options);
         if (empty($list)) {
             return null;
         }
         //listStoryFormat  - 0 is summary, 1 full
         $this->addStoryCss();
+        if ($tag) {
+            $title = "Stories for tag <strong>$tag</strong>";
+        } else {
+            $title = null;
+        }
         $data['title'] = $title;
-        $data['list'] = $this->addPublishBlock($list);
+        $data['list'] = $this->addPublishBlock($list, $tag);
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $data['isAdmin'] = \Current_User::allow('stories');
         $data['showAuthor'] = $showAuthor;
@@ -752,6 +777,23 @@ EOF;
         } else {
             $data['twitter'] = '';
         }
+
+        if ($options['page'] > 1) {
+            $data['prevpage'] = $options['page'] - 1;
+        } else {
+            $data['prevpage'] = null;
+        }
+        if ($this->more_rows) {
+            $data['nextpage'] = $options['page'] + 1;
+        } else {
+            $data['nextpage'] = null;
+        }
+
+        if (empty($options['tag'])) {
+            $data['url'] = 'Listing';
+        } else {
+            $data['url'] = 'Tag/' . $options['tag'];
+        }
         $template = new \phpws2\Template($data);
         $templateFile = $format ? 'FrontPageFull.html' : 'FrontPageSummary.html';
         $template->setModuleTemplate('stories', $templateFile);
@@ -759,11 +801,11 @@ EOF;
         return $template->get();
     }
 
-    private function addPublishBlock($list)
+    private function addPublishBlock($list, $tag=null)
     {
         foreach ($list as $key => $value) {
             $newlist[$key] = $value;
-            $newlist[$key]['publishInfo'] = $this->publishBlock($value);
+            $newlist[$key]['publishInfo'] = $this->publishBlock($value, $tag);
         }
         return $newlist;
     }
