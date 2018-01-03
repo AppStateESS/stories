@@ -2,7 +2,7 @@
 <?=$style?>
 <?php foreach ($list as $entry):?>
 <div class="story-list-entry clearfix">
-  <span class="label label-primary">
+  <span class="label label-primary permanent-link">
     <a href="./stories/Entry/<?=$entry['urlTitle']?>/"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
   </span>
   <?php if ($isAdmin):?>
@@ -14,5 +14,11 @@
   <?=$entry['publishInfo']?>
 </div>
 <?php endforeach; ?>
+<?php if ($prevpage):?>
+<a href="./stories/<?=$url?>/?page=<?=$prevpage?>" class="btn btn-primary">Previous stories</a>
+<?php endif;?>
+<?php if ($nextpage):?>
+<a href="./stories/<?=$url?>/?page=<?=$nextpage?>" class="btn btn-primary">Read more stories</a>
+<?php endif; ?>
 <?=$twitter?>
 <?=$tooltip?>
