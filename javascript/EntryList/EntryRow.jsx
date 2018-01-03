@@ -123,8 +123,6 @@ const EntryRow = (props) => {
             <strong>Created:</strong>&nbsp;<abbr title={createDate}>{createDateRelative}</abbr>
           </div>
           <div>{publishInfo}</div>
-          <div>
-            <strong>Expires:</strong>&nbsp;{expire}</div>
         </div>
       </div>
       {options}
