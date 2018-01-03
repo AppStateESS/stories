@@ -194,13 +194,23 @@ class TagFactory extends BaseFactory
         return $result;
     }
 
-    public function getTagLinks($tags, $entryId)
+    public function getTagLinks($tags, $entryId, $currentTag=null)
     {
         if (empty($tags)) {
             return null;
         }
-        $firstTag = $tags[0]['label'];
-        unset($tags[0]);
+        if (!empty($currentTag)) {
+            $firstTag = $currentTag;
+            foreach ($tags as $k=>$v) {
+                if ($v['label'] == $currentTag) {
+                    unset($tags[$k]);
+                    break;
+                }
+            }
+        } else {
+            $firstTag = $tags[0]['label'];
+            unset($tags[0]);
+        }
         
         if (count($tags) == 0) {
             return <<<EOF
@@ -210,7 +220,7 @@ EOF;
         
         foreach ($tags as $tag) {
             $options[] = <<<EOF
-<li><a class="tag-link" href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
+<li><a class="tag-link pointer" href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
 EOF;
         }
         $tags = implode('', $options);
