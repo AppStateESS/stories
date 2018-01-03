@@ -108,7 +108,8 @@ class FeatureFactory extends BaseFactory
             foreach ($entries as $k => $entry) {
                 $entry = $entryFactory->load($entry['entryId']);
                 $vars = $entry->getStringVars(true, $hiddenVars);
-                $trimCharacters = $this->trimCharactersCount($feature['format'], $feature['columns']);
+                $trimCharacters = $this->trimCharactersCount($feature['format'],
+                        $feature['columns']);
 
                 $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
                         $trimCharacters);
@@ -135,15 +136,15 @@ class FeatureFactory extends BaseFactory
     {
         switch ($columns) {
             case 2:
-            $columnAllowed = 100;
+                $columnAllowed = 100;
                 break;
 
             case 3:
-            $columnAllowed = 50;
+                $columnAllowed = 50;
                 break;
 
             case 4:
-            $columnAllowed = 0;
+                $columnAllowed = 0;
                 break;
         }
 
@@ -309,9 +310,7 @@ EOF;
         foreach ($entries as $key => $entry) {
             if ($entry['entryId'] == 0) {
                 unset($entries[$key]);
-            }
-            // new code
-            else {
+            } else {
                 $tbl->addValue('entryId', $entry['entryId']);
                 $tbl->addValue('featureId', $feature->id);
                 $tbl->addValue('x', $entry['x']);
