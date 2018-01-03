@@ -44,5 +44,9 @@ class User extends RoleController
         $style = StoryMenu::mediumCSSLink();
         return $style . $this->factory->view($this->id, $this->role->isAdmin());
     }
-
+    
+    protected function listHtmlCommand(Request $request)
+    {
+        return $this->factory->showStories($request);
+    }
 }
