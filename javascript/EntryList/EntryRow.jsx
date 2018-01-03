@@ -23,8 +23,9 @@ const EntryRow = (props) => {
   } = props
 
   const {
-    authorEmail, authorName,
-    //authorPic,
+    authorEmail,
+    authorName,
+    authorPic,
     createDate,
     createDateRelative,
     expirationDate,
@@ -44,12 +45,6 @@ const EntryRow = (props) => {
   let image = noImage()
   if (thumbnail.length > 0) {
     image = <img className="img-responsive" src={thumbnail}/>
-  }
-
-  let expire = expirationDate
-
-  if (!expirationDate) {
-    expire = 'Never'
   }
 
   let publishLabel
@@ -85,26 +80,24 @@ const EntryRow = (props) => {
 
   let options
   let rowClass = 'entry-row mb-1'
-  if (props.isCurrent) {
-    rowClass = 'entry-row mb-1 active'
-    options = (
-      <div className="row mt-1 options">
-        <div className="col-sm-4">
-          <Options
-            entryId={id}
-            published={published}
-            deleteStory={deleteStory}
-            publishStory={publishStory}/>
-        </div>
-        <div className="col-sm-8">
-          <TagList tags={tags} showTags={showTags} sortByTag={sortByTag}/>
-        </div>
+  rowClass = 'entry-row mb-1 active'
+  options = (
+    <div className="row mt-1 options">
+      <div className="col-sm-4">
+        <Options
+          entryId={id}
+          published={published}
+          deleteStory={deleteStory}
+          publishStory={publishStory}/>
       </div>
-    )
-  }
+      <div className="col-sm-8">
+        <TagList tags={tags} showTags={showTags} sortByTag={sortByTag}/>
+      </div>
+    </div>
+  )
 
   return (
-    <div className={rowClass} onMouseOver={props.setCurrentEntry}>
+    <div className={rowClass}>
       <div className="row">
         <div className="col-sm-2">
           <div className="entry-image" onClick={props.thumbnailForm}>
@@ -132,7 +125,6 @@ const EntryRow = (props) => {
 
 EntryRow.propTypes = {
   entry: PropTypes.object,
-  isCurrent: PropTypes.bool,
   select: PropTypes.func,
   unselect: PropTypes.func,
   selected: PropTypes.bool,
