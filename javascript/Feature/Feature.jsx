@@ -174,7 +174,7 @@ export default class Feature extends Component {
     feature.entries = newEntries
   }
 
-  addRow(e) {
+  addRow() {
     $.ajax({
       url: './stories/Feature',
       dataType: 'json',
@@ -212,9 +212,13 @@ export default class Feature extends Component {
         columns,
         sorting
       } = feature
+      let columnCount = 0
       let newEntries = entries.map(function (value) {
         if (value.entryId > 0) {
-          return {entryId: value.entryId, x: value.x, y: value.y}
+          columnCount++
+          if (columnCount <= columns) {
+            return {entryId: value.entryId, x: value.x, y: value.y}
+          }
         }
       })
       $.ajax({
@@ -300,8 +304,8 @@ export default class Feature extends Component {
     if (this.state.currentKey !== null) {
       leftSide = (
         <li key="1">
-            <span onClick={this.clearFeature} className="navbar-text pointer">
-              <i className="fa fa-list"></i>&nbsp;Back to feature list</span>
+          <span onClick={this.clearFeature} className="navbar-text pointer">
+            <i className="fa fa-list"></i>&nbsp;Back to feature list</span>
         </li>
       )
     } else {
