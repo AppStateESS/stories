@@ -55,7 +55,7 @@ const Navbar = (props) => {
                   </li>
                   <li role="separator" className="divider"></li>
                   <li>
-                    <a href="./stories/Listing">
+                    <a href="./stories/Listing/admin">
                       <i className="fa fa-list"></i>&nbsp;Stories</a>
                   </li>
                   <li>
