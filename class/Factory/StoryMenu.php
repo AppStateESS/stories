@@ -58,7 +58,7 @@ EOF;
 
     public static function listStoryLink()
     {
-        $link = '<a href="./stories/Listing/"><i class="fa fa-list"></i> List</a>';
+        $link = '<a href="./stories/Listing/admin"><i class="fa fa-list"></i> List</a>';
         \MiniAdmin::add('stories', $link);
     }
     
