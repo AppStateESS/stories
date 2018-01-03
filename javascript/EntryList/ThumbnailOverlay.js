@@ -14,8 +14,8 @@ class ThumbnailOverlay extends React.Component {
     super(props)
     this.file = null
     this.state = {
-      photo: null,
       leadUpdate: false,
+      preview: null,
     }
     this.saveThumbnail = this.saveThumbnail.bind(this)
     this.updateImage = this.updateImage.bind(this)
@@ -23,7 +23,7 @@ class ThumbnailOverlay extends React.Component {
   }
 
   close() {
-    this.setState({photo: null})
+    this.setState({photo: null, preview: null,})
     this.props.close()
   }
 
@@ -57,16 +57,26 @@ class ThumbnailOverlay extends React.Component {
   updateImage(e) {
     const file = e[0]
     this.file = file
-    this.props.updateImage(file.preview)
+    this.setState({preview: file.preview})
   }
 
   render() {
-    const {entry} = this.props
     let photo = <EmptyPhoto/>
-    if (entry && entry.thumbnail != '') {
+    let src
+
+    if (this.state.preview && this.state.preview != '') {
+      src = this.state.preview
+    } else if (this.props.entry && this.props.entry.thumbnail) {
+      src = this.props.entry.thumbnail
+    }
+
+    if (src) {
       photo = <img
-        src={entry.thumbnail}
-      style={{maxWidth: '100%', maxHeight: '100%'}}/>
+        src={src}
+        style={{
+          maxWidth: '100%',
+          maxHeight: '100%'
+        }}/>
     }
 
     const closeButton = (
@@ -85,13 +95,18 @@ class ThumbnailOverlay extends React.Component {
       <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
         {
           this.props.thumbnailOverlay
-            ? <Overlay close={this.close} width="500px" height="420px" title="Change thumbnail">
-                <Dropzone
-                  onDrop={this.updateImage}
-                  className="dropzone text-center pointer">
+            ? <Overlay
+                close={this.close}
+                width="500px"
+                height="420px"
+                title="Change thumbnail">
+                <Dropzone onDrop={this.updateImage} className="dropzone text-center pointer">
                   {photo}
                 </Dropzone>
-                <div className="text-muted mb-1"><small><strong>Note:</strong> changing images in story may change thumbnail.</small></div>
+                <div className="text-muted mb-1">
+                  <small>
+                    <strong>Note:</strong>&nbsp; changing images in story may change thumbnail.</small>
+                </div>
                 <div>
                   <button
                     className="btn btn-primary btn-block"
@@ -110,7 +125,6 @@ class ThumbnailOverlay extends React.Component {
 ThumbnailOverlay.propTypes = {
   thumbnailOverlay: PropTypes.bool,
   updateEntry: PropTypes.func,
-  updateImage: PropTypes.func,
   entry: PropTypes.object,
   close: PropTypes.func,
   saveThumbnail: PropTypes.func,
