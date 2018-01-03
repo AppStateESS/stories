@@ -302,14 +302,11 @@ export default class EntryList extends Component {
     } else if (this.state.listing === false) {
       listing = <NoEntries/>
     } else {
-      let isCurrent = false
       let listResult = this.state.listing.map(function (entry, key) {
-        isCurrent = (this.currentEntry() != null && this.currentEntry().id == entry.id)
 
         return <EntryRow
           deleteStory={this.deleteStory.bind(this, key)}
           entry={entry}
-          isCurrent={isCurrent}
           sortByTag={this.sortByTag}
           showTags={this.showTags.bind(this, key)}
           setCurrentEntry={this.setCurrentEntry.bind(this, key)}
@@ -383,7 +380,6 @@ export default class EntryList extends Component {
         <ThumbnailOverlay
           thumbnailOverlay={this.state.thumbnailOverlay}
           updateEntry={this.updateEntry}
-          updateImage={this.updateImage}
           entry={this.currentEntry()}
           close={this.closeOverlay}/>
         <Navbar leftSide={leftSide} rightSide={rightSide} header={header}/>
