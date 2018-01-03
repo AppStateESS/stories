@@ -52,7 +52,7 @@
     "prod": "webpack --config webpack.production.config.js -p"
   },
   "dependencies": {
-    "jquery-sortable": "^0.9.13",
-    "tooltipster": "^4.2.5"
+    "bootstrapjs": "^2.0.0",
+    "jquery-sortable": "^0.9.13"
   }
 }
