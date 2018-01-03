@@ -27,7 +27,7 @@ use stories\Factory\TagFactory;
 use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
-class Admin extends RoleController
+class Admin extends User
 {
 
     /**
@@ -46,7 +46,7 @@ class Admin extends RoleController
         return parent::getHtml($request);
     }
 
-    protected function listHtmlCommand(Request $request)
+    protected function adminHtmlCommand(Request $request)
     {
         \Menu::disableMenu();
 
@@ -58,7 +58,7 @@ EOF;
         return $script . $this->factory->scriptView('EntryList');
     }
     
-    protected function listJsonCommand(Request $request)
+    protected function adminJsonCommand(Request $request)
     {
         $tagFactory = new TagFactory;
         $result = $this->factory->adminListView($request);
