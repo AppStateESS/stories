@@ -19,7 +19,7 @@ class DisplayColumn extends React.Component {
   }
 
   moveButtons() {
-    const {moveThumb, stopMove, holdThumb, entry} = this.props
+    const {moveThumb, stopMove, holdThumb, entry,} = this.props
 
     if (this.state.showButtons === false || entry.entryId == 0) {
       return null
@@ -74,13 +74,13 @@ class DisplayColumn extends React.Component {
       stories,
       applyStory,
       clearStory,
-      previousEmpty,
+      previousEmpty
     } = this.props
     const _class = 'story-feature ' + format
     const position = `${entry.x}% ${entry.y}%`
     const thumbnailStyle = {
       backgroundImage: `url('${entry.story.thumbnail}')`,
-      backgroundPosition: position
+      backgroundPosition: position,
     }
 
     let clearButton
@@ -91,13 +91,13 @@ class DisplayColumn extends React.Component {
     const selectCss = {
       width: '80%',
       float: 'left',
-      marginRight: '10px',
+      marginRight: '10px'
     }
 
     let storyList = <em>No published stories available</em>
     if (stories !== undefined) {
       let storyOptions = stories.map(function (value) {
-        return {value: value.id, label: value.title}
+        return {value: value.id, label: value.title,}
       })
       if (previousEmpty) {
         storyList = null
@@ -137,8 +137,10 @@ class DisplayColumn extends React.Component {
           </div>
           <div className="publish-info">
             {authorPic}
-            <span className="author-name">{entry.story.authorName}</span>
-            <div className="publish-date clearfix">Published {entry.story.publishDateRelative}
+            <div className="posted">
+              <div className="author-name">{entry.story.authorName}</div>
+              <div className="publish-date">{entry.story.publishDateRelative}
+              </div>
             </div>
           </div>
         </div>
@@ -159,7 +161,7 @@ DisplayColumn.propTypes = {
   stopMove: PropTypes.func,
   holdThumb: PropTypes.func,
   thumbnailForm: PropTypes.func,
-  previousEmpty: PropTypes.bool
+  previousEmpty: PropTypes.bool,
 }
 
 DisplayColumn.defaultTypes = {}
