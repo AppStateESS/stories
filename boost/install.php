@@ -44,7 +44,7 @@ function stories_install(&$content)
         $tagToEntry = $db->buildTable('storiesTagToEntry');
         $entryId = $tagToEntry->addDataType('entryId', 'int');
         $tagId = $tagToEntry->addDataType('tagId', 'int');
-        $unique = new Database\Unique(array($tagId, $entryId));
+        $unique = new \phpws2\Database\Unique(array($tagId, $entryId));
         $tagToEntry->addUnique($unique);
         $tagToEntry->create();
 
