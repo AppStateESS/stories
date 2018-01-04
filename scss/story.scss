@@ -1,3 +1,9 @@
+$small-break: 768px;
+$medium-break: 991px;
+$landscape-height : 300px;
+$topbottom-height : 400px;
+$leftright-height : 300px;
+
 .publish-info {
   .circle-frame {
     overflow: hidden;
@@ -5,10 +11,17 @@
     border: 1px solid #e3e3e3;
     float: left;
     margin-right: 6px;
+    width: 74px;
+    height: 74px;
 
     img {
       width: 100%;
     }
+  }
+
+  .publish-date {
+      color: #828282;
+      font-size : 14px;
   }
 }
 
@@ -16,20 +29,40 @@
   margin-bottom: 2em;
   padding-bottom: 1em;
   border-bottom: 1px solid #e3e3e3;
-
-  .publish-info {
-    .circle-frame {
-      width: 74px;
-      height: 74px;
-    }
-  }
 }
 
 #story-feature-list {
+  @media screen and (min-width: $medium-break) {
+    .col-md-3 .story-feature {
+      a h4 {
+        font-size: 16px;
+      }
+    }
+  }
+  @media screen and (max-width: $medium-break) and (min-width: $small-break) {
+    .col-sm-4 .story-feature {
+      &.leftright {
+        a h4 {
+          font-size: 16px;
+        }
+
+        .circle-frame {
+          display: none;
+        }
+
+        .author-name {
+          font-size: 14px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
   .story-feature {
     border: 1px solid #e3e3e3;
     position: relative;
     margin-bottom: 1em;
+    overflow: hidden;
 
     a h4 {
       font-size: 20px;
@@ -44,7 +77,10 @@
     }
 
     &.landscape {
-      height: 300px;
+      height: $landscape-height;
+      @media screen and (max-width: $small-break) {
+        height: 300px;
+      }
 
       .story-thumbnail {
         width: 100%;
@@ -58,11 +94,17 @@
     }
 
     &.topbottom {
-      height: 400px;
+      height: $topbottom-height;
+      @media screen and (max-width: $small-break) {
+        height: 300px;
+      }
 
       .story-thumbnail {
         width: 100%;
         height: 50%;
+        @media screen and (max-width: $small-break) {
+          height: 100px;
+        }
       }
 
       .story-content {
@@ -71,7 +113,10 @@
     }
 
     &.leftright {
-      height: 300px;
+      height: $leftright-height;
+      @media screen and (max-width: $small-break) {
+        height: 200px;
+      }
 
       .publish-info {
         width: 60%;
@@ -116,11 +161,6 @@
 
       .author-name {
         font-size: 16px;
-      }
-
-      .publish-date {
-        color: #828282;
-        font-size: 14px;
       }
 
       .circle-frame {
