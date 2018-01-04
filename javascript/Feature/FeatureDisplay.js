@@ -24,7 +24,7 @@ const FeatureDisplay = (props) => {
       bsClass = 'col-sm-4'
       break
     case 4:
-      bsClass = 'col-sm-3'
+      bsClass = 'col-sm-6 col-md-3'
       break
   }
 
