@@ -14,6 +14,10 @@ div.story-entry .medium-insert-embeds figure figcaption, div.story-entry .medium
     text-align: left;
 }
 
+twitterwidget {
+  margin: 0 auto;
+}
+
 /* medium forces a 100px height on its embed iframe. This doesn't work with instagram */
 @media screen and (min-width: 616px) {
     div.medium-insert-embed>div>div>div {
