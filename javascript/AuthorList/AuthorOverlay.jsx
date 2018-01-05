@@ -9,7 +9,6 @@ import Overlay from '../AddOn/Overlay'
 export default class AuthorOverlay extends Component {
   constructor(props) {
     super(props)
-    this.state = {author : this.props.author}
     this.updateName = this.updateName.bind(this)
     this.updateEmail = this.updateEmail.bind(this)
     this.saveAuthor = this.saveAuthor.bind(this)
