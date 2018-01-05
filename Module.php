@@ -103,6 +103,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         if (!$request->isGet() || $request->getUrl() != '/') {
             return;
         }
+        \Layout::addToStyleList('mod/stories/css/bootstrap-fills.css');
         $entryFactory = new \stories\Factory\EntryFactory;
         $featureFactory = new \stories\Factory\FeatureFactory();
         $settings = new \phpws2\Settings;
