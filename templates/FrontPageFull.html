@@ -7,12 +7,23 @@
   </div>
   <?=$entry['publishInfo']?>
   <span class="label label-info permanent-link mr-1">
-    <a href="./stories/Entry/<?=$entry['urlTitle']?>/"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
+    <a href="<?=$entry['currentUrl']?>"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
   </span>
   <?php if ($isAdmin):?>
   <span class="label label-primary permanent-link">
     <a href="./stories/Entry/<?=$entry['id']?>/edit"><i class="fa fa-edit"></i>&nbsp;Edit</a>
   </span>
+  <div class="share-buttons">
+    <span class="facebook-share">
+      <a title="Share on Facebook" target="_blank" href="//www.facebook.com/sharer.php?u=<?=$entry['currentUrl']?>"><i class="fa fa-2x fa-facebook-official"></i></a>
+    </span>
+    <span class="twitter-share">
+      <a title="Share on Twitter" target="_blank" href="http://twitter.com/intent/tweet?text=<?=$entry['title'],' ',$entry['currentUrl']?>"><i class="fa fa-2x fa-twitter-square"></i></a>
+    </span>
+    <span class="reddit-share">
+      <a title="Share on Reddit" target="_blank" href="http://www.reddit.com/submit?url=<?=$entry['currentUrl']?>"><i class="fa fa-2x fa-reddit-square"></i></a>
+    </span>
+  </div>
   <?php endif;?>
 </div>
 <?php endforeach; ?>
