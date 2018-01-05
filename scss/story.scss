@@ -1,8 +1,8 @@
 $small-break: 768px;
 $medium-break: 991px;
-$landscape-height : 300px;
-$topbottom-height : 400px;
-$leftright-height : 300px;
+$landscape-height: 300px;
+$topbottom-height: 400px;
+$leftright-height: 300px;
 
 .publish-info {
   .circle-frame {
@@ -20,8 +20,8 @@ $leftright-height : 300px;
   }
 
   .publish-date {
-      color: #828282;
-      font-size : 14px;
+    color: #828282;
+    font-size: 14px;
   }
 }
 
@@ -29,6 +29,10 @@ $leftright-height : 300px;
   margin-bottom: 2em;
   padding-bottom: 1em;
   border-bottom: 1px solid #e3e3e3;
+
+  .story-image {
+    text-align : center;
+  }
 }
 
 #story-feature-list {
