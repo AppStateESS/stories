@@ -16,7 +16,7 @@ export default class Settings extends Component {
       listStoryFormat: 0,
       commentCode: '',
       showComments: 0,
-      showAuthor: 0,
+      showAuthor: 0
     }
     this.setCommentCode = this.setCommentCode.bind(this)
     this.setShowComments = this.setShowComments.bind(this)
@@ -39,7 +39,7 @@ export default class Settings extends Component {
     }
     $.post('./stories/Settings', {
       param: param,
-      value: setting
+      value: setting,
     }, null, 'json').done(function () {
       const stateSetting = {}
       stateSetting[param] = setting
@@ -63,29 +63,29 @@ export default class Settings extends Component {
     const amountButtons = [
       {
         value: 2,
-        label: 2
+        label: 2,
       }, {
         value: 4,
-        label: 4
+        label: 4,
       }, {
         value: 6,
-        label: 6
+        label: 6,
       }, {
         value: 8,
-        label: 8
+        label: 8,
       }, {
         value: 10,
-        label: 10
+        label: 10,
       },
     ]
 
     const formatButton = [
       {
         value: 0,
-        label: 'Summary',
+        label: 'Summary'
       }, {
         value: 1,
-        label: 'Full',
+        label: 'Full'
       },
     ]
 
@@ -104,22 +104,16 @@ export default class Settings extends Component {
                   label="List stories on front page"/>
               </div>
               <div className="indent clearfix">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div>Number of stories per page</div>
-                    <ButtonGroup
-                      buttons={amountButtons}
-                      handle={this.saveSetting.bind(this, 'listStoryAmount')}
-                      match={this.state.listStoryAmount}/>
-                  </div>
-                  <div className="col-md-6">
-                    <div>Story display type</div>
-                    <ButtonGroup
-                      buttons={formatButton}
-                      handle={this.saveSetting.bind(this, 'listStoryFormat')}
-                      match={this.state.listStoryFormat}/>
-                  </div>
-                </div>
+                <div>Stories per page</div>
+                <ButtonGroup
+                  buttons={amountButtons}
+                  handle={this.saveSetting.bind(this, 'listStoryAmount')}
+                  match={this.state.listStoryAmount}/>
+                <div className="mt-1">Story display type</div>
+                <ButtonGroup
+                  buttons={formatButton}
+                  handle={this.saveSetting.bind(this, 'listStoryFormat')}
+                  match={this.state.listStoryFormat}/>
               </div>
             </div>
           </div>
