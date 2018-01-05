@@ -5,6 +5,7 @@ import Waiting from '../AddOn/Waiting'
 import Navbar from '../AddOn/Navbar'
 import SearchBar from '../AddOn/SearchBar'
 import PictureOverlay from './PictureOverlay'
+import AuthorOverlay from './AuthorOverlay'
 import './style.css'
 
 /* global $ */
@@ -20,7 +21,8 @@ export default class AuthorList extends Component {
       currentKey: null,
       search: '',
       moreRows: true,
-      pictureOverlay: false
+      pictureOverlay: false,
+      authorOverlay: false,
     }
 
     this.load = this.load.bind(this)
@@ -43,7 +45,7 @@ export default class AuthorList extends Component {
     }
     $.getJSON('./stories/Author/list', sendData).done(function (data) {
       if (data.listing == null) {
-        this.setState({listing: false, loading: false, moreRows: false})
+        this.setState({listing: false, loading: false, moreRows: false,})
       } else {
         let listing
         if (this.offset > 0) {
@@ -51,7 +53,7 @@ export default class AuthorList extends Component {
         } else {
           listing = data.listing
         }
-        this.setState({listing: listing, loading: false, moreRows: data.moreRows})
+        this.setState({listing: listing, loading: false, moreRows: data.moreRows,})
       }
     }.bind(this))
   }
@@ -62,7 +64,7 @@ export default class AuthorList extends Component {
   }
 
   update(key) {
-    this.setState({currentKey: key})
+    this.setState({currentKey: key, authorOverlay: true})
   }
 
   clearSearch() {
@@ -85,7 +87,7 @@ export default class AuthorList extends Component {
   }
 
   thumbnailForm(key) {
-    this.setState({currentKey: key, pictureOverlay: true,})
+    this.setState({currentKey: key, pictureOverlay: true})
   }
 
   searchChange(e) {
@@ -107,7 +109,7 @@ export default class AuthorList extends Component {
   }
 
   closeOverlay() {
-    this.setState({currentKey: null, pictureOverlay: false,})
+    this.setState({currentKey: null, pictureOverlay: false, authorOverlay: false})
   }
 
   render() {
@@ -121,7 +123,7 @@ export default class AuthorList extends Component {
 
     const header = {
       title: 'Author list',
-      url: 'stories/Author',
+      url: 'stories/Author'
     }
     let listing
     if (this.state.loading) {
@@ -160,7 +162,12 @@ export default class AuthorList extends Component {
           updateAuthor={this.updateAuthor}
           updateImage={this.updateImage}
           author={this.currentAuthor()}
-          close={this.closeOverlay}/>{listing}
+          close={this.closeOverlay}/>
+        <AuthorOverlay
+          show={this.state.authorOverlay}
+          close={this.closeOverlay}
+          updateAuthor={this.updateAuthor}
+          author={this.currentAuthor()}/> {listing}
       </div>
     )
   }
