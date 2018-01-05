@@ -67,7 +67,7 @@ class EntryFactory extends BaseFactory
 
     private function pullOptions(Request $request)
     {
-        $segmentSize = \phpws2\Settings::get('stories', 'segmentSize');
+        $segmentSize = \phpws2\Settings::get('stories', 'featureNumber');
         // if offset not set, default 0
         $page = (int) $request->pullGetInteger('page', true);
         if ($page > 1) {
@@ -138,10 +138,11 @@ class EntryFactory extends BaseFactory
         // if true, don't add fields to the query
         $limitedVars = false;
         $now = time();
+        $settings = new \phpws2\Settings();
         $defaultOptions = array('publishedOnly' => false,
             'hideExpired' => true,
             'orderBy' => 'publishDate',
-            'limit' => 5,
+            'limit' => $settings->get('stories', 'featureNumber'),
             'includeContent' => true,
             'publishedOnly' => true,
             'showAuthor' => false,
@@ -253,8 +254,10 @@ class EntryFactory extends BaseFactory
             return null;
         }
         $tagFactory = new TagFactory;
+        $address = \Canopy\Server::getSiteUrl();
         foreach ($objectList as $entry) {
             $row = $entry->getStringVars();
+            $row['currentUrl'] = $address . 'stories/Entry/' . $row['urlTitle'];
             if ($options['showTagLinks']) {
                 $row['tagLinks'] = $tagFactory->getTagLinks($row['tags'],
                         $row['id'], $options['tag']);
