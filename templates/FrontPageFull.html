@@ -2,16 +2,18 @@
 <?=$style?>
 <?php foreach ($list as $entry):?>
 <div class="story-list-entry clearfix">
-  <span class="label label-primary permanent-link">
-    <a href="./stories/Entry/<?=$entry['urlTitle']?>/"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
-  </span>
-  <?php if ($isAdmin):?>
-  <a class="pull-right btn btn-default btn-sm" href="./stories/Entry/<?=$entry['id']?>/edit">Edit</a>
-  <?php endif;?>
   <div class="story-content">
     <?=$entry['content']?>
   </div>
   <?=$entry['publishInfo']?>
+  <span class="label label-info permanent-link mr-1">
+    <a href="./stories/Entry/<?=$entry['urlTitle']?>/"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
+  </span>
+  <?php if ($isAdmin):?>
+  <span class="label label-primary permanent-link">
+    <a href="./stories/Entry/<?=$entry['id']?>/edit"><i class="fa fa-edit"></i>&nbsp;Edit</a>
+  </span>
+  <?php endif;?>
 </div>
 <?php endforeach; ?>
 <?php if ($prevpage):?>
