@@ -62,6 +62,12 @@ EOF;
         \MiniAdmin::add('stories', $link);
     }
     
+    public static function authorLink()
+    {
+        $link = '<a href="./stories/Author/"><i class="fa fa-user"></i> Authors</a>';
+        \MiniAdmin::add('stories', $link);
+    }
+    
     public static function featureLink()
     {
         $link = '<a href="./stories/Feature/"><i class="fa fa-exclamation-circle"></i> Features</a>';
