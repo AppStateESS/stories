@@ -696,7 +696,10 @@ EOF;
             } else {
                 $data['twitter'] = '';
             }
+            $address= \Canopy\Server::getSiteUrl();
+            $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
             $data['publishInfo'] = $this->publishBlock($data);
+            $data['shareButtons'] = $this->shareButtons($data);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
 
@@ -718,7 +721,7 @@ EOF;
 EOF;
     }
 
-    public function publishBlock($data, $tag=null)
+    public function publishBlock($data, $tag = null)
     {
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         $tagFactory = new TagFactory;
@@ -733,6 +736,13 @@ EOF;
 
         $template = new \phpws2\Template($data);
         $template->setModuleTemplate('stories', 'Publish.html');
+        return $template->get();
+    }
+
+    public function shareButtons($data)
+    {
+        $template = new \phpws2\Template($data);
+        $template->setModuleTemplate('stories', 'ShareButtons.html');
         return $template->get();
     }
 
@@ -754,7 +764,7 @@ EOF;
         $options = $this->pullOptions($request);
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         $options['showAuthor'] = $showAuthor;
-        $tag = empty($options['tag']) ? null: $options['tag'];
+        $tag = empty($options['tag']) ? null : $options['tag'];
         $list = $this->pullList($options);
         if (empty($list)) {
             return null;
@@ -767,7 +777,7 @@ EOF;
             $title = null;
         }
         $data['title'] = $title;
-        $data['list'] = $this->addPublishBlock($list, $tag);
+        $data['list'] = $this->addAccessories($list, $tag);
         $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
         $data['isAdmin'] = \Current_User::allow('stories');
         $data['showAuthor'] = $showAuthor;
@@ -804,11 +814,12 @@ EOF;
         return $template->get();
     }
 
-    private function addPublishBlock($list, $tag=null)
+    private function addAccessories($list, $tag = null)
     {
         foreach ($list as $key => $value) {
             $newlist[$key] = $value;
             $newlist[$key]['publishInfo'] = $this->publishBlock($value, $tag);
+            $newlist[$key]['shareButtons'] = $this->shareButtons($value);
         }
         return $newlist;
     }
