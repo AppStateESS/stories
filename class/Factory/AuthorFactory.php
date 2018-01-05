@@ -40,6 +40,11 @@ class AuthorFactory extends BaseFactory
 
     public $moreRows = false;
 
+    /**
+     * 
+     * @param array $data
+     * @return Resource
+     */
     public function build($data = null)
     {
         $resource = new Resource();
@@ -158,6 +163,14 @@ class AuthorFactory extends BaseFactory
         $tbl->addField('name', 'label');
         $tbl->addOrderBy('name');
         return $db->select();
+    }
+    
+    public function put($authorId, Request $request)
+    {
+        $author = $this->load($authorId);
+        $author->name = $request->pullPutString('name');
+        $author->email = $request->pullPutString('email');
+        return self::saveResource($author);
     }
 
 }
