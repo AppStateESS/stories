@@ -1,15 +1,16 @@
 <?=!empty($title) ? "<h2>$title</h2>" : null?>
 <?=$style?>
 <?php foreach ($list as $entry):?>
-<div class="story-list-entry">
-  <div class="story-image"><a href="./<?=$entry['urlTitle']?>"><img src="<?=$entry['leadImage']?>" class="img-responsive" /></a></div>
+<div class="story-list-entry clearfix">
+  <div class="story-image"><a href="./<?=$entry['urlTitle']?>"><img src="<?=$entry['leadImage']?>" class="img-responsive center-block" /></a></div>
   <div class="story-title">
-    <a href="./<?=$entry['urlTitle']?>"><h3><?=$entry['title']?></h3></a></div>
+    <a href="./<?=$entry['urlTitle']?>"><h3><?=$entry['title']?></h3></a>
+  </div>
   <div class="story-summary">
-    <?=$entry['summary']?> 
+    <?=$entry['summary']?>
     <p><a href="<?=$entry['urlTitle']?>">Read more...</a></p>
   </div>
-  <?=$publishInfo?>
+  <?=$entry['publishInfo']?>
 </div>
 <?php endforeach; ?>
 <?php if ($prevpage):?>
