@@ -57,5 +57,10 @@ class Admin extends User
     {
         return $this->factory->savePhoto($request);
     }
+    
+    protected function putCommand(Request $request)
+    {
+        return $this->factory->put($this->id, $request);
+    }
 
 }
