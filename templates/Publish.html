@@ -4,7 +4,7 @@
   <?php endif;?>
   <div class="posted">
     <?php if ($showAuthor):?>
-    <div class="author-name">By <?=$authorName?></div>
+    <div class="author-name">By <a class="author-email" href="mailto:<?=$authorEmail?>"><?=$authorName?></a></div>
     <?php endif;?>
     <?php if ($published):?>
     <div class="publish-date">
