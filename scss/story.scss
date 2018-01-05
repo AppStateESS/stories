@@ -5,12 +5,30 @@ $topbottom-height: 400px;
 $leftright-height: 300px;
 
 .label a {
-  color : white;
+  color: white;
+}
+
+
+.share-buttons {
+  float: left;
+  margin-right : 10px;
+  .facebook-share a {
+    color: #4267B2;
+  }
+
+  .twitter-share a {
+    color: #FFAD1F;
+  }
+
+  .reddit-share a {
+    color: #FF4501;
+  }
 }
 
 .publish-info {
-  align-items: center;
-  display: flex;
+  .author-email {
+    font-weight : bold;
+  }
 
   .circle-frame {
     overflow: hidden;
@@ -36,6 +54,15 @@ $leftright-height: 300px;
   margin-bottom: 2em;
   padding-bottom: 1em;
   border-bottom: 1px solid #e3e3e3;
+
+  .publish-info {
+    border: 1px solid #e3e3e3;
+    padding: 6px;
+    border-radius: 5px;
+    align-items: center;
+    display: flex;
+    width: 300px;
+  }
 
   .story-image {
     text-align: center;
