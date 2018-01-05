@@ -4,7 +4,14 @@ $landscape-height: 300px;
 $topbottom-height: 400px;
 $leftright-height: 300px;
 
+.label a {
+  color : white;
+}
+
 .publish-info {
+  align-items: center;
+  display: flex;
+
   .circle-frame {
     overflow: hidden;
     border-radius: 50%;
@@ -31,7 +38,7 @@ $leftright-height: 300px;
   border-bottom: 1px solid #e3e3e3;
 
   .story-image {
-    text-align : center;
+    text-align: center;
   }
 }
 
@@ -154,10 +161,8 @@ $leftright-height: 300px;
     }
 
     .publish-info {
-      align-items: center;
       background-color: white;
       bottom: 0;
-      display: flex;
       height: 20%;
       padding: 4px;
       position: absolute;
