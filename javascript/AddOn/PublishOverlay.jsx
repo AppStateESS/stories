@@ -29,7 +29,7 @@ const PublishOverlay = ({
   if (isPublished == 0) {
     publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publish}>Publish</button>
   } else {
-    publishButton = <button className="btn btn-warning btn-block mb-1" onClick={unpublish}>Unpublish</button>
+    publishButton = <button className="btn btn-info btn-block mb-1" onClick={unpublish}>Unpublish</button>
   }
 
   return (
