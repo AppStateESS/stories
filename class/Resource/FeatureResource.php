@@ -41,7 +41,7 @@ class FeatureResource extends BaseResource
     protected $sorting;
     protected $stories;
     
-    protected $table = 'storiesFeature';
+    protected $table = 'storiesfeature';
     
     public function __construct()
     {

@@ -16,7 +16,7 @@ class TagResource extends BaseResource
 {
     protected $title;
     
-    protected $table = 'storiesTag';
+    protected $table = 'storiestag';
     
     public function __construct() {
         parent::__construct();

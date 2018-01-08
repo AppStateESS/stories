@@ -76,7 +76,7 @@ class FeatureFactory extends BaseFactory
         }
 
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesFeature');
+        $tbl = $db->addTable('storiesfeature');
         if ($options['activeOnly']) {
             $tbl->addFieldConditional('active', 1);
         }
@@ -100,7 +100,7 @@ class FeatureFactory extends BaseFactory
     {
         $entryFactory = new EntryFactory;
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl = $db->addTable('storiesentrytofeature');
         $tbl->addFieldConditional('featureId', $feature['id']);
         $tbl->addOrderBy('sorting');
         $entries = $db->select();
@@ -282,7 +282,7 @@ EOF;
     public function deleteEntry($entryId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl = $db->addTable('storiesentrytofeature');
         $tbl->addFieldConditional('entryId', $entryId);
         return $db->delete();
     }
@@ -290,7 +290,7 @@ EOF;
     public function delete($featureId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesFeature');
+        $tbl = $db->addTable('storiesfeature');
         $tbl->addFieldConditional('id', $featureId);
         $db->delete();
         $this->deleteEntryList($featureId);
@@ -299,7 +299,7 @@ EOF;
     public function deleteEntryList($featureId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl = $db->addTable('storiesentrytofeature');
         $tbl->addFieldConditional('featureId', $featureId);
         $db->delete();
     }
@@ -311,7 +311,7 @@ EOF;
 
         // new code
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntryToFeature');
+        $tbl = $db->addTable('storiesentrytofeature');
         $tbl->addFieldConditional('featureId', $feature->id);
         $db->delete();
         $db->clearConditional();

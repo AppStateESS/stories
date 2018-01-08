@@ -22,11 +22,11 @@
 function stories_uninstall(&$content)
 {
     $db = \phpws2\Database::getDB();
-    $db->buildTable('storiesAuthor')->drop(true);
-    $db->buildTable('storiesEntry')->drop(true);
-    $db->buildTable('storiesTag')->drop(true);
-    $db->buildTable('storiesFeature')->drop(true);
-    $db->buildTable('storiesTagToEntry')->drop(true);
-    $db->buildTable('storiesEntryToFeature')->drop(true);
+    $db->buildTable('storiesauthor')->drop(true);
+    $db->buildTable('storiesentry')->drop(true);
+    $db->buildTable('storiestag')->drop(true);
+    $db->buildTable('storiesfeature')->drop(true);
+    $db->buildTable('storiestagtoentry')->drop(true);
+    $db->buildTable('storiesentrytofeature')->drop(true);
     return true;
 }

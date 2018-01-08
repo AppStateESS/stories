@@ -59,7 +59,7 @@ class SettingsFactory extends BaseFactory
     public function needPurging()
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntry');
+        $tbl = $db->addTable('storiesentry');
         $tbl->addFieldConditional('deleted', 1);
         $id = $tbl->addField('id', 'count');
         $id->showCount();
@@ -70,7 +70,7 @@ class SettingsFactory extends BaseFactory
     public function purgeDeleted()
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntry');
+        $tbl = $db->addTable('storiesentry');
         $tbl->addFieldConditional('deleted', 1);
         $db->delete();
         return true;

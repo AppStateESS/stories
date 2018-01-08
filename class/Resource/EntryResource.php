@@ -19,7 +19,7 @@ class EntryResource extends BaseResource
 {
 
     /**
-     * Pulled from author table. Not saved in storiesEntry
+     * Pulled from author table. Not saved in storiesentry
      * @var phpws2\Variable\Email
      */
     protected $authorEmail;
@@ -31,13 +31,13 @@ class EntryResource extends BaseResource
     protected $authorId;
 
     /**
-     * Pulled from author table. Not saved in storiesEntry
+     * Pulled from author table. Not saved in storiesentry
      * @var phpws2\Variable\StringVar 
      */
     protected $authorName;
 
     /**
-     * Pulled from author table. Not saved in storiesEntry
+     * Pulled from author table. Not saved in storiesentry
      * @var phpws2\Variable\FileVar
      */
     protected $authorPic;
@@ -127,7 +127,7 @@ class EntryResource extends BaseResource
     /**
      * @var string
      */
-    protected $table = 'storiesEntry';
+    protected $table = 'storiesentry';
 
     public function __construct()
     {

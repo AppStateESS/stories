@@ -41,14 +41,14 @@ function stories_install(&$content)
         $tag->createTable($db);
         $db->clearTables();
 
-        $tagToEntry = $db->buildTable('storiesTagToEntry');
+        $tagToEntry = $db->buildTable('storiestagtoentry');
         $entryId = $tagToEntry->addDataType('entryId', 'int');
         $tagId = $tagToEntry->addDataType('tagId', 'int');
         $unique = new \phpws2\Database\Unique(array($tagId, $entryId));
         $tagToEntry->addUnique($unique);
         $tagToEntry->create();
 
-        $entryToFeature = $db->buildTable('storiesEntryToFeature');
+        $entryToFeature = $db->buildTable('storiesentrytofeature');
         $entryToFeature->addDataType('entryId', 'int');
         $entryToFeature->addDataType('featureId', 'int');
         $entryToFeature->addDataType('x', 'smallint');

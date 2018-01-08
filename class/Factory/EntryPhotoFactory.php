@@ -185,7 +185,7 @@ class EntryPhotoFactory
         }
 
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntry');
+        $tbl = $db->addTable('storiesentry');
         $tbl->addFieldConditional('id', $entryId);
         $tbl->addFieldConditional('thumbnail', $thumbnailUrl);
         $tbl->addValue('thumbnail', null);

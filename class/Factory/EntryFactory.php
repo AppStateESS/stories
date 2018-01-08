@@ -43,8 +43,8 @@ class EntryFactory extends BaseFactory
     public function load($id)
     {
         $db = Database::getDB();
-        $entryTbl = $db->addTable('storiesEntry');
-        $authorTbl = $db->addTable('storiesAuthor');
+        $entryTbl = $db->addTable('storiesentry');
+        $authorTbl = $db->addTable('storiesauthor');
         $authorTbl->addField('name', 'authorName');
         $authorTbl->addField('pic', 'authorPic');
         $authorTbl->addField('email', 'authorEmail');
@@ -67,15 +67,15 @@ class EntryFactory extends BaseFactory
 
     private function pullOptions(Request $request)
     {
-        $segmentSize = \phpws2\Settings::get('stories', 'listStoryAmount');
+        $listStoryAmount = \phpws2\Settings::get('stories', 'listStoryAmount');
         // if offset not set, default 0
         $page = (int) $request->pullGetInteger('page', true);
         if ($page > 1) {
-            $offsetSize = $segmentSize * ($page - 1);
+            $offsetSize = $listStoryAmount * ($page - 1);
         } else {
             $offset = $request->pullGetInteger('offset', true);
             if ($offset > 0) {
-                $offsetSize = $segmentSize * $offset;
+                $offsetSize = $listStoryAmount * $offset;
             } else {
                 $offsetSize = 0;
             }
@@ -94,7 +94,7 @@ class EntryFactory extends BaseFactory
         $options = array(
             'search' => $search,
             'orderBy' => $orderBy,
-            'limit' => $segmentSize,
+            'limit' => $listStoryAmount,
             'offset' => $offsetSize,
             'page' => $page,
             'tag' => $tag
@@ -160,7 +160,7 @@ class EntryFactory extends BaseFactory
             $options = $defaultOptions;
         }
 
-        $tbl = $db->addTable('storiesEntry');
+        $tbl = $db->addTable('storiesentry');
         if (!empty($options['vars'])) {
             $limitedVars = true;
             foreach ($options['vars'] as $field) {
@@ -214,8 +214,8 @@ class EntryFactory extends BaseFactory
         }
 
         if ($options['tag']) {
-            $tagIdTable = $db->addTable('storiesTagToEntry', null, false);
-            $tagTable = $db->addTable('storiesTag', null, false);
+            $tagIdTable = $db->addTable('storiestagtoentry', null, false);
+            $tagTable = $db->addTable('storiestag', null, false);
             $tagTable->addFieldConditional('title', $options['tag']);
             $db->addConditional($db->createConditional($tagTable->getField('id'),
                             $tagIdTable->getField('tagId'), '='));
@@ -224,7 +224,7 @@ class EntryFactory extends BaseFactory
         }
 
         if (!$limitedVars && $options['showAuthor']) {
-            $tbl2 = $db->addTable('storiesAuthor');
+            $tbl2 = $db->addTable('storiesauthor');
 
             $tbl2->addField('name', 'authorName');
             $tbl2->addField('email', 'authorEmail');
@@ -322,7 +322,7 @@ class EntryFactory extends BaseFactory
     public function getByUrlTitle($urlTitle)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntry');
+        $tbl = $db->addTable('storiesentry');
         $tbl->addFieldConditional('urlTitle', $urlTitle);
         $data = $db->selectOneRow();
         if (empty($data)) {
@@ -632,7 +632,7 @@ EOF;
             throw new \stories\Exception\CannotPurge;
         }
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesEntry');
+        $tbl = $db->addTable('storiesentry');
         $tbl->addFieldConditional('id', $id);
         $db->delete();
         $photoFactory = new EntryPhotoFactory();

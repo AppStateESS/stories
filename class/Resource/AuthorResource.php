@@ -20,7 +20,7 @@ class AuthorResource extends BaseResource
     protected $userId;
     protected $twitterUsername;
     
-    protected $table = 'storiesAuthor';
+    protected $table = 'storiesauthor';
     
     public function __construct()
     {

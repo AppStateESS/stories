@@ -73,7 +73,7 @@ class TagFactory extends BaseFactory
             throw new \Exception('Bad tag id');
         }
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesTagToEntry');
+        $tbl = $db->addTable('storiestagtoentry');
         $tbl->addValue('entryId', $entryId);
         $tbl->addValue('tagId', $tagId);
         return $db->insert();
@@ -103,8 +103,8 @@ class TagFactory extends BaseFactory
     public function getTagsByEntryId($entryId, $selectValues = false)
     {
         $db = Database::getDB();
-        $tagTbl = $db->addTable('storiesTag');
-        $tteTbl = $db->addTable('storiesTagToEntry', null, false);
+        $tagTbl = $db->addTable('storiestag');
+        $tteTbl = $db->addTable('storiestagtoentry', null, false);
         //$tagTbl->addField('title');
         $cond = $db->createConditional($tteTbl->getField('tagId'),
                 $tagTbl->getField('id'), '=');
@@ -128,7 +128,7 @@ class TagFactory extends BaseFactory
     public function clearEntryTags($entryId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesTagToEntry');
+        $tbl = $db->addTable('storiestagtoentry');
         $tbl->addFieldConditional('entryId', $entryId);
         $db->delete();
     }
@@ -136,7 +136,7 @@ class TagFactory extends BaseFactory
     public function getTagByTitle($title)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesTag');
+        $tbl = $db->addTable('storiestag');
         $tbl->addFieldConditional('title', $title);
         $tagVars = $db->selectOneRow();
         if (empty($tagVars)) {
@@ -151,7 +151,7 @@ class TagFactory extends BaseFactory
     {
         $this->deleteTagEntry($id);
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesTag');
+        $tbl = $db->addTable('storiestag');
         $tbl->addFieldConditional('id', $id);
         $db->delete();
     }
@@ -159,7 +159,7 @@ class TagFactory extends BaseFactory
     public function deleteTagEntry($id)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesTagToEntry');
+        $tbl = $db->addTable('storiestagtoentry');
         $tbl->addFieldConditional('tagId', $id);
         $db->delete();
     }
@@ -172,7 +172,7 @@ class TagFactory extends BaseFactory
     public function listTags($selectValues = false)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesTag');
+        $tbl = $db->addTable('storiestag');
         $tbl->addOrderBy('title');
         $result = $db->select();
         if (empty($result)) {
@@ -240,7 +240,7 @@ EOF;
     public function purgeEntry($entryId)
     {
         $db = \phpws2\Database::getDB();
-        $tbl = $db->addTable('storiesTagToEntry');
+        $tbl = $db->addTable('storiestagtoentry');
         $tbl->addFieldConditional('entryId', $entryId);
         $db->delete();
     }

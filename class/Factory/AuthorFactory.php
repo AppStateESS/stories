@@ -82,7 +82,7 @@ class AuthorFactory extends BaseFactory
     public function getByUserId($userId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesAuthor');
+        $tbl = $db->addTable('storiesauthor');
         $tbl->addFieldConditional('userId', $userId);
         $data = $db->selectOneRow();
         return !empty($data) ? $this->build($data) : null;
@@ -96,7 +96,7 @@ class AuthorFactory extends BaseFactory
         $search = $request->pullGetString('search', true);
 
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesAuthor');
+        $tbl = $db->addTable('storiesauthor');
         $userTbl = $db->addTable('users', null, false);
         $userTbl->addField('last_logged');
         $db->joinResources($tbl, $userTbl,
@@ -158,7 +158,7 @@ class AuthorFactory extends BaseFactory
     
     public function jsonSelectList() {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesAuthor');
+        $tbl = $db->addTable('storiesauthor');
         $tbl->addField('id', 'value');
         $tbl->addField('name', 'label');
         $tbl->addOrderBy('name');
