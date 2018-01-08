@@ -55,5 +55,25 @@ class SettingsFactory extends BaseFactory
         $settings = new \phpws2\Settings();
         $settings->set('stories', $param, $value);
     }
+    
+    public function needPurging()
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntry');
+        $tbl->addFieldConditional('deleted', 1);
+        $id = $tbl->addField('id', 'count');
+        $id->showCount();
+        $deleted = $db->selectColumn();
+        return $deleted;
+    }
+    
+    public function purgeDeleted()
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesEntry');
+        $tbl->addFieldConditional('deleted', 1);
+        $db->delete();
+        return true;
+    }
 
 }

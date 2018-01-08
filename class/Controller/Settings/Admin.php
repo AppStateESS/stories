@@ -53,6 +53,7 @@ class Admin extends RoleController
         $settingObj->commentCode = $settings->get('stories', 'commentCode');
         $settingObj->showComments = $settings->get('stories', 'showComments');
         $settingObj->showAuthor = $settings->get('stories', 'showAuthor');
+        $settingObj->deleted = $this->factory->needPurging();
         
         $settingsJson = json_encode($settingObj);
         $script = <<<EOF
@@ -64,6 +65,11 @@ EOF;
     public function postCommand(Request $request)
     {
         $this->factory->post($request);
+    }
+    
+    public function purgePostCommand(Request $request)
+    {
+        return $this->factory->purgeDeleted();
     }
          
 }

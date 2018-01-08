@@ -16,15 +16,25 @@ export default class Settings extends Component {
       listStoryFormat: 0,
       commentCode: '',
       showComments: 0,
-      showAuthor: 0
+      showAuthor: 0,
+      deleted: 0,
+      purgeVerified: false
     }
     this.setCommentCode = this.setCommentCode.bind(this)
     this.setShowComments = this.setShowComments.bind(this)
     this.saveCommentCode = this.saveCommentCode.bind(this)
+    this.purgeDeleted = this.purgeDeleted.bind(this)
+    this.toggleVerified = this.toggleVerified.bind(this)
   }
 
   componentDidMount() {
     this.setState(this.props.settings)
+  }
+
+  toggleVerified() {
+    this.setState({
+      purgeVerified: !this.state.purgeVerified
+    })
   }
 
   saveSetting(param, value) {
@@ -59,6 +69,18 @@ export default class Settings extends Component {
     this.saveSetting('showComments', value)
   }
 
+  purgeDeleted() {
+    $.ajax({
+      url: 'stories/Settings/purge',
+      dataType: 'json',
+      type: 'post',
+      success: function(){
+        window.location.reload(true)
+      }.bind(this),
+      error: function(){}.bind(this)
+    })
+  }
+
   render() {
     const amountButtons = [
       {
@@ -88,6 +110,38 @@ export default class Settings extends Component {
         label: 'Full'
       },
     ]
+
+    let purge
+    const isAre = this.state.deleted > 1
+      ? 'are'
+      : 'is'
+
+    const storyCount = `stor${
+    this.state.deleted > 1
+      ? 'ies'
+      : 'y'}`
+
+    if (this.state.deleted > 0) {
+      const lock = (
+        <button className="btn btn-default" onClick={this.toggleVerified}>
+          <i
+            className={`fa fa-${this.state.purgeVerified
+              ? 'unlock-alt'
+              : 'lock'}`}></i>
+        </button>
+      )
+      purge = (
+        <div>
+          <p>{`There ${isAre} ${this.state.deleted} ${storyCount} waiting to be purged.`}</p>
+          <button
+            className="btn btn-danger"
+            onClick={this.purgeDeleted}
+            disabled={!this.state.purgeVerified}>Purge all deleted</button>{lock}
+        </div>
+      )
+    } else {
+      purge = <p>No deleted stories require purging.</p>
+    }
 
     return (
       <div>
@@ -147,7 +201,12 @@ export default class Settings extends Component {
                 label="Show author profile on story"/>
             </div>
           </div>
-          <div className="col-md-6"></div>
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>Purge</h3>
+              {purge}
+            </div>
+          </div>
         </div>
       </div>
     )
