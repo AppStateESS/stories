@@ -67,7 +67,7 @@ class EntryFactory extends BaseFactory
 
     private function pullOptions(Request $request)
     {
-        $segmentSize = \phpws2\Settings::get('stories', 'featureNumber');
+        $segmentSize = \phpws2\Settings::get('stories', 'listStoryAmount');
         // if offset not set, default 0
         $page = (int) $request->pullGetInteger('page', true);
         if ($page > 1) {
@@ -142,7 +142,7 @@ class EntryFactory extends BaseFactory
         $defaultOptions = array('publishedOnly' => false,
             'hideExpired' => true,
             'orderBy' => 'publishDate',
-            'limit' => $settings->get('stories', 'featureNumber'),
+            'limit' => $settings->get('stories', 'listStoryAmount'),
             'includeContent' => true,
             'publishedOnly' => true,
             'showAuthor' => false,
