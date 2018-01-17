@@ -51,6 +51,8 @@ class StoriesUpdate {
         switch (1) {
             case $this->compare('1.0.1'):
                 $this->update('1.0.1');
+            case $this->compare('1.0.2'):
+                $this->update('1.0.2');
         }
         return $this->content;
     }
@@ -64,6 +66,12 @@ class StoriesUpdate {
     {
         $changes[] = 'Table names lowercased';
         $this->addContent('1.0.1', $changes);
+    }
+
+    private function v1_0_2()
+    {
+        $changes[] = 'Image styles fixed.';
+        $this->addContent('1.0.2', $changes);
     }
     
     private function addContent($version, array $changes)
