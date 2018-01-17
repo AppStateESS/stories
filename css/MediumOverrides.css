@@ -14,11 +14,11 @@ div.story-entry .medium-insert-embeds figure figcaption, div.story-entry .medium
     text-align: left;
 }
 
-div.medium-insert-images.medium-insert-images-right.medium-insert-active figure figcaption {
+div.medium-insert-images.medium-insert-images-right figure figcaption {
     margin-left : 0px !important;
 }
 
-div.medium-insert-images.medium-insert-active.medium-insert-images-left figure figcaption {
+div.medium-insert-images.medium-insert-images-left figure figcaption {
     margin-left : 0px !important;
 }
 
@@ -38,6 +38,11 @@ twitterwidget {
     .medium-insert-images.medium-insert-images-right, .medium-insert-images-right.mediumInsert {
         max-width : 100%;
         float: none;
-        margin : 10px;
+        margin : 10px auto;
+    }
+    .medium-insert-images.medium-insert-images-left, .medium-insert-images-left.mediumInsert {
+        max-width : 100%;
+        float: none;
+        margin : 10px auto;
     }
 }
