@@ -14,6 +14,15 @@ div.story-entry .medium-insert-embeds figure figcaption, div.story-entry .medium
     text-align: left;
 }
 
+div.medium-insert-images.medium-insert-images-right.medium-insert-active figure figcaption {
+    margin-left : 0px !important;
+}
+
+div.medium-insert-images.medium-insert-active.medium-insert-images-left figure figcaption {
+    margin-left : 0px !important;
+}
+
+
 twitterwidget {
   margin: 0 auto;
 }
