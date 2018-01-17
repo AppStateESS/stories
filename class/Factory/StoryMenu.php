@@ -76,7 +76,7 @@ EOF;
 
     public static function mediumCSSLink()
     {
-        $homeHttp = PHPWS_HOME_HTTP;
+        $homeHttp = PHPWS_SOURCE_HTTP;
         return <<<EOF
 <link type="text/css" rel="stylesheet" href="{$homeHttp}mod/stories/css/medium-editor-insert-plugin.min.css" />
 EOF;
