@@ -57,6 +57,7 @@ class Admin extends RoleController
             'includeContent' => false,
             'orderBy' => 'title',
             'titleRequired' => true,
+            'limit' => 0,
             'mustHaveThumbnail' => true,
             'asResource' => false,
             'showTagLinks' => false);
