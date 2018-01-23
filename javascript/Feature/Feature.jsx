@@ -161,6 +161,10 @@ export default class Feature extends Component {
 
   /* Moves active entries into clean stack */
   stackEntries(feature) {
+    if (feature.entries == undefined) {
+      feature.entries = []
+      return
+    }
     let newEntries = []
     for (let i = 0; i < 4; i++) {
       if (feature.entries[i] === undefined) {
