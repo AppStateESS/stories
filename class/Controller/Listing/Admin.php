@@ -50,12 +50,7 @@ class Admin extends User
     {
         \Menu::disableMenu();
 
-        $settings = new \phpws2\Settings();
-        $segmentSize = $settings->get('stories', 'segmentSize');
-        $script = <<<EOF
-<script>const segmentSize = $segmentSize;</script>
-EOF;
-        return $script . $this->factory->scriptView('EntryList');
+        return $this->factory->scriptView('EntryList');
     }
     
     protected function adminJsonCommand(Request $request)
