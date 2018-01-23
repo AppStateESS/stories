@@ -50,7 +50,7 @@ const EntryRow = (props) => {
   let publishLabel
   let publishInfo
   if (published == 0) {
-    publishInfo = 'Unpublished'
+    publishInfo = <span className="label label-info">Unpublished</span>
   } else {
     if (publishDate >= moment().format('X')) {
       publishLabel = 'Publish on'
