@@ -390,10 +390,6 @@ export default class EntryList extends Component {
   }
 }
 
-EntryList.propTypes = {
-  segmentSize: PropTypes.number
-}
-
 const NoEntries = () => {
   return (
     <p>No stories found.&nbsp;
