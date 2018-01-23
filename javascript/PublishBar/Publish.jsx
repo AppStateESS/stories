@@ -32,15 +32,8 @@ export default class Publish extends Component {
     $.ajax({
       url: `./stories/Entry/${this.state.id}`,
       data: {
-        values: [
-          {
-            param: 'published',
-            value: value
-          }, {
-            param: 'publishDate',
-            value: this.state.publishDate
-          },
-        ]
+        param: 'published',
+        value: value,
       },
       dataType: 'json',
       type: 'patch',
