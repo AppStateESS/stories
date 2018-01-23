@@ -105,6 +105,7 @@ class EntryFactory extends BaseFactory
     public function adminListView(Request $request)
     {
         $options = $this->pullOptions($request);
+        $options['limit'] = 10;
         $options['hideExpired'] = false;
         $options['publishedOnly'] = false;
         $result['listing'] = $this->pullList($options);
@@ -242,12 +243,17 @@ class EntryFactory extends BaseFactory
             $options['offset'] = ((int) $options['page'] - 1) * $options['limit'];
         }
 
-        if (isset($options['limit'])) {
+        if (isset($options['limit']) && $options['limit'] > 0) {
             if (isset($options['offset'])) {
                 $db->setLimit($options['limit'], $options['offset']);
             } else {
                 $db->setLimit($options['limit']);
             }
+        }
+        // limitedVars was not well thought out. used mostly for features
+        // story choice which only uses title and id
+        if ($limitedVars) {
+            return $db->select();
         }
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
         if (empty($objectList)) {
@@ -595,6 +601,12 @@ EOF;
     private function patchEntry(Resource $entry, $param, $value)
     {
         switch ($param) {
+            case 'published':
+                if ($value == '0') {
+                    $featureFactory = new FeatureFactory();
+                    $featureFactory->removeEntryFromAll($entry->id);
+                }
+
             default:
                 $entry->$param = $value;
         }
@@ -621,7 +633,7 @@ EOF;
         // Feature will bug out if the entry is deleted
         //
         $featureFactory = new FeatureFactory;
-        $featureFactory->deleteEntry($id);
+        $featureFactory->removeEntryFromAll($id);
         self::saveResource($entry);
     }
 
@@ -696,7 +708,7 @@ EOF;
             } else {
                 $data['twitter'] = '';
             }
-            $address= \Canopy\Server::getSiteUrl();
+            $address = \Canopy\Server::getSiteUrl();
             $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
             $data['publishInfo'] = $this->publishBlock($data);
             $data['shareButtons'] = $this->shareButtons($data);
