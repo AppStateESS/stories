@@ -4,8 +4,12 @@ const EntryForm = new EntryFormClass($('#story-status'), entry)
 
 var editor = new MediumEditor('.entry-form', {
   placeholder: {
-    text: 'Start your story here...',
-    hideOnClick: false,
+    text: 'Click here to start your story...',
+    hideOnClick: true,
+  },
+  buttonLabels: 'fontawesome',
+  paste: {
+    forcePlainTest: true,
   },
   disableDoubleReturn : false,
   autoLink: true,
@@ -20,12 +24,17 @@ var editor = new MediumEditor('.entry-form', {
       'quote',
       'orderedlist',
       'unorderedlist',
+      'indent',
+      'outdent',
       'removeFormat',
     ]
   },
 })
 
-editor.selectElement(document.querySelector('.entry-form'))
+// This code defaults the cursor to the first line. The cursor ends up above
+// the content and causes problems. It is better to have them click to get
+// started.
+//editor.selectElement(document.querySelector('.entry-form'))
 
 $('.entry-form').mediumInsert({
   editor: editor,
