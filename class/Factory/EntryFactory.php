@@ -107,6 +107,7 @@ class EntryFactory extends BaseFactory
         $options = $this->pullOptions($request);
         $options['limit'] = 10;
         $options['hideExpired'] = false;
+        $options['showAuthor'] = true;
         $options['publishedOnly'] = false;
         $result['listing'] = $this->pullList($options);
         $result['more_rows'] = $this->more_rows;
