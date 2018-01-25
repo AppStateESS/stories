@@ -25,10 +25,8 @@ const EntryRow = (props) => {
   const {
     authorEmail,
     authorName,
-    authorPic,
     createDate,
     createDateRelative,
-    expirationDate,
     publishDate,
     publishDateRelative,
     published,
