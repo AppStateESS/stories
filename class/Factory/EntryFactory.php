@@ -696,7 +696,6 @@ EOF;
 
     public function view($id, $isAdmin = false)
     {
-        $showComments = \phpws2\Settings::get('stories', 'showComments');
         try {
             $entry = $this->load($id);
             $data = $this->data($entry, !$isAdmin);
@@ -715,6 +714,12 @@ EOF;
             $data['shareButtons'] = $this->shareButtons($data);
             $data['cssOverride'] = $this->mediumCSSOverride();
             $data['isAdmin'] = $isAdmin;
+            if (\phpws2\Settings::get('stories', 'showComments')) {
+                $data['commentCode'] = \phpws2\Settings::get('stories',
+                                'commentCode');
+            } else {
+                $data['commentCode'] = null;
+            }
 
             $data['caption'] = $this->scriptView('Caption', false);
             $data['tooltip'] = $this->scriptView('Tooltip', false);
