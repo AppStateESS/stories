@@ -53,6 +53,8 @@ class StoriesUpdate {
                 $this->update('1.0.1');
             case $this->compare('1.0.2'):
                 $this->update('1.0.2');
+            case $this->compare('1.0.3'):
+                $this->update('1.0.3');
         }
         return $this->content;
     }
@@ -73,10 +75,23 @@ class StoriesUpdate {
         $changes[] = 'Image styles fixed.';
         $this->addContent('1.0.2', $changes);
     }
+
+    private function v1_0_3()
+    {
+        $changes[] = 'Fixed admin listing limit.';
+        $changes[] = 'Unpublish removes features properly.';
+        $changes[] = 'Unpublished status in list move obvious.';
+        $changes[] = 'Changed initial edit action to mouse click.';
+        $changes[] = 'Added indent and outdent buttons';
+        $changes[] = 'Changed icons to FontAwesome';
+        $changes[] = 'Fixed author not showing in admin list';
+        $changes[] = 'Updated npm packages';
+        $this->addContent('1.0.3', $changes);
+    }
     
     private function addContent($version, array $changes)
     {
-        $changes_string = implode("\n+", $changes);
+        $changes_string = implode("\n+ ", $changes);
         $this->content[] = <<<EOF
 <pre>
 Version $version
