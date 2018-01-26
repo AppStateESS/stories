@@ -104,10 +104,8 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         $entryFactory = new \stories\Factory\EntryFactory;
         $featureFactory = new \stories\Factory\FeatureFactory();
         $settings = new \phpws2\Settings;
-        if ($settings->get('stories', 'showFeatures')) {
-            \Layout::add($featureFactory->show($request), 'stories', 'features',
-                    true);
-        }
+        \Layout::add($featureFactory->show($request), 'stories', 'features',
+                true);
 
         if ($settings->get('stories', 'listStories')) {
             \Layout::add($entryFactory->showStories($request), 'stories',
