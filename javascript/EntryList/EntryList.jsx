@@ -299,7 +299,7 @@ export default class EntryList extends Component {
     let listing
     if (this.state.loading) {
       return <Waiting label="stories"/>
-    } else if (this.state.listing === false) {
+    } else if (this.state.listing === false || this.state.listing.length == 0) {
       listing = <NoEntries/>
     } else {
       let listResult = this.state.listing.map(function (entry, key) {
