@@ -89,7 +89,7 @@ class EntryFactory extends BaseFactory
 
         $search = $request->pullGetString('search', true);
 
-        $tag = $request->pullGetString('tag', true);
+        $tag = str_replace('%20', ' ', $request->pullGetString('tag', true));
 
         $options = array(
             'search' => $search,
