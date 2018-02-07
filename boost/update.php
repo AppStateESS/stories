@@ -55,6 +55,8 @@ class StoriesUpdate {
                 $this->update('1.0.2');
             case $this->compare('1.0.3'):
                 $this->update('1.0.3');
+            case $this->compare('1.0.4'):
+                $this->update('1.0.4');
         }
         return $this->content;
     }
@@ -87,6 +89,13 @@ class StoriesUpdate {
         $changes[] = 'Fixed author not showing in admin list';
         $changes[] = 'Updated npm packages';
         $this->addContent('1.0.3', $changes);
+    }
+    
+    private function v1_0_4()
+    {
+        $changes[] = 'Fixed bug with spaced tags.';
+        $changes[] = 'Fixed bug in admin list when all stories deleted.';
+        $this->addContent('1.0.4', $changes);
     }
     
     private function addContent($version, array $changes)
