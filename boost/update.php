@@ -97,6 +97,13 @@ class StoriesUpdate {
         $changes[] = 'Fixed bug in admin list when all stories deleted.';
         $this->addContent('1.0.4', $changes);
     }
+
+    private function v1_0_5()
+    {
+        $changes[] = 'Sortable added to library properly.';
+        $changes[] = 'Caption script added to llist view.';
+        $this->addContent('1.0.5', $changes);
+    }
     
     private function addContent($version, array $changes)
     {
