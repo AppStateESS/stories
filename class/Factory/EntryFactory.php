@@ -311,6 +311,7 @@ class EntryFactory extends BaseFactory
         $vars['navbar'] = $this->scriptView('Navbar');
         $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
         $vars['EntryForm'] = $this->scriptView('EntryForm', false);
+        $vars['Sortable'] = $this->scriptView('Sortable', false);
 
         $vars['insert'] = "<script src='$insertSource'></script>";
         $vars['tags'] = json_encode($tagFactory->listTags(true));
@@ -800,6 +801,8 @@ EOF;
         $data['isAdmin'] = \Current_User::allow('stories');
         $data['showAuthor'] = $showAuthor;
         $data['tooltip'] = $this->scriptView('Tooltip', false);
+        $data['Caption'] = $this->scriptView('Caption', false);
+        
         $format = Settings::get('stories', 'listStoryFormat');
 
         // Twitter feeds don't show up in summary view
