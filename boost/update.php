@@ -57,6 +57,8 @@ class StoriesUpdate {
                 $this->update('1.0.3');
             case $this->compare('1.0.4'):
                 $this->update('1.0.4');
+            case $this->compare('1.0.5'):
+                $this->update('1.0.5');
         }
         return $this->content;
     }
