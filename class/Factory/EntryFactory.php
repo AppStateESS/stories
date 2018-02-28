@@ -713,7 +713,8 @@ EOF;
             $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
             $data['publishInfo'] = $this->publishBlock($data);
             $data['shareButtons'] = $this->shareButtons($data);
-            $data['cssOverride'] = $this->mediumCSSOverride();
+            \Layout::addJSHeader($this->mediumCSSOverride());
+            $data['cssOverride'] = '';
             $data['isAdmin'] = $isAdmin;
             if (\phpws2\Settings::get('stories', 'showComments')) {
                 $data['commentCode'] = \phpws2\Settings::get('stories',
@@ -797,7 +798,9 @@ EOF;
         }
         $data['title'] = $title;
         $data['list'] = $this->addAccessories($list, $tag);
-        $data['style'] = StoryMenu::mediumCSSLink() . $this->mediumCSSOverride();
+        \Layout::addJSHeader(StoryMenu::mediumCSSLink());
+        \Layout::addJSHeader($this->mediumCSSOverride());
+        $data['style'] = '';
         $data['isAdmin'] = \Current_User::allow('stories');
         $data['showAuthor'] = $showAuthor;
         $data['tooltip'] = $this->scriptView('Tooltip', false);
