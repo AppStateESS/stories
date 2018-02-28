@@ -35,14 +35,16 @@ twitterwidget {
 }
 
 @media screen and (max-width: 768px) {
-    .medium-insert-images.medium-insert-images-right, .medium-insert-images-right.mediumInsert {
+    .medium-insert-images.medium-insert-images-right, .medium-insert-images-right.mediumInsert, .medium-insert-embeds.medium-insert-embeds-right {
+        max-width : 100%;
+        float: none;
+        margin : 10px auto;
+        width : auto;
+    }
+    .medium-insert-images.medium-insert-images-left, .medium-insert-images-left.mediumInsert, .medium-insert-embeds.medium-insert-embeds-left {
         max-width : 100%;
         float: none;
         margin : 10px auto;
     }
-    .medium-insert-images.medium-insert-images-left, .medium-insert-images-left.mediumInsert {
-        max-width : 100%;
-        float: none;
-        margin : 10px auto;
-    }
+    
 }

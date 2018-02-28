@@ -117,6 +117,7 @@ class StoriesUpdate {
         $tbl->addValue('url', 'stories/Listing/admin');
         $db->update();
         $changes[] = 'Control Panel link goes to admin list';
+        $changes[] = 'Fixed left floats on embeds.';
         $this->addContent('1.0.6', $changes);
     }
     
