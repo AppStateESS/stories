@@ -59,6 +59,8 @@ class StoriesUpdate {
                 $this->update('1.0.4');
             case $this->compare('1.0.5'):
                 $this->update('1.0.5');
+            case $this->compare('1.0.6'):
+                $this->update('1.0.6');
         }
         return $this->content;
     }
@@ -105,6 +107,17 @@ class StoriesUpdate {
         $changes[] = 'Sortable added to library properly.';
         $changes[] = 'Caption script added to llist view.';
         $this->addContent('1.0.5', $changes);
+    }
+    
+    private function v1_0_6()
+    {
+        $db = \phpws2\Database::getDB();
+        $tbl = $db->addTable('controlpanel_link');
+        $tbl->addFieldConditional('itemname', 'stories');
+        $tbl->addValue('url', 'stories/Listing/admin');
+        $db->update();
+        $changes[] = 'Control Panel link goes to admin list';
+        $this->addContent('1.0.6', $changes);
     }
     
     private function addContent($version, array $changes)
