@@ -532,20 +532,20 @@ EOF;
         // Give up after searching 5 blank tags
         $titleCount = 0;
         while (!$titleFound && $titleCount < 5) {
-            if ($h3->length > 0 && $h3->length >= $titleCount) {
+            if ($h3->length > 0) {
                 $h3Node = $h3->item($titleCount);
                 if ($h3Node) {
-                    $title = trim($h3Node->textContent);
+                    $title = substr(trim($h3Node->textContent), 0, 255);
                 }
-            } elseif ($h4->length > 0 && $h4->length >= $titleCount) {
+            } elseif ($h4->length > 0) {
                 $h4Node = $h4->item($titleCount);
                 if ($h4Node) {
-                    $title = trim($h4Node->textContent);
+                    $title = substr(trim($h4Node->textContent), 0, 255);
                 }
-            } elseif ($p->length > 0 && $p->length >= $titleCount) {
+            } elseif ($p->length > 0) {
                 $pNode = $p->item($titleCount);
                 if ($pNode) {
-                    $title = trim($pNode->textContent);
+                    $title = substr(trim($pNode->textContent), 0, 255);
                     $pStart = $titleCount + 1;
                 }
             }
@@ -556,7 +556,7 @@ EOF;
             $titleCount++;
         }
         if ($titleFound == false) {
-            $entry->title = '';
+            $entry->title = 'Untitled';
         }
 
         $summaryFound = false;
