@@ -61,6 +61,8 @@ class StoriesUpdate {
                 $this->update('1.0.5');
             case $this->compare('1.0.6'):
                 $this->update('1.0.6');
+            case $this->compare('1.0.7'):
+                $this->update('1.0.7');
         }
         return $this->content;
     }
@@ -119,6 +121,16 @@ class StoriesUpdate {
         $changes[] = 'Control Panel link goes to admin list';
         $changes[] = 'Fixed left floats on embeds.';
         $this->addContent('1.0.6', $changes);
+    }
+    
+    private function v1_0_7()
+    {
+        $changes[] = 'Fixed feature title without left margin.';
+        $changes[] = 'Long titles are brought under 255 limit.'
+        $changes[] = 'View link removed from edit if story has no content.';
+        $changes[] = 'Can no longer publish blank stories.';
+        $changes[] = 'Changed usage of FriendlyError.';
+        $this->addContent('1.0.7', $changes);
     }
     
     private function addContent($version, array $changes)
