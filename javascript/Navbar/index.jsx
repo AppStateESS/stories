@@ -18,12 +18,14 @@ const rightSide = (
   </li>
 )
 
-const leftSide = (
-  <li>
-    <a href={`./stories/${entry.urlTitle}`}>View story</a>
-  </li>
-)
-
+let leftSide
+if (entry.urlTitle.length > 0) {
+  leftSide = (
+    <li>
+      <a href={`./stories/${entry.urlTitle}`}>View story</a>
+    </li>
+  )
+}
 
 ReactDOM.render(
   <Navbar header="Edit story" rightSide={rightSide} leftSide={leftSide}/>,
