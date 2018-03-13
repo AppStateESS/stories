@@ -126,7 +126,7 @@ class StoriesUpdate {
     private function v1_0_7()
     {
         $changes[] = 'Fixed feature title without left margin.';
-        $changes[] = 'Long titles are brought under 255 limit.'
+        $changes[] = 'Long titles are brought under 255 limit.';
         $changes[] = 'View link removed from edit if story has no content.';
         $changes[] = 'Can no longer publish blank stories.';
         $changes[] = 'Changed usage of FriendlyError.';
