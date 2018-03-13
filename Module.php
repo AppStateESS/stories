@@ -57,9 +57,8 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         } catch (\Exception $e) {
             if (STORIES_FRIENDLY_ERROR) {
                 \phpws2\Error::log($e);
-                echo \Layout::wrap('<div class="jumbotron"><h1>Uh oh...</h1><p>An error occurred with Stories.</p></div>',
-                        'Stories Error', true);
-                exit();
+                $controller = new Controller\FriendlyError($this);
+                return $controller;
             } else {
                 throw $e;
             }
