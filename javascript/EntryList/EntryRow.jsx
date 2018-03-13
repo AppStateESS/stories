@@ -48,7 +48,7 @@ const EntryRow = (props) => {
   let publishLabel
   let publishInfo
   if (published == 0) {
-    publishInfo = <span className="label label-info">Unpublished</span>
+    publishInfo = <span className="label label-info"><abbr title="Stories without content will remain unpublished">Unpublished</abbr></span>
   } else {
     if (publishDate >= moment().format('X')) {
       publishLabel = 'Publish on'
@@ -64,6 +64,7 @@ const EntryRow = (props) => {
   }
 
   let titleLink
+  let allowPublish = true
   if (title) {
     titleLink = (
       <a className="entry-title" href={urlTitle}>
@@ -71,6 +72,7 @@ const EntryRow = (props) => {
       </a>
     )
   } else {
+    allowPublish = false
     titleLink = (<h3>
       <em>Untitled</em>
     </h3>)
@@ -84,6 +86,7 @@ const EntryRow = (props) => {
       <div className="col-sm-4">
         <Options
           entryId={id}
+          allowPublish={allowPublish}
           published={published}
           deleteStory={deleteStory}
           publishStory={publishStory}/>

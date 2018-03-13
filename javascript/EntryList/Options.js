@@ -2,7 +2,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const Options = ({entryId, deleteStory, publishStory, published,}) => {
+const Options = ({entryId, deleteStory, publishStory, published, allowPublish}) => {
   let publishLabel = 'Publish'
   if (published == 1) {
     publishLabel = 'Publish'
@@ -12,7 +12,11 @@ const Options = ({entryId, deleteStory, publishStory, published,}) => {
       <a
         className="btn btn-sm btn-default mr-1"
         href={`./stories/Entry/${entryId}/edit`}>Edit</a>
-      <a className="btn btn-sm btn-default mr-1" onClick={publishStory}>{publishLabel}</a>
+      {
+        allowPublish
+          ? <a className="btn btn-sm btn-default mr-1" onClick={publishStory}>{publishLabel}</a>
+          : null
+      }
       <a className="btn btn-sm btn-danger mr-1" onClick={deleteStory}>
         Delete</a>
     </div>
@@ -24,7 +28,10 @@ Options.propTypes = {
   deleteStory: PropTypes.func,
   isPublished: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
   publishStory: PropTypes.func,
-  published: PropTypes.oneOfType([PropTypes.bool,PropTypes.string,PropTypes.number,])
+  allowPublish: PropTypes.bool,
+  published: PropTypes.oneOfType(
+    [PropTypes.bool, PropTypes.string, PropTypes.number,]
+  )
 }
 
 export default Options

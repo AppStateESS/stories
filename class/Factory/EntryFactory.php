@@ -388,6 +388,11 @@ EOF;
             $entry->content = $content;
             $this->siftContent($entry);
         }
+        
+        // Empty title does not allow a published story.
+        if (empty($entry->title)) {
+            $entry->published = false;
+        }
         return $this->save($entry);
     }
 
@@ -556,7 +561,7 @@ EOF;
             $titleCount++;
         }
         if ($titleFound == false) {
-            $entry->title = 'Untitled';
+            $entry->title = '';
         }
 
         $summaryFound = false;
