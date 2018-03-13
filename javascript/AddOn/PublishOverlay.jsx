@@ -50,6 +50,10 @@ const PublishOverlay = ({
         <div>{publishButton}</div>
         <div>{closeButton}</div>
       </div>
+      <div className="text-center mt-1">
+        <span className="label label-info">Note: stories without content will not be published.</span>
+      </div>
+      
     </Overlay>
   )
 }
