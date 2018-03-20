@@ -20,8 +20,6 @@ define('STORIES_SUMMARY_TAGS', 'b,strong,em,i,a,style,ul,ol,li,p');
 
 define('STORIES_DAY_THRESHOLD', 3);
 
-// Max width should be greater if you want a landscape-centric feature list
-// Hint: you do.
 define('STORIES_THUMB_TARGET_WIDTH', 800);
-define('STORIES_THUMB_TARGET_HEIGHT', 400);
+define('STORIES_THUMB_TARGET_HEIGHT', 800);
 
