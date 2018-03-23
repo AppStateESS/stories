@@ -40,7 +40,7 @@ class EntryFactory extends BaseFactory
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
-    public function load($id)
+    public function load($id, $allowDeleted=false)
     {
         $db = Database::getDB();
         $entryTbl = $db->addTable('storiesentry');
@@ -55,7 +55,7 @@ class EntryFactory extends BaseFactory
         $entry = $this->build();
         $db->selectInto($entry);
 
-        if ($entry->deleted) {
+        if (!$allowDeleted && $entry->deleted) {
             throw new ResourceNotFound;
         }
         $tagFactory = new TagFactory;
@@ -388,7 +388,7 @@ EOF;
             $entry->content = $content;
             $this->siftContent($entry);
         }
-        
+
         // Empty title does not allow a published story.
         if (empty($entry->title)) {
             $entry->published = false;
@@ -416,7 +416,6 @@ EOF;
     public function save(Resource $entry)
     {
         $this->checkUrlTitle($entry);
-        $this->removeShortcut($entry);
         $this->saveShortcut($entry);
         self::saveResource($entry);
         return $entry->id;
@@ -433,12 +432,24 @@ EOF;
      */
     private function saveShortcut(Resource $entry)
     {
+        $url = 'stories:' . $entry->id;
         $db = Database::getDB();
         $tbl = $db->addTable('access_shortcuts');
-        $tbl->usePearSequence(true);
-        $tbl->addValue('keyword', $entry->urlTitle);
-        $tbl->addValue('url', 'stories:' . $entry->id);
-        return $db->insert();
+        $tbl->addFieldConditional('url', $url);
+        $tbl->addField('id');
+        $shortcutId = $db->selectColumn();
+        $db->clearConditional();
+        if (empty($shortcutId)) {
+            $tbl->usePearSequence(true);
+            $tbl->addValue('keyword', $entry->urlTitle);
+            $tbl->addValue('url', 'stories:' . $entry->id);
+            $tbl->addValue('active', 1);
+            return $db->insert();
+        } else {
+            $tbl->addValue('keyword', $entry->urlTitle);
+            $tbl->addFieldConditional('id', $shortcutId);
+            return $db->update();
+        }
     }
 
     /**
@@ -638,7 +649,6 @@ EOF;
         $entry->deleted = true;
 
         // Feature will bug out if the entry is deleted
-        //
         $featureFactory = new FeatureFactory;
         $featureFactory->removeEntryFromAll($id);
         self::saveResource($entry);
@@ -646,7 +656,7 @@ EOF;
 
     public function purge($id)
     {
-        $entry = $this->load($id);
+        $entry = $this->load($id, true);
         if (!$entry->deleted) {
             throw new \stories\Exception\CannotPurge;
         }
@@ -810,7 +820,7 @@ EOF;
         $data['showAuthor'] = $showAuthor;
         $data['tooltip'] = $this->scriptView('Tooltip', false);
         $data['Caption'] = $this->scriptView('Caption', false);
-        
+
         $format = Settings::get('stories', 'listStoryFormat');
 
         // Twitter feeds don't show up in summary view
