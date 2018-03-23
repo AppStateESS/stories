@@ -63,6 +63,8 @@ class StoriesUpdate {
                 $this->update('1.0.6');
             case $this->compare('1.0.7'):
                 $this->update('1.0.7');
+            case $this->compare('1.0.8'):
+                $this->update('1.0.8');
         }
         return $this->content;
     }
@@ -131,6 +133,12 @@ class StoriesUpdate {
         $changes[] = 'Can no longer publish blank stories.';
         $changes[] = 'Changed usage of FriendlyError.';
         $this->addContent('1.0.7', $changes);
+    }
+    
+    private function v1_0_8()
+    {
+        $changes[] = 'Changed the way shortcuts are saved.';
+        $this->addContent('1.0.8', $changes);
     }
     
     private function addContent($version, array $changes)
