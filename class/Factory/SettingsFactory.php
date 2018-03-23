@@ -69,10 +69,14 @@ class SettingsFactory extends BaseFactory
     
     public function purgeDeleted()
     {
+        $entryFactory = new EntryFactory;
         $db = Database::getDB();
         $tbl = $db->addTable('storiesentry');
+        $tbl->addField('id');
         $tbl->addFieldConditional('deleted', 1);
-        $db->delete();
+        while($id = $db->selectColumn()) {
+            $entryFactory->purge($id);
+        }
         return true;
     }
 
