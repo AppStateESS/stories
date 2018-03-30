@@ -45,7 +45,7 @@ const FeatureList = (props) => {
           <button
             className="btn btn-primary btn-sm"
             onClick={props.loadCurrentFeature.bind(null, key)}><i className="fa fa-edit"></i></button>
-          <button className="btn btn-danger btn-sm" onClick={props.deleteFeature.bind(null, key)}><i className="fa fa-trash-o"></i></button>
+          <button className="btn btn-danger btn-sm" onClick={props.deleteFeature.bind(null, key)}><i className="far fa-trash-alt"></i></button>
         </td>
         <td>{value.title}</td>
         <td>{value.columns}</td>

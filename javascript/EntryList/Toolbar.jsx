@@ -16,7 +16,7 @@ const Toolbar = ({entry, publish, deleteStory}) => {
     </a>
     {entry.published ? 'Published' : 'Publish now'}
     <button className="btn btn-sm btn-danger ml-1" onClick={deleteStory}>
-      <i className="fa fa-trash-o"></i>&nbsp;Delete</button>
+      <i className="far fa-trash-alt"></i>&nbsp;Delete</button>
   </span>
   return (
     <div className="row">
