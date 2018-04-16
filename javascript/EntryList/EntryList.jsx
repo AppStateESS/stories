@@ -1,6 +1,6 @@
 'use strict'
 import React, {Component} from 'react'
-import PropTypes from 'prop-types'
+import $ from 'jquery'
 import Waiting from '../AddOn/Waiting'
 import EntryRow from './EntryRow'
 import PublishOverlay from '../AddOn/PublishOverlay'
@@ -303,7 +303,6 @@ export default class EntryList extends Component {
       listing = <NoEntries/>
     } else {
       let listResult = this.state.listing.map(function (entry, key) {
-
         return <EntryRow
           deleteStory={this.deleteStory.bind(this, key)}
           entry={entry}
