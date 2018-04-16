@@ -1,4 +1,5 @@
 'use strict'
+import $ from 'jquery'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import FeatureObj from './FeatureObj'
@@ -10,8 +11,6 @@ import SampleEntry from './SampleEntry'
 import ThumbnailOverlay from '../EntryList/ThumbnailOverlay'
 import Navbar from '../AddOn/Navbar'
 import './style.css'
-
-/* global $ */
 
 export default class Feature extends Component {
   constructor(props) {
