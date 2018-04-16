@@ -14,6 +14,5 @@ exports.entry = {
   AuthorBar: exports.APP_DIR + '/AuthorBar/index.jsx',
   Tooltip: exports.APP_DIR + '/Tooltip/index.js',
   Caption: exports.APP_DIR + '/Caption/index.js',
-  Sortable: exports.APP_DIR + '/Sortable/index.js',
-  vendor: ['react', 'react-dom']
+  Sortable: exports.APP_DIR + '/Sortable/index.js'
 }

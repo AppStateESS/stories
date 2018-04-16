@@ -15,6 +15,16 @@ module.exports = {
     $: 'jQuery',
     EntryForm: 'EntryForm',
   },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          name: "vendor",
+          chunks: "all",
+        }
+      }
+    }
+  },
   resolve: {
     extensions: [
       '.js', '.jsx',
@@ -24,9 +34,6 @@ module.exports = {
     },
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin(
-      {name: 'vendor', filename: 'vendor.[chunkhash:8].js'}
-    ),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')

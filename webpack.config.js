@@ -7,11 +7,21 @@ module.exports = {
   entry: setup.entry,
   output: {
     path: setup.path.join(setup.APP_DIR, 'dev'),
-    filename: '[name].js'
+    filename: '[name].js',
   },
   externals: {
     $: 'jQuery',
-    EntryForm: 'EntryForm'
+    EntryForm: 'EntryForm',
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          name: "vendor",
+          chunks: "all",
+        }
+      }
+    }
   },
   resolve: {
     extensions: [
@@ -19,49 +29,43 @@ module.exports = {
     ],
     alias: {
       'jquery-ui/widget': 'blueimp-file-upload/js/vendor/jquery.ui.widget.js'
-    },
+    }
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin(
-      {name: 'vendor', filename: 'vendor.js'}
-    ),
     new webpack.ProvidePlugin({EntryForm: 'EntryForm'}),
-    new BrowserSyncPlugin({
-      host: 'localhost',
-      port: 3000,
-      files: ['./javascript/dev/*.js'],
-      proxy: 'localhost/phpwebsite'
-    }),
+    new BrowserSyncPlugin(
+      {host: 'localhost', notify: false, port: 3000, files: ['./javascript/dev/*.js'], proxy: 'localhost/phpwebsite',}
+    ),
   ],
   module: {
     rules: [
       {
         test: require.resolve('blueimp-file-upload'),
-        loader: 'imports-loader?define=>false'
+        loader: 'imports-loader?define=>false',
       }, {
         test: require.resolve('medium-editor-insert-plugin'),
-        loader: 'imports-loader?define=>false'
+        loader: 'imports-loader?define=>false',
       }, {
         test: /\.jsx?$/,
         enforce: 'pre',
         loader: 'jshint-loader',
         exclude: '/node_modules/',
-        include: setup.APP_DIR + '/dev'
+        include: setup.APP_DIR + '/dev',
       }, {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader?limit=100000'
+        loader: 'url-loader?limit=100000',
       }, {
         test: /\.jsx?/,
         include: setup.APP_DIR,
         loader: 'babel-loader',
         query: {
           presets: ['es2015', 'react',]
-        }
+        },
       }, {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        loader: 'style-loader!css-loader',
       },
     ]
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
 }
