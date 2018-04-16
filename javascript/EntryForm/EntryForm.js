@@ -50,7 +50,7 @@ export default class EntryForm {
     if (entry.content.match(/<img src="data:image\//)) {
       return
     }
-    this.status.html('<span><i class="fa fa-cog fa-spin fa-fw"></i>Saving...</span>')
+    this.status.html('<span><i class="fas fa-cog fa-spin fa-fw"></i>Saving...</span>')
     $.ajax({
       url: './stories/Entry/' + entry.id,
       data: entry,

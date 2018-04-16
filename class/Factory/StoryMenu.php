@@ -37,7 +37,7 @@ class StoryMenu
 
     public static function addStoryLink()
     {
-        $link = '<a href="./stories/Entry/create"><i class="fa fa-pencil"></i> Add story</a>';
+        $link = '<a href="./stories/Entry/create"><i class="fas fa-pencil-alt"></i> Add story</a>';
         \MiniAdmin::add('stories', $link);
     }
 

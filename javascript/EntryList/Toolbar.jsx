@@ -9,7 +9,7 @@ const Toolbar = ({entry, publish, deleteStory}) => {
     <a
       href={`stories/Entry/${entry.id}/edit`}
       className="btn btn-sm btn-primary ml-1">
-      <i className="fa fa-pencil"></i>&nbsp; Edit
+      <i className="fas fa-pencil-alt"></i>&nbsp; Edit
     </a>
     <a href={`stories/Entry/${entry.id}`} className="btn btn-sm btn-default ml-1">
       <i className="fa fa-eye"></i>&nbsp; View

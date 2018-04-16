@@ -25,7 +25,7 @@ const BigCheckbox = ({handle, checked, label}) => {
   return (
     <div onClick={handleIt} style={point} className="big-checkbox">
       <div className="fa-stack fa-lg pull-left">
-        <i className="fa fa-square-o fa-stack-2x" style={mute}></i>
+        <i className="far fa-square fa-stack-2x" style={mute}></i>
         {empty(checked)
           ? null
           : <i className="fa fa-check text-success fa-stack-2x"></i>}
