@@ -41,7 +41,7 @@ const MoveButton = ({dir, holdThumb, stopMove, moveThumb,cX, cY}) => {
       onMouseDown={holdThumb.bind(null, x, y, 5)}
       onMouseUp={stopMove}
       onMouseLeave={stopMove}
-      className="btn btn-xs btn-default">
+      className="btn btn-sm btn-secondary">
       <i className={fa}></i>
     </button>
   )
