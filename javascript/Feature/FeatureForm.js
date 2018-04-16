@@ -26,7 +26,7 @@ class FeatureForm extends React.Component {
   }
 
   shiftEntries(feature) {
-    let newEntries = feature.entries.map(function(value){
+    let newEntries = feature.entries.map(function (value) {
       if (value.entryId > 0) {
         return value
       }
@@ -58,13 +58,11 @@ class FeatureForm extends React.Component {
     }.bind(this), 100)
   }
 
-  moveThumb(key, x, y, inc) {
-    const mX = parseInt(x) * parseInt(inc)
-    const mY = parseInt(y) * parseInt(inc)
+  moveThumb(key, x, y) {
     const feature = this.props.feature
     const entry = feature.entries[key]
-    let newX = parseInt(entry.x) + mX
-    let newY = parseInt(entry.y) + mY
+    let newX = parseInt(entry.x) - x
+    let newY = parseInt(entry.y) - y
     if (newX > 100) {
       newX = 100
     } else if (newX < 0) {
@@ -93,13 +91,13 @@ class FeatureForm extends React.Component {
     const columnButtons = [
       {
         value: '2',
-        label: '2',
+        label: '2'
       }, {
         value: '3',
-        label: '3',
+        label: '3'
       }, {
         value: '4',
-        label: '4',
+        label: '4'
       },
     ]
 
@@ -178,7 +176,7 @@ FeatureForm.propTypes = {
   thumbnailForm: PropTypes.func,
   update: PropTypes.func,
   clearStory: PropTypes.func,
-  srcHttp: PropTypes.string
+  srcHttp: PropTypes.string,
 }
 
 FeatureForm.defaultTypes = {}
