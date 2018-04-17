@@ -8,6 +8,10 @@ import './style.css'
 class FeatureForm extends React.Component {
   constructor(props) {
     super(props)
+    
+    this.state = {
+      moving: false
+    }
     this.interval
     this.setColumns = this.setColumns.bind(this)
     this.setTitle = this.setTitle.bind(this)
@@ -17,6 +21,7 @@ class FeatureForm extends React.Component {
     this.holdThumb = this.holdThumb.bind(this)
     this.applyStory = this.applyStory.bind(this)
     this.saveTitle = this.saveTitle.bind(this)
+    this.setZoom = this.setZoom.bind(this)
   }
 
   setColumns(columns) {
@@ -50,19 +55,39 @@ class FeatureForm extends React.Component {
 
   stopMove() {
     clearInterval(this.interval)
+    if (this.state.moving) {
+      this.props.update(this.props.feature)
+    }
+    
+    this.setState({moving: false})
   }
 
   holdThumb(key, x, y) {
     this.interval = setInterval(function () {
-      this.moveThumb(key, x, y, 5)
+      this.setState({moving: true})
+      this.moveThumb(key, x, y, 5, false)
     }.bind(this), 100)
   }
 
-  moveThumb(key, x, y) {
+  setZoom(key, zoom) {
+    if (zoom > 200 || zoom < 50) {
+      return
+    }
+
     const feature = this.props.feature
     const entry = feature.entries[key]
-    let newX = parseInt(entry.x) - x
-    let newY = parseInt(entry.y) - y
+    entry.zoom = zoom
+    feature.entries[key] = entry
+    this.props.update(feature)
+  }
+
+  moveThumb(key, x, y, inc, update=true) {
+    const mX = parseInt(x) * parseInt(inc)
+    const mY = parseInt(y) * parseInt(inc)
+    const feature = this.props.feature
+    const entry = feature.entries[key]
+    let newX = parseInt(entry.x) + mX
+    let newY = parseInt(entry.y) + mY
     if (newX > 100) {
       newX = 100
     } else if (newX < 0) {
@@ -78,7 +103,7 @@ class FeatureForm extends React.Component {
     entry.x = newX
     entry.y = newY
     feature.entries[key] = entry
-    this.props.update(feature)
+    this.props.update(feature, update)
   }
 
   applyStory(key, entry) {
@@ -91,13 +116,13 @@ class FeatureForm extends React.Component {
     const columnButtons = [
       {
         value: '2',
-        label: '2'
+        label: '2',
       }, {
         value: '3',
-        label: '3'
+        label: '3',
       }, {
         value: '4',
-        label: '4'
+        label: '4',
       },
     ]
 
@@ -159,6 +184,7 @@ class FeatureForm extends React.Component {
           <FeatureDisplay
             {...this.props}
             applyStory={this.applyStory}
+            setZoom={this.setZoom}
             clearStory={this.props.clearStory}
             moveThumb={this.moveThumb}
             thumbnailForm={this.props.thumbnailForm}
@@ -176,7 +202,7 @@ FeatureForm.propTypes = {
   thumbnailForm: PropTypes.func,
   update: PropTypes.func,
   clearStory: PropTypes.func,
-  srcHttp: PropTypes.string,
+  srcHttp: PropTypes.string
 }
 
 FeatureForm.defaultTypes = {}

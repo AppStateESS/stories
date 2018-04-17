@@ -52,6 +52,5 @@
     "dev": "webpack --config webpack.config.js -d --watch",
     "prod": "webpack --config webpack.production.config.js -p"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
