@@ -10,6 +10,7 @@ const FeatureDisplay = (props) => {
     stories,
     clearStory,
     moveThumb,
+    setZoom,
     holdThumb,
     stopMove,
   } = props
@@ -54,9 +55,10 @@ const FeatureDisplay = (props) => {
         stories={tempStoryList}
         applyStory={applyStory.bind(null, i)}
         clearStory={clearStory.bind(null, i)}
-        stopMove={stopMove}
+        stopMove={stopMove.bind(null, i)}
         thumbnailForm={props.thumbnailForm.bind(null, i)}
         moveThumb={moveThumb.bind(null, i)}
+        setZoom={setZoom.bind(null, i)}
         holdThumb={holdThumb.bind(null, i)}/>
     )
     if (currentEntry.entryId == 0) {
@@ -75,6 +77,7 @@ FeatureDisplay.propTypes = {
   clearStory: PropTypes.func,
   holdThumb: PropTypes.func,
   moveThumb: PropTypes.func,
+  setZoom: PropTypes.func,
   thumbnailForm: PropTypes.func,
   stopMove: PropTypes.func
 }

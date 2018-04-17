@@ -8,7 +8,7 @@ const SampleStory = {
 }
 
 const SampleEntry = () => {
-  return {entryId: 0, x: 50, y: 50, story: SampleStory}
+  return {entryId: 0, x: 50, y: 50, zoom: 100, story: SampleStory}
 }
 
 export default SampleEntry

@@ -1,44 +1,53 @@
 ul.format-selection {
   list-style-type: none;
-  margin : 0px;
-  padding : 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 ul.format-selection li {
   position: relative;
   display: block;
   float: left;
-  text-align : center;
-  margin-right : 1em;
+  text-align: center;
+  margin-right: 1em;
 }
 
 ul.format-selection li img {
-  height : 40px;
+  height: 40px;
 }
 
 .move-buttons {
-  position : absolute;
-  left : 50%;
-  top : 50%;
-  margin-top : -43px;
-  margin-left : -43px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -43px;
+  margin-left: -43px;
   opacity: .6;
-  height : 85px;
-  width : 85px;
+  height: 85px;
+  width: 85px;
 }
 
 .move-buttons table {
-  margin : 0 auto;
+  margin: 0 auto;
+}
+
+.thumbnail-buttons {
+}
+
+.zoom-buttons {
+  opacity: .6;
+  position: absolute;
+  bottom : 2px;
+  right : 2px;
 }
 
 .story-thumbnail {
-  position : relative;
+  position: relative;
 }
-
 
 .feature-admin .buttons {
   position: relative;
-  margin-bottom : 1em;
+  margin-bottom: 1em;
 }
 
 .upload-button {
@@ -47,11 +56,12 @@ ul.format-selection li img {
 
 .dropzone {
   border: 3px dotted #e3e3e3;
-  width : 100%;
-  height : 190px;
-  padding : 20px;
+  width: 100%;
+  height: 190px;
+  padding: 20px;
   margin-bottom: 10px;
 }
- .features td button.btn-sm {
-   margin-right: 6px;
- }
+
+.features td button.btn-sm {
+  margin-right: 6px;
+}
