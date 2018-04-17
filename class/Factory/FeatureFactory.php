@@ -317,11 +317,12 @@ EOF;
             if ($entry['entryId'] == 0) {
                 unset($entries[$key]);
             } else {
-                $tbl->addValue('entryId', $entry['entryId']);
-                $tbl->addValue('featureId', $feature->id);
-                $tbl->addValue('x', $entry['x']);
-                $tbl->addValue('y', $entry['y']);
-                $tbl->addValue('sorting', $count);
+                $tbl->addValue('entryId', (int)$entry['entryId']);
+                $tbl->addValue('featureId', (int)$feature->id);
+                $tbl->addValue('x', (int)$entry['x']);
+                $tbl->addValue('y', (int)$entry['y']);
+                $tbl->addValue('zoom', (int)$entry['zoom']);
+                $tbl->addValue('sorting', (int)$count);
                 $db->insert();
                 $count++;
             }
