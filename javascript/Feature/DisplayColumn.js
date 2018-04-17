@@ -12,52 +12,82 @@ class DisplayColumn extends React.Component {
     super(props)
     this.state = {
       showButtons: false,
-      dragging: false,
+      dragging: false
     }
-    this.onMouseMove = this.onMouseMove.bind(this)
-    this.onMouseDown = this.onMouseDown.bind(this)
-    this.onMouseUp = this.onMouseUp.bind(this)
-  }
-
-  componentDidUpdate(props, state) {
-    if (this.state.dragging && !state.dragging) {
-      document.addEventListener('mousemove', this.onMouseMove)
-      document.addEventListener('mouseup', this.onMouseUp)
-    } else if (!this.state.dragging && state.dragging) {
-      document.removeEventListener('mousemove', this.onMouseMove)
-      document.removeEventListener('mouseup', this.onMouseUp)
-    }
-  }
-
-  onMouseDown(e) {
-    // only left mouse button
-    if (e.button !== 0) {
-      return
-    }
-    this.setState({
-      dragging: true,
-    })
-    e.stopPropagation()
-    e.preventDefault()
-  }
-  onMouseUp(e) {
-    this.setState({dragging: false})
-    e.stopPropagation()
-    e.preventDefault()
-  }
-  onMouseMove(e) {
-    if (!this.state.dragging) {
-      return
-    }
-
-    this.props.moveThumb(e.movementX, e.movementY)
-      
-    e.stopPropagation()
-    e.preventDefault()
+    this.zoomOut = this.zoomOut.bind(this)
+    this.zoomIn = this.zoomIn.bind(this)
+    this.moveButtons = this.moveButtons.bind(this)
   }
 
   setShowButtons(value) {
     this.setState({showButtons: value})
+  }
+
+  zoomOut() {
+    const zoom = parseInt(this.props.entry.zoom) - 5
+    this.props.setZoom(zoom)
+  }
+
+  zoomIn() {
+    const zoom = parseInt(this.props.entry.zoom) + 5
+    this.props.setZoom(zoom)
+  }
+
+  moveButtons() {
+    const {moveThumb, stopMove, holdThumb, entry} = this.props
+
+    if (this.state.showButtons === false || entry.entryId == 0) {
+      return null
+    }
+    const zoom = entry.zoom
+    const cX = entry.x
+    const cY = entry.y
+    return (
+      <div className="thumbnail-buttons">
+        <button
+          className="btn btn-primary btn-sm upload-button"
+          onClick={this.props.thumbnailForm}>
+          <i className="fa fa-upload"></i>
+        </button>
+        <div className="move-buttons">
+          <table>
+            <tbody>
+              <tr>
+                <td></td>
+                <td>
+                  <MoveButton dir="up" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <MoveButton dir="left" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+                <td></td>
+                <td>
+                  <MoveButton dir="right" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <MoveButton dir="down" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
+                </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="zoom-buttons">
+          <button disabled={zoom == 50} className="btn btn-sm btn-secondary" onClick={this.zoomOut}>
+            <i className="fas fa-search-minus"></i>
+          </button>
+          <button disabled={zoom == 200} className="btn btn-sm btn-secondary" onClick={this.zoomIn}>
+            <i className="fas fa-search-plus"></i>
+          </button>
+        </div>
+      </div>
+    )
   }
 
   render() {
@@ -68,13 +98,15 @@ class DisplayColumn extends React.Component {
       stories,
       applyStory,
       clearStory,
-      previousEmpty,
+      previousEmpty
     } = this.props
     const _class = 'story-feature ' + format
     const position = `${entry.x}% ${entry.y}%`
+    const zoom = entry.zoom
     const thumbnailStyle = {
       backgroundImage: `url('${entry.story.thumbnail}')`,
-      backgroundPosition: position
+      backgroundSize: zoom + '%',
+      backgroundPosition: position,
     }
 
     let clearButton
@@ -85,13 +117,13 @@ class DisplayColumn extends React.Component {
     const selectCss = {
       width: '80%',
       float: 'left',
-      marginRight: '10px',
+      marginRight: '10px'
     }
 
     let storyList = <em>No published stories available</em>
     if (stories !== undefined) {
       let storyOptions = stories.map(function (value) {
-        return {value: value.id, label: value.title}
+        return {value: value.id, label: value.title,}
       })
       if (previousEmpty) {
         storyList = null
@@ -119,8 +151,8 @@ class DisplayColumn extends React.Component {
           <div
             className="story-thumbnail"
             style={thumbnailStyle}
-            ref="thumbnail"
-            onMouseDown={this.onMouseDown}></div>
+            onMouseEnter={this.setShowButtons.bind(this, true)}
+            onMouseLeave={this.setShowButtons.bind(this, false)}>{this.moveButtons()}</div>
           <div className="story-content">
             <div className="story-title">
               <a title="Read this story">
@@ -153,9 +185,10 @@ DisplayColumn.propTypes = {
   clearStory: PropTypes.func,
   moveThumb: PropTypes.func,
   stopMove: PropTypes.func,
+  setZoom: PropTypes.func,
   holdThumb: PropTypes.func,
   thumbnailForm: PropTypes.func,
-  previousEmpty: PropTypes.bool
+  previousEmpty: PropTypes.bool,
 }
 
 export default DisplayColumn
