@@ -24,7 +24,7 @@ export default class Feature extends Component {
       featureList: [],
       loading: true,
       thumbnailOverlay: false,
-      stories: [],
+      stories: []
     }
     this.addRow = this.addRow.bind(this)
     this.closeMessage = this.closeMessage.bind(this)
@@ -59,7 +59,7 @@ export default class Feature extends Component {
             </span>
           )
           message.type = 'warning'
-          this.setState({message: message, loading: false})
+          this.setState({message: message, loading: false,})
         } else {
           this.setState({
             featureList: data.featureList,
@@ -68,7 +68,7 @@ export default class Feature extends Component {
             currentFeature: null,
             currentKey: null,
             currentEntry: null,
-            currentEntryKey: null,
+            currentEntryKey: null
           })
         }
       }.bind(this),
@@ -77,10 +77,10 @@ export default class Feature extends Component {
           loading: false,
           message: {
             text: 'Error: Could not pull feature list',
-            type: 'danger'
-          }
+            type: 'danger',
+          },
         })
-      }.bind(this)
+      }.bind(this),
     })
   }
 
@@ -99,7 +99,7 @@ export default class Feature extends Component {
 
     const featureList = this.state.featureList
     featureList[this.state.currentKey] = currentFeature
-    this.setState({currentEntry, currentFeature, featureList})
+    this.setState({currentEntry, currentFeature, featureList,})
   }
 
   deleteFeature(key) {
@@ -111,7 +111,7 @@ export default class Feature extends Component {
       success: function () {
         this.load()
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -124,7 +124,7 @@ export default class Feature extends Component {
     if (feature.title === null) {
       feature.title = ''
     }
-    this.setState({currentFeature: feature, currentKey: key,})
+    this.setState({currentFeature: feature, currentKey: key})
   }
 
   unlockBody() {
@@ -133,7 +133,7 @@ export default class Feature extends Component {
 
   closeOverlay() {
     this.setState(
-      {thumbnailOverlay: false, currentEntry: null, currentEntryKey: null}
+      {thumbnailOverlay: false, currentEntry: null, currentEntryKey: null,}
     )
     this.unlockBody()
   }
@@ -141,7 +141,7 @@ export default class Feature extends Component {
   thumbnailForm(key) {
     const entry = this.state.currentFeature.entries[key]
     this.setState(
-      {thumbnailOverlay: true, currentEntryKey: key, currentEntry: entry}
+      {thumbnailOverlay: true, currentEntryKey: key, currentEntry: entry,}
     )
   }
 
@@ -155,7 +155,7 @@ export default class Feature extends Component {
   }
 
   clearFeature() {
-    this.setState({currentFeature: null, currentKey: null})
+    this.setState({currentFeature: null, currentKey: null,})
   }
 
   /* Moves active entries into clean stack */
@@ -192,10 +192,10 @@ export default class Feature extends Component {
         this.fillEntries(feature)
         featureList.push(feature)
         this.setState(
-          {currentFeature: FeatureObj, currentKey: data.featureId, featureList: featureList}
+          {currentFeature: FeatureObj, currentKey: data.featureId, featureList: featureList,}
         )
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -205,7 +205,7 @@ export default class Feature extends Component {
     this.setState({currentFeature: feature})
   }
 
-  updateFeature(feature) {
+  updateFeature(feature, save = true) {
     if (feature.id > 0) {
       const {
         title,
@@ -213,36 +213,40 @@ export default class Feature extends Component {
         entries,
         format,
         columns,
-        sorting
+        sorting,
       } = feature
       let columnCount = 0
       let newEntries = entries.map(function (value) {
         if (value.entryId > 0) {
           columnCount++
           if (columnCount <= columns) {
-            return {entryId: value.entryId, x: value.x, y: value.y}
+            return {entryId: value.entryId, x: value.x, y: value.y, zoom: value.zoom,}
           }
         }
       })
-      $.ajax({
-        url: './stories/Feature/' + feature.id,
-        data: {
-          title,
-          active,
-          entries: newEntries,
-          format,
-          columns,
-          sorting
-        },
-        dataType: 'json',
-        type: 'put',
-        success: function (data) {
-          feature.entries = data.entries
-          this.fillEntries(feature)
-          this.updateCurrentFeature(feature)
-        }.bind(this),
-        error: function () {}.bind(this),
-      })
+
+      if (save) {
+        $.ajax({
+          url: './stories/Feature/' + feature.id,
+          data: {
+            title,
+            active,
+            entries: newEntries,
+            format,
+            columns,
+            sorting,
+          },
+          dataType: 'json',
+          type: 'put',
+          success: function (data) {
+            feature.entries = data.entries
+            this.fillEntries(feature)
+            this.updateCurrentFeature(feature)
+          }.bind(this),
+          error: function () {}.bind(this)
+        })
+      }
+
     } else {
       this.updateCurrentFeature(feature)
     }
@@ -251,7 +255,7 @@ export default class Feature extends Component {
   updateCurrentFeature(feature) {
     const {featureList} = this.state
     featureList[this.state.currentKey] = feature
-    this.setState({currentFeature: feature, featureList: featureList,})
+    this.setState({currentFeature: feature, featureList: featureList})
   }
 
   closeMessage() {
