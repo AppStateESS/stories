@@ -10,14 +10,14 @@ const Options = ({entryId, deleteStory, publishStory, published, allowPublish}) 
   return (
     <div>
       <a
-        className="btn btn-sm btn-default mr-1"
+        className="btn btn-sm btn-outline-secondary mr-1"
         href={`./stories/Entry/${entryId}/edit`}>Edit</a>
       {
         allowPublish
-          ? <a className="btn btn-sm btn-default mr-1" onClick={publishStory}>{publishLabel}</a>
+          ? <a href="./stories/Listing/admin#" className="btn btn-sm btn-outline-secondary mr-1" onClick={publishStory}>{publishLabel}</a>
           : null
       }
-      <a className="btn btn-sm btn-danger mr-1" onClick={deleteStory}>
+      <a href="./stories/Listing/admin#" className="btn btn-sm btn-danger mr-1" onClick={deleteStory}>
         Delete</a>
     </div>
   )

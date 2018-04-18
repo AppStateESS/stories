@@ -42,13 +42,13 @@ const EntryRow = (props) => {
 
   let image = noImage()
   if (thumbnail.length > 0) {
-    image = <img className="img-responsive" src={thumbnail}/>
+    image = <img className="img-fluid" src={thumbnail}/>
   }
 
   let publishLabel
   let publishInfo
   if (published == 0) {
-    publishInfo = <span className="label label-info"><abbr title="Stories without content will remain unpublished">Unpublished</abbr></span>
+    publishInfo = <span className="badge badge-info"><abbr title="Stories without content will remain unpublished">Unpublished</abbr></span>
   } else {
     if (publishDate >= moment().format('X')) {
       publishLabel = 'Publish on'

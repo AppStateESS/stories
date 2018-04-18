@@ -7,11 +7,11 @@
   </div>
   <?=$entry['publishInfo']?>
   <?=$entry['shareButtons']?>
-  <span class="label label-info permanent-link mr-1">
+  <span class="badge badge-info permanent-link mr-1">
     <a href="<?=$entry['currentUrl']?>"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
   </span>
   <?php if ($isAdmin):?>
-  <span class="label label-primary permanent-link">
+  <span class="badge badge-primary permanent-link">
     <a href="./stories/Entry/<?=$entry['id']?>/edit"><i class="fa fa-edit"></i>&nbsp;Edit</a>
   </span>
   <?php endif;?>

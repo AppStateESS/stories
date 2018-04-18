@@ -345,7 +345,7 @@ export default class EntryList extends Component {
 
     const header = {title: 'Stories list', url: './stories/Listing'}
 
-    const leftSide = (<li><a href="./stories/Entry/create"><i className="fa fa-book"></i>&nbsp;Create a new story</a></li>)
+    const leftSide = (<li className="nav-item"><a className="nav-link" href="./stories/Entry/create"><i className="fa fa-book"></i>&nbsp;Create a new story</a></li>)
 
     return (
       <div className="stories-listing">

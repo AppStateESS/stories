@@ -225,10 +225,10 @@ EOF;
         }
         $tags = implode('', $options);
         $content = <<<EOF
-    <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag <i class="fa fa-caret-down"></i></a></span>
+    <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag <i class="fas fa-caret-down"></i></a></span>
     <div class="invisible">
          <div id="entry-$entryId" class="tag-list">
-                <ul>
+                <ul class="list-unstyled">
                 $tags
                 </ul>
          </div>

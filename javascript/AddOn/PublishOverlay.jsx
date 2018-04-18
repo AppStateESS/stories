@@ -23,7 +23,7 @@ const PublishOverlay = ({
 
   let publishButton
   const closeButton = (
-    <button className="btn btn-default btn-block" onClick={savePublishDate}>Close</button>
+    <button className="btn btn-outline-secondary btn-block" onClick={savePublishDate}>Close</button>
   )
 
   if (isPublished == 0) {
@@ -51,7 +51,7 @@ const PublishOverlay = ({
         <div>{closeButton}</div>
       </div>
       <div className="text-center mt-1">
-        <span className="label label-info">Note: stories without content will not be published.</span>
+        <span className="badge badge-info">Note: stories without content will not be published.</span>
       </div>
       
     </Overlay>

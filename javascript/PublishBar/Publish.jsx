@@ -101,7 +101,7 @@ export default class Publish extends Component {
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
           {publishOverlay}
         </VelocityTransitionGroup>
-        <a className="btn btn-default btn-sm" onClick={this.setOverlay.bind(this, true)}>{publishLink}</a>
+        <a className="btn btn-outline-secondary btn-sm" onClick={this.setOverlay.bind(this, true)}>{publishLink}</a>
       </div>
     )
   }

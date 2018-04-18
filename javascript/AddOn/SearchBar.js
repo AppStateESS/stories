@@ -19,7 +19,7 @@ const SearchBar = ({search, handleChange, clearSearch}) => {
             placeholder="Search..."
             onChange={handleChange}/>
           <span className="input-group-btn">
-            <button className="btn btn-default" type="button" onClick={clearSearch}>Clear</button>
+            <button className="btn btn-outline-secondary" type="button" onClick={clearSearch}>Clear</button>
           </span>
         </div>
       </form>

@@ -14,7 +14,7 @@ const TagOverlay = ({
   newOptionClick,
 }) => {
   const closeButton = (
-    <button className="btn btn-default btn-block" onClick={saveTags}>Close</button>
+    <button className="btn btn-outline-secondary btn-block" onClick={saveTags}>Close</button>
   )
   return (
     <Overlay

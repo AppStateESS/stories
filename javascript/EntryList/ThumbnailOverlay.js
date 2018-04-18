@@ -80,7 +80,7 @@ class ThumbnailOverlay extends React.Component {
     }
 
     const closeButton = (
-      <button className="btn btn-default btn-block" onClick={this.close}>Close</button>
+      <button className="btn btn-outline-secondary btn-block" onClick={this.close}>Close</button>
     )
     const fadeIn = {
       animation: "fadeIn"
@@ -103,10 +103,6 @@ class ThumbnailOverlay extends React.Component {
                 <Dropzone onDrop={this.updateImage} className="dropzone text-center pointer">
                   {photo}
                 </Dropzone>
-                <div className="text-muted mb-1">
-                  <small>
-                    <strong>Note:</strong>&nbsp; changing images in story may change thumbnail.</small>
-                </div>
                 <div>
                   <button
                     className="btn btn-primary btn-block"
