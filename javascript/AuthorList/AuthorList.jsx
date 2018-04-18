@@ -1,4 +1,5 @@
 'use strict'
+import $ from 'jquery'
 import React, {Component} from 'react'
 import AuthorRow from './AuthorRow'
 import Waiting from '../AddOn/Waiting'
@@ -7,8 +8,6 @@ import SearchBar from '../AddOn/SearchBar'
 import PictureOverlay from './PictureOverlay'
 import AuthorOverlay from './AuthorOverlay'
 import './style.css'
-
-/* global $ */
 
 export default class AuthorList extends Component {
   constructor(props) {
