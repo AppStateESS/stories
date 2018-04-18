@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import Select from 'react-select'
 import MoveButton from './MoveButton'
 import 'react-select/dist/react-select.min.css'
+import {maxZoom, minZoom} from './config'
 
 /* global $ */
 
@@ -79,10 +80,10 @@ class DisplayColumn extends React.Component {
           </table>
         </div>
         <div className="zoom-buttons">
-          <button disabled={zoom == 50} className="btn btn-sm btn-secondary" onClick={this.zoomOut}>
+          <button disabled={zoom == minZoom} className="btn btn-sm btn-secondary" onClick={this.zoomOut}>
             <i className="fas fa-search-minus"></i>
           </button>
-          <button disabled={zoom == 200} className="btn btn-sm btn-secondary" onClick={this.zoomIn}>
+          <button disabled={zoom == maxZoom} className="btn btn-sm btn-secondary" onClick={this.zoomIn}>
             <i className="fas fa-search-plus"></i>
           </button>
         </div>

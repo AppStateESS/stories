@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ButtonGroup from '../AddOn/ButtonGroup'
 import FeatureDisplay from './FeatureDisplay'
+import {maxZoom, minZoom} from './config'
 import './style.css'
 
 class FeatureForm extends React.Component {
@@ -70,7 +71,7 @@ class FeatureForm extends React.Component {
   }
 
   setZoom(key, zoom) {
-    if (zoom > 200 || zoom < 50) {
+    if (zoom > maxZoom || zoom < minZoom) {
       return
     }
 
@@ -128,8 +129,8 @@ class FeatureForm extends React.Component {
 
     const isActive = (format) => {
       return this.props.feature.format === format
-        ? 'btn btn-default active'
-        : 'btn btn-default'
+        ? 'btn btn-outline-secondary active'
+        : 'btn btn-outline-secondary'
     }
 
     const formatTopBottom = this.props.srcHttp + 'mod/stories/img/top-bottom.png'
