@@ -1,13 +1,11 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-/* global $ */
+import $ from 'jquery'
 
 export default class Overlay extends Component {
   constructor(props) {
     super(props)
     this.state = {}
-    this.lighten = this.lighten.bind(this)
-    this.normal = this.normal.bind(this)
     this.unlockBody = this.unlockBody.bind(this)
     this.close = this.close.bind(this)
   }
@@ -22,14 +20,6 @@ export default class Overlay extends Component {
 
   unlockBody() {
     $('body').css('overflow', 'inherit')
-  }
-
-  normal() {
-    this.refs.closebutton.style.color = 'inherit'
-  }
-
-  lighten() {
-    this.refs.closebutton.style.color = '#479AFF'
   }
 
   close() {
@@ -62,7 +52,7 @@ export default class Overlay extends Component {
       bottom: '0px',
       left: '0px',
       backgroundColor: 'rgba(0,0,0,0.8)',
-      zIndex: '300'
+      zIndex: '300',
     }
 
     const overlayStyle = {
@@ -76,24 +66,24 @@ export default class Overlay extends Component {
       zIndex: '310',
       overflow: overflow,
       padding: '10px',
-      transform: 'translate(-50%)',
+      transform: 'translate(-50%)'
     }
 
     const headerStyle = {
       marginBottom: '1em',
-      height: '45px',
+      height: '45px'
     }
 
     const titleStyle = {
       padding: '9px',
       fontSize: '18px',
       fontWeight: 'bold',
-      overflow: 'hidden'
+      overflow: 'hidden',
     }
 
     const closeButton = {
       padding: '5px',
-      float: 'right',
+      float: 'right'
     }
 
     const childrenStyle = {
@@ -105,11 +95,10 @@ export default class Overlay extends Component {
         <div style={overlayStyle}>
           <div style={headerStyle}>
             <div
-              ref="closebutton"
-              style={closeButton}
-              onMouseEnter={this.lighten}
-              onMouseLeave={this.normal}>
-              <i className="fa fa-2x fa-times pointer" onClick={this.close}></i>
+              style={closeButton}>
+              <button className="btn btn-light" onClick={this.close}>
+                <i className="fa fa-2x fa-times"></i>
+              </button>
             </div>
             <div style={titleStyle}>{this.props.title}</div>
           </div>
@@ -123,10 +112,12 @@ export default class Overlay extends Component {
 }
 
 Overlay.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element, PropTypes.array,]),
+  children: PropTypes.oneOfType(
+    [PropTypes.string, PropTypes.element, PropTypes.array,]
+  ),
   close: PropTypes.func,
   title: PropTypes.string,
   width: PropTypes.string,
   height: PropTypes.string,
-  overflow: PropTypes.string,
+  overflow: PropTypes.string
 }
