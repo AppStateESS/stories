@@ -208,8 +208,9 @@ class FeatureFactory extends BaseFactory
         $thumbnail = $entry['story']['thumbnail'];
         $x = $entry['x'];
         $y = $entry['y'];
+        $zoom = $entry['zoom'];
         return <<<EOF
-background-image : url('$thumbnail');background-position: {$x}% {$y}%;
+background-image : url('$thumbnail');background-position: {$x}% {$y}%;background-size: {$zoom}%;
 EOF;
     }
 
