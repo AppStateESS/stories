@@ -30,25 +30,25 @@ const AuthorRow = (props) => {
   let picture = (
     <div className="text-center" onClick={props.thumbnail}>
       <div>
-        <i className="fa fa-camera fa-2x text-muted"></i>
+        <i className="fas fa-camera fa-2x text-muted"></i>
       </div>
       <span style={noPic}>No picture</span>
     </div>
   )
   if (pic != null) {
-    picture = (<div className="circle-frame"><img src={pic} onClick={props.thumbnail} /></div>)
+    picture = (<div className="circle-frame pointer"><img src={pic} onClick={props.thumbnail} /></div>)
   }
   return (
-    <tr>
-      <td>
+    <tr className="align-items-center">
+      <td className="align-middle">
         <button className="btn btn-primary btn-sm" onClick={props.update}>
-          <i className="fa fa-edit"></i>
+          <i className="fas fa-edit"></i>
         </button>
       </td>
-      <td>{picture}</td>
-      <td>{name}</td>
-      <td>{email}</td>
-      <td>{lastLogged}</td>
+      <td className="align-middle">{picture}</td>
+      <td className="align-middle">{name}</td>
+      <td className="align-middle">{email}</td>
+      <td className="align-middle">{lastLogged}</td>
     </tr>
   )
 }
