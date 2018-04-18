@@ -18,8 +18,13 @@ const ButtonGroup = ({
   activeColor
 }) => {
   let buttonList = buttons.map(function (value, key) {
-    const buttonColor = 'btn-' + activeColor
-    let cn = classnames('btn', 'btn-default')
+    let buttonColor
+    if (!value.color) {
+      buttonColor = 'btn-' + activeColor
+    } else {
+      buttonColor = 'btn-' + value.color
+    }
+    let cn = classnames('btn', 'btn-outline-secondary')
     if (match !== null && match !== undefined) {
       if (match.constructor === Array && (match.indexOf(value.value) !== -1)) {
         cn = classnames('btn', 'active', buttonColor)
@@ -71,7 +76,7 @@ ButtonGroup.propTypes = {
 }
 
 ButtonGroup.defaultProps = {
-  activeColor: 'default',
+  activeColor: 'outline-secondary',
   match: '',
   name: ''
 }

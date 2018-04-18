@@ -84,7 +84,7 @@ EOF;
     
     public static function adminDisplayLink()
     {
-        $link = '<a href="./stories/Settings"><i class="fa fa-gear"></i> Settings</a>';
+        $link = '<a href="./stories/Settings"><i class="fas fa-cog"></i> Settings</a>';
         \MiniAdmin::add('stories', $link);
         
     }
