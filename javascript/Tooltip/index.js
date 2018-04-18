@@ -1,8 +1,7 @@
 require("expose-loader?$!jquery")
 /* global $ */
-$.noConflict()
 let currentDom = ''
-$(function () {
+$(document).ready(() => {
   $(".tagged").popover({
     trigger: "manual",
     html: true,
