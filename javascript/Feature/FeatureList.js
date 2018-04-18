@@ -19,10 +19,12 @@ const FeatureList = (props) => {
   const buttons = [
     {
       value: '1',
-      label: 'Yes'
+      label: 'Yes',
+      color : 'success'
     }, {
       value: '0',
-      label: 'No'
+      label: 'No',
+      color : 'danger'
     },
   ]
 
