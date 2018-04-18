@@ -73,7 +73,6 @@ abstract class RoleController
 
     public function getHtml(Request $request)
     {
-        \Layout::addToStyleList('mod/stories/css/bootstrap-fills.css');
         $command = $this->pullGetCommand($request);
 
         $method_name = $command . 'HtmlCommand';
