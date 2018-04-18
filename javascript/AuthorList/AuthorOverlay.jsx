@@ -18,13 +18,16 @@ export default class AuthorOverlay extends Component {
     const {author} = this.props
     $.ajax({
       url: './stories/Author/' + author.id,
-      data: {name: author.name, email: author.email},
+      data: {
+        name: author.name,
+        email: author.email,
+      },
       dataType: 'json',
       type: 'put',
-      success: function(){
+      success: function () {
         this.props.close()
       }.bind(this),
-      error: function(){}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -56,16 +59,30 @@ export default class AuthorOverlay extends Component {
             ? <Overlay
                 close={this.props.close}
                 width="400px"
-                height="340px"
+                height="350px"
                 title="Update author">
-                <label>Name:</label>
-                <input type="text" name="name" value={author.name}
-                  onChange={this.updateName} className="form-control"/>
-                <label>Email:</label>
-                <input type="text" name="email" value={author.email}
-                  onChange={this.updateEmail} className="form-control"/>
+                <div className="form-group">
+                  <label>Name:</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={author.name}
+                    onChange={this.updateName}
+                    className="form-control"/>
+                </div>
+                <div className="form-group">
+                  <label>Email:</label>
+                  <input
+                    type="text"
+                    name="email"
+                    value={author.email}
+                    onChange={this.updateEmail}
+                    className="form-control"/>
+                </div>
                 <button className="btn btn-primary btn-block mt-1" onClick={this.saveAuthor}>Save</button>
-                <button className="btn btn-default btn-block" onClick={this.props.close}>Close</button>
+                <button
+                  className="btn btn-outline-secondary btn-block"
+                  onClick={this.props.close}>Close</button>
               </Overlay>
             : null
         }</VelocityTransitionGroup>
@@ -77,5 +94,5 @@ AuthorOverlay.propTypes = {
   show: PropTypes.bool,
   close: PropTypes.func,
   updateAuthor: PropTypes.func,
-  author: PropTypes.object
+  author: PropTypes.object,
 }
