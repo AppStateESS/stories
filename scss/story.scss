@@ -25,6 +25,10 @@ $leftright-height: 300px;
 }
 
 .publish-info {
+  padding: 6px;
+  border-radius: 5px;
+  width: 300px;
+  
   .author-email {
     font-weight: bold;
   }
@@ -50,18 +54,7 @@ $leftright-height: 300px;
   }
 }
 
-.publish-info {
-  padding: 6px;
-  border-radius: 5px;
-  width: 300px;
-  
-}
-
-.story-list-entry {
-  margin-bottom: 2em;
-  padding-bottom: 1em;
-  border-bottom: 1px solid #e3e3e3;
-  
+.story-full-view, .story-list-entry {
   .publish-info {
     border: 1px solid #e3e3e3;
     display: flex;
@@ -70,7 +63,14 @@ $leftright-height: 300px;
       height: 70px;    
     }
   }
+}
 
+
+.story-list-entry {
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #e3e3e3;
+  
   .story-image {
     text-align: center;
   }
