@@ -80,7 +80,7 @@ class ThumbnailOverlay extends React.Component {
     }
 
     const closeButton = (
-      <button className="btn btn-outline-secondary btn-block" onClick={this.close}>Close</button>
+      <button className="btn btn-outline-dark btn-block" onClick={this.close}>Close</button>
     )
     const fadeIn = {
       animation: "fadeIn"

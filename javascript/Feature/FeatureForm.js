@@ -129,8 +129,8 @@ class FeatureForm extends React.Component {
 
     const isActive = (format) => {
       return this.props.feature.format === format
-        ? 'btn btn-outline-secondary active'
-        : 'btn btn-outline-secondary'
+        ? 'btn btn-outline-dark active'
+        : 'btn btn-outline-dark'
     }
 
     const formatTopBottom = this.props.srcHttp + 'mod/stories/img/top-bottom.png'

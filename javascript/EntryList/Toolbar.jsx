@@ -11,7 +11,7 @@ const Toolbar = ({entry, publish, deleteStory}) => {
       className="btn btn-sm btn-primary ml-1">
       <i className="fas fa-pencil-alt"></i>&nbsp; Edit
     </a>
-    <a href={`stories/Entry/${entry.id}`} className="btn btn-sm btn-outline-secondary ml-1">
+    <a href={`stories/Entry/${entry.id}`} className="btn btn-sm btn-outline-dark ml-1">
       <i className="fa fa-eye"></i>&nbsp; View
     </a>
     {entry.published ? 'Published' : 'Publish now'}

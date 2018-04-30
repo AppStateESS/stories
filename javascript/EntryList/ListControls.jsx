@@ -22,7 +22,7 @@ const ListControls = (props) => {
             placeholder="Search for stories..."
             onChange={handleChange}/>
           <span className="input-group-btn">
-            <button className="btn btn-outline-secondary" type="button" onClick={clearSearch}>Clear</button>
+            <button className="btn btn-outline-dark" type="button" onClick={clearSearch}>Clear</button>
           </span>
         </div>
       </div>
@@ -57,7 +57,7 @@ const SortBy = ({sortBy, updateSort,}) => {
   return (
     <div className="dropdown">
       <button
-        className="btn btn-outline-secondary btn-sm dropdown-toggle"
+        className="btn btn-outline-dark btn-sm dropdown-toggle"
         type="button"
         id="dropdownMenu1"
         data-toggle="dropdown"

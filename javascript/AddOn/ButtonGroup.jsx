@@ -24,7 +24,7 @@ const ButtonGroup = ({
     } else {
       buttonColor = 'btn-' + value.color
     }
-    let cn = classnames('btn', 'btn-outline-secondary')
+    let cn = classnames('btn', 'btn-outline-dark')
     if (match !== null && match !== undefined) {
       if (match.constructor === Array && (match.indexOf(value.value) !== -1)) {
         cn = classnames('btn', 'active', buttonColor)

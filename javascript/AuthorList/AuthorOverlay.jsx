@@ -81,7 +81,7 @@ export default class AuthorOverlay extends Component {
                 </div>
                 <button className="btn btn-primary btn-block mt-1" onClick={this.saveAuthor}>Save</button>
                 <button
-                  className="btn btn-outline-secondary btn-block"
+                  className="btn btn-outline-dark btn-block"
                   onClick={this.props.close}>Close</button>
               </Overlay>
             : null

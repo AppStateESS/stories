@@ -122,7 +122,7 @@ export default class Settings extends Component {
 
     if (this.state.deleted > 0) {
       const lock = (
-        <button className="btn btn-outline-secondary" onClick={this.toggleVerified}>
+        <button className="btn btn-outline-dark" onClick={this.toggleVerified}>
           <i
             className={`fa fa-${this.state.purgeVerified
               ? 'unlock-alt'

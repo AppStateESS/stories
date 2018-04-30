@@ -23,7 +23,7 @@ const PublishOverlay = ({
 
   let publishButton
   const closeButton = (
-    <button className="btn btn-outline-secondary btn-block" onClick={savePublishDate}>Close</button>
+    <button className="btn btn-outline-dark btn-block" onClick={savePublishDate}>Close</button>
   )
 
   if (isPublished == 0) {

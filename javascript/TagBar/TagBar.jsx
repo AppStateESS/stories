@@ -95,7 +95,7 @@ export default class TagBar extends Component {
     if (this.state.entryTags[0] != undefined) {
       tagListing = this.state.entryTags.map(function (value, key) {
         return (
-          <span className="btn btn-outline-secondary btn-sm mr-1" disabled key={key}>{value.label}</span>
+          <span className="btn btn-outline-dark btn-sm mr-1" disabled key={key}>{value.label}</span>
         )
       }.bind(this))
     }
