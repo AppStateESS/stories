@@ -9,18 +9,18 @@ module.exports = {
   output: {
     path: setup.path.join(setup.APP_DIR, 'build'),
     filename: '[name].[chunkhash:8].min.js',
-    chunkFilename: '[name].[chunkhash:8].chunk.js',
+    chunkFilename: '[name].[chunkhash:8].chunk.js'
   },
   externals: {
     $: 'jQuery',
-    EntryForm: 'EntryForm',
+    EntryForm: 'EntryForm'
   },
   optimization: {
     splitChunks: {
       cacheGroups: {
         commons: {
           name: "vendor",
-          chunks: "all",
+          chunks: "all"
         }
       }
     }
@@ -31,7 +31,7 @@ module.exports = {
     ],
     alias: {
       'jquery-ui/widget': 'blueimp-file-upload/js/vendor/jquery.ui.widget.js'
-    },
+    }
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -42,46 +42,46 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         screw_ie8: true,
-        warnings: false
+        warnings: false,
       },
       mangle: {
         screw_ie8: true
       },
       output: {
         comments: false,
-        screw_ie8: true
-      }
+        screw_ie8: true,
+      },
     }),
-    new AssetsPlugin({filename: 'assets.json', prettyPrint: true}),
+    new AssetsPlugin({filename: 'assets.json', prettyPrint: true,}),
   ],
   module: {
     rules: [
       {
         test: require.resolve('blueimp-file-upload'),
-        loader: 'imports-loader?define=>false'
+        loader: 'imports-loader?define=>false',
       }, {
         test: require.resolve('medium-editor-insert-plugin'),
-        loader: 'imports-loader?define=>false'
+        loader: 'imports-loader?define=>false',
       }, {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader?limit=100000'
+        loader: 'url-loader?limit=100000',
       }, {
         test: /\.jsx?/,
         include: setup.APP_DIR,
         loader: 'babel-loader',
         query: {
-          presets: ['es2015', 'react',]
-        }
+          presets: ['env', 'react',]
+        },
       }, {
         test: [
-          /\.js$/, /\.es6$/, /\.jsx$/,
+          /\.js$/, /\.jsx$/,
         ],
         exclude: /node_modules/,
-        loader: WebpackStripLoader.loader('console.log')
+        loader: WebpackStripLoader.loader('console.log'),
       }, {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        loader: 'style-loader!css-loader',
       },
     ]
-  }
+  },
 }
