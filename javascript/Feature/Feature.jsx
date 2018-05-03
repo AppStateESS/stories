@@ -27,22 +27,42 @@ export default class Feature extends Component {
       stories: []
     }
     this.addRow = this.addRow.bind(this)
+    this.clearFeature = this.clearFeature.bind(this)
+    this.clearStory = this.clearStory.bind(this)
     this.closeMessage = this.closeMessage.bind(this)
+    this.closeOverlay = this.closeOverlay.bind(this)
+    this.deleteFeature = this.deleteFeature.bind(this)
+    this.loadCurrentFeature = this.loadCurrentFeature.bind(this)
+    this.thumbnailForm = this.thumbnailForm.bind(this)
     this.updateFeature = this.updateFeature.bind(this)
     this.updateActive = this.updateActive.bind(this)
-    this.loadCurrentFeature = this.loadCurrentFeature.bind(this)
-    this.clearStory = this.clearStory.bind(this)
     this.updateTitle = this.updateTitle.bind(this)
-    this.clearFeature = this.clearFeature.bind(this)
-    this.thumbnailForm = this.thumbnailForm.bind(this)
-    this.closeOverlay = this.closeOverlay.bind(this)
     this.updateEntry = this.updateEntry.bind(this)
     this.updateImage = this.updateImage.bind(this)
-    this.deleteFeature = this.deleteFeature.bind(this)
   }
 
   componentDidMount() {
     this.load()
+
+    window.onbeforeunload = () => {
+      const {currentFeature} = this.state
+      let activeCount = 0
+      if (currentFeature != null) {
+        for (let i = 0; i < currentFeature.entries.length; i++) {
+          if (currentFeature.entries[i].entryId == '0') {
+            break
+          }
+          activeCount++
+        }
+        activeCount = activeCount < 2 ? 2 : activeCount
+        
+        if (this.state.currentFeature.columns > activeCount) {
+          const feature = this.state.currentFeature
+          feature.columns = activeCount
+          this.updateFeature(feature)
+        }
+      }
+    }
   }
 
   load() {
@@ -312,14 +332,14 @@ export default class Feature extends Component {
       leftSide = (
         <li key="1">
           <span onClick={this.clearFeature} className="navbar-text pointer">
-            <i className="fa fa-list"></i>&nbsp;Back to feature list</span>
+            <i className="fas fa-list"></i>&nbsp;Back to feature list</span>
         </li>
       )
     } else {
       leftSide = (
         <li key="2">
           <span onClick={this.addRow} className="navbar-text pointer">
-            <i className="fa fa-plus"></i>&nbsp;Add feature set</span>
+            <i className="fas fa-plus"></i>&nbsp;Add feature set</span>
         </li>
       )
     }

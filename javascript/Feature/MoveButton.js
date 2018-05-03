@@ -11,25 +11,25 @@ const MoveButton = ({dir, holdThumb, stopMove, moveThumb,cX, cY}) => {
     case 'up':
       x = 0
       y = -1
-      fa = 'fa fa-arrow-up'
+      fa = 'fas fa-fw fa-arrow-up'
       disabled = cY == 0
       break
     case 'down':
       x = 0
       y = 1
-      fa = 'fa fa-arrow-down'
+      fa = 'fas fa-fw fa-arrow-down'
       disabled = cY == 100
       break
     case 'left':
       x = -1
       y = 0
-      fa = 'fa fa-arrow-left'
+      fa = 'fas fa-fw fa-arrow-left'
       disabled = cX == 0
       break
     case 'right':
       x = 1
       y = 0
-      fa = 'fa fa-arrow-right'
+      fa = 'fas fa-fw fa-arrow-right'
       disabled = cX == 100
       break
   }

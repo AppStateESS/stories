@@ -10,6 +10,7 @@ const FeatureDisplay = (props) => {
     stories,
     clearStory,
     moveThumb,
+    resetThumb,
     setZoom,
     holdThumb,
     stopMove,
@@ -58,6 +59,7 @@ const FeatureDisplay = (props) => {
         stopMove={stopMove.bind(null, i)}
         thumbnailForm={props.thumbnailForm.bind(null, i)}
         moveThumb={moveThumb.bind(null, i)}
+        resetThumb={resetThumb.bind(null, i)}
         setZoom={setZoom.bind(null, i)}
         holdThumb={holdThumb.bind(null, i)}/>
     )
@@ -77,6 +79,7 @@ FeatureDisplay.propTypes = {
   clearStory: PropTypes.func,
   holdThumb: PropTypes.func,
   moveThumb: PropTypes.func,
+  resetThumb: PropTypes.func,
   setZoom: PropTypes.func,
   thumbnailForm: PropTypes.func,
   stopMove: PropTypes.func

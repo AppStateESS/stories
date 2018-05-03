@@ -6,8 +6,6 @@ import MoveButton from './MoveButton'
 import 'react-select/dist/react-select.min.css'
 import {maxZoom, minZoom} from './config'
 
-/* global $ */
-
 class DisplayColumn extends React.Component {
   constructor(props) {
     super(props)
@@ -15,9 +13,9 @@ class DisplayColumn extends React.Component {
       showButtons: false,
       dragging: false
     }
+    this.moveButtons = this.moveButtons.bind(this)
     this.zoomOut = this.zoomOut.bind(this)
     this.zoomIn = this.zoomIn.bind(this)
-    this.moveButtons = this.moveButtons.bind(this)
   }
 
   setShowButtons(value) {
@@ -33,9 +31,10 @@ class DisplayColumn extends React.Component {
     const zoom = parseInt(this.props.entry.zoom) + 5
     this.props.setZoom(zoom)
   }
+  
 
   moveButtons() {
-    const {moveThumb, stopMove, holdThumb, entry} = this.props
+    const {moveThumb, stopMove, holdThumb, resetThumb, entry} = this.props
 
     if (this.state.showButtons === false || entry.entryId == 0) {
       return null
@@ -64,7 +63,7 @@ class DisplayColumn extends React.Component {
                 <td>
                   <MoveButton dir="left" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
                 </td>
-                <td></td>
+                <td><button className="btn btn-secondary btn-sm" onClick={resetThumb}><i className="fas fa-fw fa-redo"></i></button></td>
                 <td>
                   <MoveButton dir="right" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
                 </td>
@@ -185,6 +184,7 @@ DisplayColumn.propTypes = {
   applyStory: PropTypes.func,
   clearStory: PropTypes.func,
   moveThumb: PropTypes.func,
+  resetThumb: PropTypes.func,
   stopMove: PropTypes.func,
   setZoom: PropTypes.func,
   holdThumb: PropTypes.func,

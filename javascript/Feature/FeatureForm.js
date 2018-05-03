@@ -14,15 +14,16 @@ class FeatureForm extends React.Component {
       moving: false
     }
     this.interval
-    this.setColumns = this.setColumns.bind(this)
-    this.setTitle = this.setTitle.bind(this)
-    this.setFormat = this.setFormat.bind(this)
-    this.stopMove = this.stopMove.bind(this)
-    this.moveThumb = this.moveThumb.bind(this)
-    this.holdThumb = this.holdThumb.bind(this)
     this.applyStory = this.applyStory.bind(this)
+    this.holdThumb = this.holdThumb.bind(this)
+    this.moveThumb = this.moveThumb.bind(this)
+    this.resetThumb = this.resetThumb.bind(this)
     this.saveTitle = this.saveTitle.bind(this)
+    this.setColumns = this.setColumns.bind(this)
+    this.setFormat = this.setFormat.bind(this)
+    this.setTitle = this.setTitle.bind(this)
     this.setZoom = this.setZoom.bind(this)
+    this.stopMove = this.stopMove.bind(this)
   }
 
   setColumns(columns) {
@@ -78,6 +79,16 @@ class FeatureForm extends React.Component {
     const feature = this.props.feature
     const entry = feature.entries[key]
     entry.zoom = zoom
+    feature.entries[key] = entry
+    this.props.update(feature)
+  }
+  
+  resetThumb(key) {
+    const feature = this.props.feature
+    const entry = feature.entries[key]
+    entry.zoom = '100'
+    entry.x = '50'
+    entry.y = '50'
     feature.entries[key] = entry
     this.props.update(feature)
   }
@@ -187,6 +198,7 @@ class FeatureForm extends React.Component {
             applyStory={this.applyStory}
             setZoom={this.setZoom}
             clearStory={this.props.clearStory}
+            resetThumb={this.resetThumb}
             moveThumb={this.moveThumb}
             thumbnailForm={this.props.thumbnailForm}
             holdThumb={this.holdThumb}
