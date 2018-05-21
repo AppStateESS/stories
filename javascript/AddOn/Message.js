@@ -5,7 +5,7 @@ const Message = (props) => {
   let icon = ''
   switch (props.type) {
     case 'danger':
-      icon = 'fa fa-exclamation-triangle'
+      icon = 'fas fa-exclamation-triangle'
       break
 
     case 'success':
@@ -13,11 +13,11 @@ const Message = (props) => {
       break
 
     case 'info':
-      icon = 'fa fa-info-circle'
+      icon = 'fas fa-info-circle'
       break
 
     case 'warning':
-      icon = 'fa fa-hand-paper-o'
+      icon = 'far fa-hand-paper'
       break
   }
 
