@@ -1,5 +1,4 @@
 'use strict'
-import $ from 'jquery'
 import React, {Component} from 'react'
 import AuthorRow from './AuthorRow'
 import Waiting from '../AddOn/Waiting'

@@ -1,6 +1,5 @@
 'use strict'
 import React, {Component} from 'react'
-import $ from 'jquery'
 import Waiting from '../AddOn/Waiting'
 import EntryRow from './EntryRow'
 import PublishOverlay from '../AddOn/PublishOverlay'
