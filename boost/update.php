@@ -65,6 +65,8 @@ class StoriesUpdate {
                 $this->update('1.0.7');
             case $this->compare('1.0.8'):
                 $this->update('1.0.8');
+            case $this->compare('1.1.0'):
+                $this->update('1.1.0');
         }
         return $this->content;
     }
@@ -139,6 +141,16 @@ class StoriesUpdate {
     {
         $changes[] = 'Changed the way shortcuts are saved.';
         $this->addContent('1.0.8', $changes);
+    }
+    
+    private function v1_1_0()
+    {
+        $changes[] = 'Updated to Bootstrap 4';
+        $changes[] = 'Added zoom thumbnail ability for features';
+        $changes[] = 'Added reset button recenter';
+        $changes[] = 'Display fixes';
+        $changes[] = 'Updated npm libraries';
+        $this->addContent('1.1.0', $changes);
     }
     
     private function addContent($version, array $changes)
