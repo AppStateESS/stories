@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Overlay from './Overlay'
+import Overlay from 'canopy-react-overlay'
 import moment from 'moment'
 
 const PublishOverlay = ({
@@ -50,7 +50,7 @@ const PublishOverlay = ({
         <div>{publishButton}</div>
         <div>{closeButton}</div>
       </div>
-      <div className="text-center mt-1">
+      <div className="text-center mt-2">
         <span className="badge badge-info">Note: stories without content will not be published.</span>
       </div>
       
