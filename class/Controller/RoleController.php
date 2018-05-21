@@ -66,7 +66,7 @@ abstract class RoleController
     {
         $id = $request->shiftCommand();
         if (!is_numeric($id)) {
-            throw new \stories\Exception\MissingRequestId($id);
+            throw new \stories\Exception\ResourceNotFound($id);
         }
         $this->id = $id;
     }
