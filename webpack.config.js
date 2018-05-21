@@ -34,7 +34,7 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({EntryForm: 'EntryForm'}),
     new BrowserSyncPlugin(
-      {host: 'localhost', notify: false, port: 3000, files: ['./javascript/dev/*.js'], proxy: 'localhost/phpwebsite',}
+      {host: 'localhost', notify: false, port: 3000, files: ['./javascript/dev/*.js'], proxy: 'localhost/canopy',}
     ),
   ],
   module: {
