@@ -1,7 +1,7 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import ButtonGroup from '../AddOn/ButtonGroup'
+import ButtonGroup from 'canopy-react-buttongroup'
 import FeatureDisplay from './FeatureDisplay'
 import {maxZoom, minZoom} from './config'
 import './style.css'

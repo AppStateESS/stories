@@ -1,7 +1,7 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import ButtonGroup from '../AddOn/ButtonGroup'
+import ButtonGroup from 'canopy-react-buttongroup'
 
 const FeatureList = (props) => {
   if (props.list === undefined || props.list === null) {

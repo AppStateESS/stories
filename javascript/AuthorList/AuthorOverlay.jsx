@@ -2,7 +2,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {VelocityTransitionGroup} from 'velocity-react'
-import Overlay from '../AddOn/Overlay'
+import Overlay from 'canopy-react-overlay'
 
 /* global $ */
 
@@ -79,7 +79,7 @@ export default class AuthorOverlay extends Component {
                     onChange={this.updateEmail}
                     className="form-control"/>
                 </div>
-                <button className="btn btn-primary btn-block mt-1" onClick={this.saveAuthor}>Save</button>
+                <button className="btn btn-primary btn-block mt-2" onClick={this.saveAuthor}>Save</button>
                 <button
                   className="btn btn-outline-dark btn-block"
                   onClick={this.props.close}>Close</button>

@@ -2,7 +2,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {VelocityTransitionGroup} from 'velocity-react'
-import Overlay from '../AddOn/Overlay'
+import Overlay from 'canopy-react-overlay'
 import Dropzone from 'react-dropzone'
 import EmptyPhoto from '../AddOn/EmptyPhoto'
 import '../AddOn/imageOverlay.css'
