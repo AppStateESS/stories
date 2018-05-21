@@ -82,7 +82,7 @@ const EntryRow = (props) => {
   let rowClass = 'entry-row mb-1'
   rowClass = 'entry-row mb-1 active'
   options = (
-    <div className="row mt-1 options">
+    <div className="row mt-2 options">
       <div className="col-sm-4">
         <Options
           entryId={id}
