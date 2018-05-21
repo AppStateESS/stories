@@ -1,8 +1,8 @@
 'use strict'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import BigCheckbox from '../AddOn/BigCheckbox'
-import ButtonGroup from '../AddOn/ButtonGroup'
+import BigCheckbox from 'canopy-react-bigcheckbox'
+import ButtonGroup from 'canopy-react-buttongroup'
 import Navbar from '../AddOn/Navbar'
 
 /* global $ */
@@ -124,7 +124,7 @@ export default class Settings extends Component {
       const lock = (
         <button className="btn btn-outline-dark" onClick={this.toggleVerified}>
           <i
-            className={`fa fa-${this.state.purgeVerified
+            className={`fas fa-${this.state.purgeVerified
               ? 'unlock-alt'
               : 'lock'}`}></i>
         </button>
@@ -161,10 +161,12 @@ export default class Settings extends Component {
                 <ButtonGroup
                   buttons={amountButtons}
                   handle={this.saveSetting.bind(this, 'listStoryAmount')}
+                  activeColor="success"
                   match={this.state.listStoryAmount}/>
-                <div className="mt-1">Story display type</div>
+                <div className="mt-2">Story display type</div>
                 <ButtonGroup
                   buttons={formatButton}
+                  activeColor="success"
                   handle={this.saveSetting.bind(this, 'listStoryFormat')}
                   match={this.state.listStoryFormat}/>
               </div>
