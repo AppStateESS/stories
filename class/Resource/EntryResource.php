@@ -50,7 +50,7 @@ class EntryResource extends BaseResource
 
     /**
      * Timestamp story was first created.
-     * @var phpws2\Variable\IntegerVar 
+     * @var phpws2\Variable\DateTime 
      */
     protected $createDate;
 
@@ -74,7 +74,7 @@ class EntryResource extends BaseResource
 
     /**
      * Time after the story may be published.
-     * @var phpws2\Variable\IntegerVar 
+     * @var phpws2\Variable\DateTime 
      */
     protected $publishDate;
 
