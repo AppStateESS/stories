@@ -2,8 +2,8 @@
 <dependency>
 	<module>
 		<title>core</title>
-		<properName>phpWebSite Core</properName>
-		<version>2.10.1</version>
-		<url>http://github.com/AppStateESS/phpwebsite/</url>
+		<properName>Canopy Core</properName>
+		<version>3.0.0</version>
+		<url>http://github.com/AppStateESS/canopy/</url>
 	</module>
 </dependency>
