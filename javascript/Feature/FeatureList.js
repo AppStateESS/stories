@@ -5,7 +5,7 @@ import ButtonGroup from 'canopy-react-buttongroup'
 
 const FeatureList = (props) => {
   if (props.list === undefined || props.list === null) {
-    return <div>No features found. Add a feature row to get started.</div>
+    return <div>No features found. <a href="./stories/Feature#" onClick={props.add}>Add a feature set to get started.</a></div>
   }
 
   const formatTopBottom = props.srcHttp + 'mod/stories/img/top-bottom.png'
@@ -83,6 +83,7 @@ FeatureList.propTypes = {
   updateActive: PropTypes.func,
   deleteFeature: PropTypes.func,
   srcHttp: PropTypes.string,
+  add : PropTypes.func,
 }
 
 FeatureList.defaultTypes = {}
