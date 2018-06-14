@@ -1,7 +1,4 @@
-require("expose-loader?$!jquery")
-
 /* global $ */
-
 const resizeCaption = () => {
   const containerWidth = $('.container').width()
   $('figure').each(function (i, obj) {
@@ -13,6 +10,5 @@ const resizeCaption = () => {
   })
 
 }
-
 resizeCaption()
 $(window).resize(resizeCaption)
