@@ -11,6 +11,8 @@ import ThumbnailOverlay from '../EntryList/ThumbnailOverlay'
 import Navbar from '../AddOn/Navbar'
 import './style.css'
 
+/* global $ */
+
 export default class Feature extends Component {
   constructor(props) {
     super(props)
@@ -316,6 +318,7 @@ export default class Feature extends Component {
         update={this.updateFeature}/>
     } else {
       return <FeatureList
+        add={this.addRow}
         list={this.state.featureList}
         srcHttp={this.props.srcHttp}
         updateActive={this.updateActive}
