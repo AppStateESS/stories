@@ -40,7 +40,7 @@ class EntryFactory extends BaseFactory
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
-    public function load($id, $allowDeleted=false)
+    public function load($id, $allowDeleted = false)
     {
         $db = Database::getDB();
         $entryTbl = $db->addTable('storiesentry');
@@ -298,33 +298,35 @@ class EntryFactory extends BaseFactory
         $tagFactory = new TagFactory();
 
         $sourceHttp = PHPWS_SOURCE_HTTP;
-        $insertSource = PHPWS_SOURCE_HTTP . 'mod/stories/javascript/MediumEditor/insert.js';
+        $status = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
         $entryVars = $entry->getStringVars();
-        $vars['cssOverride'] = $this->mediumCSSOverride();
-        $vars['home'] = $sourceHttp;
         $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
-        $vars['twitter'] = $this->loadTwitterScript(true);
-        $vars['entry'] = json_encode($entryVars);
-        $vars['publishBar'] = $this->scriptView('PublishBar');
+        $jsonVars = array('entry' => $entryVars, 'tags' => $tagFactory->listTags(true), 'status' => $status);
+        $vars['publishBar'] = $this->scriptView('Publish', true, $jsonVars);
         $vars['tagBar'] = $this->scriptView('TagBar');
         $vars['authorBar'] = $this->scriptView('AuthorBar');
         $vars['navbar'] = $this->scriptView('Navbar');
-        $vars['MediumEditorPack'] = $this->scriptView('MediumEditorPack', false);
-        $vars['EntryForm'] = $this->scriptView('EntryForm', false);
-        $vars['Sortable'] = $this->scriptView('Sortable', false);
 
-        $vars['insert'] = "<script src='$insertSource'></script>";
-        $vars['tags'] = json_encode($tagFactory->listTags(true));
+        $vars['home'] = $sourceHttp;
+        $this->loadTwitterScript(true);
+        $this->scriptView('MediumEditorPack', false);
+        $this->scriptView('EntryForm', false);
+        $this->scriptView('Sortable', false);
 
-        $vars['status'] = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
+        $insertSource = "{$sourceHttp}mod/stories/javascript/MediumEditor/insert.js";
+        \Layout::addJSHeader("<script src='$insertSource'></script>");
+
+        \Layout::addJSHeader('<script>editor.setContent(entry.content)</script>');
+
         $template = new \phpws2\Template($vars);
+        $this->mediumCSSOverride();
         $template->setModuleTemplate('stories', 'Entry/Form.html');
         return $template->get();
     }
 
     /**
      * Pulls an entry by the urlTitle or null if not found
-     * @param string $title
+     * @param string $urlTitle
      * @return \stories\Resource\EntryResource
      */
     public function getByUrlTitle($urlTitle)
@@ -343,10 +345,8 @@ class EntryFactory extends BaseFactory
 
     public function mediumCSSOverride()
     {
-        $homeHttp = PHPWS_SOURCE_HTTP;
-        return <<<EOF
-<link rel="stylesheet" type="text/css" href="{$homeHttp}mod/stories/css/MediumOverrides.css" />
-EOF;
+        $css = "mod/stories/css/MediumOverrides.css";
+        \Layout::addToStyleList($css);
     }
 
     /**
@@ -364,7 +364,8 @@ EOF;
         $contentReady = preg_replace("/<\/figure>/",
                         '</figure><div class="medium-insert-embeds-overlay"></div>',
                         $content) . $suffix;
-        return $contentReady;
+        $fixCaption = str_replace('<figcaption', '<figcaption contenteditable="true"', $contentReady);
+        return $fixCaption;
     }
 
     protected function loadAuthor(Resource $entry, AuthorResource $author)
@@ -804,31 +805,30 @@ EOF;
         if (empty($list)) {
             return null;
         }
-        //listStoryFormat  - 0 is summary, 1 full
         $this->addStoryCss();
+        //listStoryFormat  - 0 is summary, 1 full
         if ($tag) {
-            $title = "Stories for tag <strong>$tag</strong>";
+            $data['title'] = "Stories for tag <strong>$tag</strong>";
+            // tag searches show stories in summary mode
+            $format = 0;
         } else {
-            $title = null;
+            $data['title'] = null;
+            $format = Settings::get('stories', 'listStoryFormat');
         }
-        $data['title'] = $title;
+
+        // Twitter feeds don't show up in summary view
+        if ($format) {
+            \Layout::addJSHeader($this->loadTwitterScript());
+        }
+        
         $data['list'] = $this->addAccessories($list, $tag);
         \Layout::addJSHeader(StoryMenu::mediumCSSLink());
         \Layout::addJSHeader($this->mediumCSSOverride());
         $data['style'] = '';
         $data['isAdmin'] = \Current_User::allow('stories');
         $data['showAuthor'] = $showAuthor;
-        $data['tooltip'] = $this->scriptView('Tooltip', false);
-        $data['Caption'] = $this->scriptView('Caption', false);
-
-        $format = Settings::get('stories', 'listStoryFormat');
-
-        // Twitter feeds don't show up in summary view
-        if ($format) {
-            $data['twitter'] = $this->loadTwitterScript();
-        } else {
-            $data['twitter'] = '';
-        }
+        $this->scriptView('Caption', false);
+        $this->scriptView('Tooltip', false);
 
         if ($options['page'] > 1) {
             $data['prevpage'] = $options['page'] - 1;
@@ -879,9 +879,9 @@ EOF;
 <script src="{$homeHttp}mod/stories/javascript/MediumEditor/loadTwitter.js"></script>
 EOF;
         if ($include) {
-            return $includeFile . $script;
+            \Layout::addJSHeader($includeFile . $script);
         } else {
-            return $script;
+            \Layout::addJSHeader($script);
         }
     }
 
@@ -928,6 +928,16 @@ EOF;
     }
 
     /**
+     * Removes contenteditable="true" attribute from any elements.
+     * @param string $content
+     * @return string
+     */
+    private function removeEditable($content)
+    {
+        return str_replace(' contenteditable="true"', '', $content);
+    }
+
+    /**
      * Cleans up the content string that is imported from Medium Editor.
      * Medium editor content contains remnants of its controls.
      * @param string $content
@@ -948,6 +958,9 @@ EOF;
         $content = $this->cleanEmbed($content);
         $content = $this->cleanFacebook($content);
         $content = $this->cleanTwitter($content);
+        // Removed the contenteditable="true" left in the figcaption
+        // (or anywhere else)
+        $content = $this->removeEditable($content);
         // clear extra spaces
         $content = preg_replace('/>\s{2,}</', '> <', $content);
         $content = str_replace("\n", '', $content);
