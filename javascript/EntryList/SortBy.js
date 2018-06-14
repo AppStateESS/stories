@@ -20,14 +20,13 @@ const SortBy = ({sortBy, updateSort,}) => {
   }
   return (
     <li className="dropdown">
-      <a
-        className="dropdown-toggle pointer"
+      <button
+        className="btn btn-light dropdown-toggle pointer"
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="true">
         Sort by {sortStr}&nbsp;
-        <i className="fa fa-chevron-down"></i>
-      </a>
+      </button>
       <ul className="dropdown-menu sortby" aria-labelledby="dropdownMenu1">
         <li className="pointer" onClick={updateSort.bind(null, 'publishDate')}>Published</li>
         <li className="pointer" onClick={updateSort.bind(null, 'updateDate')}>Updated</li>
