@@ -21,7 +21,7 @@ const Navbar = (props) => {
 
   return (
     <div className="stories-navbar">
-      <nav className="navbar navbar-expand-lg fixed-top navbar-light">
+      <nav className="navbar navbar-expand-md fixed-top navbar-light">
         <a className="navbar-brand" href={url}>{title}</a>
         <button
           type="button"
