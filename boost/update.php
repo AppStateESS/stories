@@ -152,6 +152,16 @@ class StoriesUpdate {
         $changes[] = 'Updated npm libraries';
         $this->addContent('1.1.0', $changes);
     }
+
+    private function v1_1_1()
+    {
+        $changes[] = 'Several fixes that caused 1.1.0 to be incompatible';
+        $changes[] = 'All scripts processed in footer now as is standard.';
+        $changes[] = 'Navbar collapses at smaller width than before.';
+        $changes[] = 'Fixed jquery conflicts.';
+        $changes[] = 'New UI ease-of-use changes.';
+        $this->addContent('1.1.1', $changes);
+    }
     
     private function addContent($version, array $changes)
     {
