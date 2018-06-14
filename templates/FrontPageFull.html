@@ -1,4 +1,4 @@
-<?=!empty($title) ? "<h2>$title</h2>" : null?>
+<?=!empty($title) ? "<div class=\"alert alert-secondary\"><i class=\"fas fa-tags\"></i>$title</div>" : null?>
 <?=$style?>
 <?php foreach ($list as $entry):?>
 <div class="story-list-entry clearfix">
@@ -23,5 +23,3 @@
 <?php if ($nextpage):?>
 <a href="./stories/<?=$url?>/?page=<?=$nextpage?>" class="btn btn-primary">Read more stories</a>
 <?php endif; ?>
-<?=$twitter?>
-<?=$tooltip,$Caption?>
