@@ -38,7 +38,7 @@ export default class Publish extends Component {
       dataType: 'json',
       type: 'patch',
       success: function () {
-        this.setState({published: value, publishOverlay: false})
+        this.setState({published: value.toString(), publishOverlay: false})
       }.bind(this),
       error: function () {}.bind(this)
     })
@@ -74,9 +74,9 @@ export default class Publish extends Component {
       animation: "fadeOut"
     }
 
-    let publishOverlay
-    if (this.state.publishOverlay) {
-      publishOverlay = <PublishOverlay
+    const publishOverlay = (
+      <PublishOverlay
+        show={this.state.publishOverlay}
         title={this.state.title}
         savePublishDate={this.savePublishDate}
         isPublished={this.state.published}
@@ -84,7 +84,7 @@ export default class Publish extends Component {
         setPublishDate={this.setPublishDate}
         publish={this.publishStory.bind(this, 1)}
         unpublish={this.publishStory.bind(this, 0)}/>
-    }
+    )
 
     let publishLink
     if (this.state.published === '0') {
@@ -92,16 +92,18 @@ export default class Publish extends Component {
     } else if (this.state.publishDate < now) {
       publishLink = 'Published'
     } else {
-      const relative = moment(this.state.publishDate*1000).format('LLL')
+      const relative = moment(this.state.publishDate * 1000).format('LLL')
       publishLink = `Publish after ${relative}`
     }
-
+    
     return (
       <div>
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
           {publishOverlay}
         </VelocityTransitionGroup>
-        <a className="btn btn-outline-dark btn-sm" onClick={this.setOverlay.bind(this, true)}>{publishLink}</a>
+        <button role="button"
+          className={`btn ${(this.state.published) == '1' ? 'btn-success': 'btn-outline-dark'} btn-sm`}
+          onClick={this.setOverlay.bind(this, true)}>{publishLink}</button>
       </div>
     )
   }

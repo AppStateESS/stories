@@ -13,7 +13,7 @@ export default class TagBar extends Component {
       entryId: 0,
       tagOverlay: false,
       entryTags: [],
-      tags: [],
+      tags: []
     }
     this.tagChange = this.tagChange.bind(this)
     this.saveTags = this.saveTags.bind(this)
@@ -38,7 +38,7 @@ export default class TagBar extends Component {
       url: './stories/Tag/attach',
       data: {
         entryId: this.state.entryId,
-        tags: this.state.entryTags,
+        tags: this.state.entryTags
       },
       dataType: 'json',
       type: 'post',
@@ -46,7 +46,7 @@ export default class TagBar extends Component {
         this.setOverlay(false)
         this.unlockBody()
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -57,7 +57,7 @@ export default class TagBar extends Component {
 
   newOptionClick(newTag) {
     delete newTag.className
-    let {tags, entryTags,} = this.state
+    let {tags, entryTags} = this.state
     this.forceToLower(newTag)
     // prevent repeats
     for (var key in tags) {
@@ -80,9 +80,9 @@ export default class TagBar extends Component {
         }
         tags.push(newTag)
         entryTags.push(newTag)
-        this.setState({tags, entryTags,})
+        this.setState({tags, entryTags})
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -91,29 +91,30 @@ export default class TagBar extends Component {
   }
 
   render() {
-    let tagListing = <span>No tags</span>
+    let tagListing
     if (this.state.entryTags[0] != undefined) {
       tagListing = this.state.entryTags.map(function (value, key) {
-        return (
-          <span className="btn btn-outline-dark btn-sm mr-1" disabled key={key}>{value.label}</span>
-        )
+        return (<span className="mr-1 badge badge-info" key={key}>{value.label}</span>)
       }.bind(this))
     }
+    const tagOverlay = (
+      <TagOverlay
+        show={this.state.tagOverlay}
+        saveTags={this.saveTags}
+        title={this.state.title}
+        tagChange={this.tagChange}
+        entryTags={this.state.entryTags}
+        tags={this.state.tags}
+        newOptionClick={this.newOptionClick}/>
+    )
+
     return (
       <div>
-        {this.state.tagOverlay
-          ? <TagOverlay
-              saveTags={this.saveTags}
-              title={this.state.title}
-              tagChange={this.tagChange}
-              entryTags={this.state.entryTags}
-              tags={this.state.tags}
-              newOptionClick={this.newOptionClick}/>
-          : null}
-        <button
-          className="btn btn-primary btn-sm mr-1"
+        {tagOverlay}
+        <span
+          className="badge badge-primary mr-1 pointer"
           onClick={this.setOverlay.bind(this, true)}>
-          <i className="fa fa-tags"></i>&nbsp;Tags</button>
+          <i className="fas fa-tags"></i>&nbsp;Tags</span>
         {tagListing}
       </div>
     )
@@ -124,5 +125,5 @@ TagBar.propTypes = {
   entryTags: PropTypes.array,
   tags: PropTypes.array,
   title: PropTypes.string,
-  entryId: PropTypes.string
+  entryId: PropTypes.string,
 }
