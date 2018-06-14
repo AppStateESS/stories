@@ -12,6 +12,7 @@ const TagOverlay = ({
   entryTags,
   tagChange,
   newOptionClick,
+  show
 }) => {
   const closeButton = (
     <button className="btn btn-outline-dark btn-block" onClick={saveTags}>Close</button>
@@ -19,8 +20,9 @@ const TagOverlay = ({
   return (
     <Overlay
       close={saveTags}
+      show={show}
       width="500px"
-      height="250px"
+      height="350px"
       title={`Tag story: ${title}`}>
       <div className="mb-1">
         <Tags
@@ -41,6 +43,7 @@ TagOverlay.propTypes = {  tags: PropTypes.array,
   title: PropTypes.string,
   tagChange: PropTypes.func,
   entryTags: PropTypes.array,
+  show: PropTypes.bool,
   newOptionClick: PropTypes.func,}
 
 TagOverlay.defaultTypes = {}

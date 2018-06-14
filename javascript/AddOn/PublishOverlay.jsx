@@ -10,7 +10,8 @@ const PublishOverlay = ({
   savePublishDate,
   title,
   publish,
-  setPublishDate
+  setPublishDate,
+  show
 }) => {
   let formattedDate = moment().format('YYYY-MM-DDThh:mm')
   if (publishDate.length !== 0) {
@@ -34,9 +35,9 @@ const PublishOverlay = ({
 
   return (
     <Overlay
+      show={show}
       close={savePublishDate}
       width="500px"
-      height="300px"
       title={`Publish story: ${title}`}>
       <div className="text-center mb-1">
         Show story after:&nbsp;
@@ -53,7 +54,6 @@ const PublishOverlay = ({
       <div className="text-center mt-2">
         <span className="badge badge-info">Note: stories without content will not be published.</span>
       </div>
-      
     </Overlay>
   )
 }
@@ -66,7 +66,8 @@ PublishOverlay.propTypes = {
   publish: PropTypes.func,
   publishDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number,]),
   setPublishDate: PropTypes.func,
-  publishStory: PropTypes.func
+  publishStory: PropTypes.func,
+  show : PropTypes.bool,
 }
 
 export default PublishOverlay
