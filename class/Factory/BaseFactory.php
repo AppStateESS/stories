@@ -39,6 +39,14 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         return $resource;
     }
 
+    /**
+     * 
+     * @staticvar boolean $vendor_included
+     * @param string $view_name
+     * @param boolean $add_anchor
+     * @param array $vars
+     * @return string
+     */
     public function scriptView($view_name, $add_anchor = true, $vars = null)
     {
         static $vendor_included = false;
@@ -51,14 +59,12 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         }
         $script[] = $this->getScript($view_name);
         $react = implode("\n", $script);
+        \Layout::addJSHeader($react);
         if ($add_anchor) {
             $content = <<<EOF
 <div id="$view_name"></div>
-$react
 EOF;
             return $content;
-        } else {
-            return $react;
         }
     }
 
@@ -68,7 +74,11 @@ EOF;
             return null;
         }
         foreach ($vars as $key => $value) {
-            $varList[] = "const $key = '$value';";
+            if (is_array($value)) {
+                $varList[] = "const $key = " . json_encode($value) . ';';
+            } else {
+                $varList[] = "const $key = '$value';";
+            }
         }
         return '<script type="text/javascript">' . implode('', $varList) . '</script>';
     }
