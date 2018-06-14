@@ -17,23 +17,15 @@
   }
 
 </style>
-<script>const entry = <?=$entry?>; const tags = <?=$tags?>;const status='<?=$status?>';</script>
-<div class="well well-sm">
-  <div class="row mb-1">
-    <div class="col-sm-6 col-md-4">
-      <?=$publishBar?>
-    </div>
-    <div class="col-sm-6 col-md-4"><?=$authorBar?></div>
-    <div class="col-sm-6 col-md-4"><?=$tagBar?></div>
+<div class="card">
+  <div class="d-flex justify-content-between">
+    <div><?=$publishBar?></div>
+    <div style="min-width: 200px"><?=$authorBar?></div>
+    <div><?=$tagBar?></div>
   </div>
 </div>
 <?=$navbar?>
-<div class="entry">
+<div class="entry mt-2">
   <div class="entry-form"></div>
-  <?=$MediumEditorPack,$EntryForm,$insert,$cssOverride,$Sortable?>
-  <script>
-  editor.setContent(entry.content)
-  </script>
   <hr />
 </div>
-<?=$twitter?>
