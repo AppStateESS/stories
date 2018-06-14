@@ -53,6 +53,7 @@ function stories_install(&$content)
         $entryToFeature->addDataType('featureId', 'int');
         $entryToFeature->addDataType('x', 'smallint');
         $entryToFeature->addDataType('y', 'smallint');
+        $entryToFeature->addDataType('zoom', 'smallint');
         $entryToFeature->addDataType('sorting', 'smallint');
         $entryToFeature->create();
     } catch (\Exception $e) {
