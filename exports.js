@@ -6,7 +6,7 @@ exports.entry = {
   EntryList: exports.APP_DIR + '/EntryList/index.jsx',
   AuthorList: exports.APP_DIR + '/AuthorList/index.jsx',
   EntryForm: exports.APP_DIR + '/EntryForm/EntryForm.js',
-  PublishBar: exports.APP_DIR + '/PublishBar/index.jsx',
+  Publish: exports.APP_DIR + '/Publish/index.jsx',
   TagBar: exports.APP_DIR + '/TagBar/index.jsx',
   Settings: exports.APP_DIR + '/Settings/index.jsx',
   Feature: exports.APP_DIR + '/Feature/index.jsx',
