@@ -46,20 +46,15 @@ class Admin extends RoleController
     {
         \Menu::disableMenu();
         $settings = new \phpws2\Settings();
-        $settingObj = new \stdClass;
-        $settingObj->listStories = $settings->get('stories', 'listStories');
-        $settingObj->listStoryAmount = $settings->get('stories', 'listStoryAmount');
-        $settingObj->listStoryFormat = $settings->get('stories', 'listStoryFormat');
-        $settingObj->commentCode = $settings->get('stories', 'commentCode');
-        $settingObj->showComments = $settings->get('stories', 'showComments');
-        $settingObj->showAuthor = $settings->get('stories', 'showAuthor');
-        $settingObj->deleted = $this->factory->needPurging();
+        $settingsArray['listStories'] = $settings->get('stories', 'listStories');
+        $settingsArray['listStoryAmount'] = $settings->get('stories', 'listStoryAmount');
+        $settingsArray['listStoryFormat'] = $settings->get('stories', 'listStoryFormat');
+        $settingsArray['commentCode'] = $settings->get('stories', 'commentCode');
+        $settingsArray['showComments'] = $settings->get('stories', 'showComments');
+        $settingsArray['showAuthor'] = $settings->get('stories', 'showAuthor');
+        $settingsArray['deleted'] = $this->factory->needPurging();
         
-        $settingsJson = json_encode($settingObj);
-        $script = <<<EOF
-<script>const settings = $settingsJson;</script>
-EOF;
-        return $script . $this->factory->scriptView('Settings');
+        return $this->factory->scriptView('Settings', true, array('settings'=>$settingsArray));
     }
     
     public function postCommand(Request $request)
