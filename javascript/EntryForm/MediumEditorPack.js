@@ -1,5 +1,4 @@
 /* global $, MediumEditor */
-require("expose-loader?$!jquery")
 import 'blueimp-file-upload/js/vendor/jquery.ui.widget'
 import 'blueimp-file-upload/js/jquery.iframe-transport'
 import 'blueimp-file-upload/js/jquery.fileupload'
