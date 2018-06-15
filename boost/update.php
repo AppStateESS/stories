@@ -58,6 +58,8 @@ class StoriesUpdate
                 $this->update('1.1.0');
             case $this->compare('1.1.1'):
                 $this->update('1.1.1');
+            case $this->compare('1.1.2'):
+                $this->update('1.1.2');
         }
         return $this->content;
     }
@@ -92,6 +94,13 @@ class StoriesUpdate
         $changes[] = 'Fixed jquery conflicts.';
         $changes[] = 'New UI ease-of-use changes.';
         $this->addContent('1.1.1', $changes);
+    }
+    
+    private function v1_1_2()
+    {
+        $changes[] = 'Fixed publish problems';
+        $changes[] = 'Reconfigured webpack and made packages more compact.';
+        $this->addContent('1.1.2', $changes);
     }
 
     private function addContent($version, array $changes)
