@@ -15,7 +15,7 @@ export default class Publish extends Component {
       title: props.title,
       publishOverlay: false,
       published: props.published,
-      publishDate: props.publishDate,
+      publishDate: props.publishDate
     }
     this.publishStory = this.publishStory.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
@@ -33,14 +33,14 @@ export default class Publish extends Component {
       url: `./stories/Entry/${this.state.id}`,
       data: {
         param: 'published',
-        value: value,
+        value: value
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
-        this.setState({published: value, publishOverlay: false})
+        this.setState({published: value.toString(), publishOverlay: false,})
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -53,14 +53,14 @@ export default class Publish extends Component {
       url: `./stories/Entry/${this.state.id}`,
       data: {
         param: 'publishDate',
-        value: this.state.publishDate,
+        value: this.state.publishDate
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
         this.setOverlay(false)
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -74,9 +74,9 @@ export default class Publish extends Component {
       animation: "fadeOut"
     }
 
-    let publishOverlay
-    if (this.state.publishOverlay) {
-      publishOverlay = <PublishOverlay
+    const publishOverlay = (
+      <PublishOverlay
+        show={this.state.publishOverlay}
         title={this.state.title}
         savePublishDate={this.savePublishDate}
         isPublished={this.state.published}
@@ -84,7 +84,7 @@ export default class Publish extends Component {
         setPublishDate={this.setPublishDate}
         publish={this.publishStory.bind(this, 1)}
         unpublish={this.publishStory.bind(this, 0)}/>
-    }
+    )
 
     let publishLink
     if (this.state.published === '0') {
@@ -92,7 +92,7 @@ export default class Publish extends Component {
     } else if (this.state.publishDate < now) {
       publishLink = 'Published'
     } else {
-      const relative = moment(this.state.publishDate*1000).format('LLL')
+      const relative = moment(this.state.publishDate * 1000).format('LLL')
       publishLink = `Publish after ${relative}`
     }
 
@@ -101,7 +101,9 @@ export default class Publish extends Component {
         <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
           {publishOverlay}
         </VelocityTransitionGroup>
-        <a className="btn btn-outline-dark btn-sm" onClick={this.setOverlay.bind(this, true)}>{publishLink}</a>
+        <button role="button"
+          className={`btn ${(this.state.published) == '1' ? 'btn-success': 'btn-outline-dark'} btn-sm`}
+          onClick={this.setOverlay.bind(this, true)}>{publishLink}</button>
       </div>
     )
   }
@@ -111,5 +113,5 @@ Publish.propTypes = {
   id: PropTypes.string,
   publishDate: PropTypes.string,
   title: PropTypes.string,
-  published: PropTypes.string,
+  published: PropTypes.string
 }
