@@ -1,7 +1,6 @@
-var webpack = require('webpack')
-var setup = require('./exports.js')
-var Promise = require('es6-promise').polyfill()
-var BrowserSyncPlugin = require('browser-sync-webpack-plugin')
+const webpack = require('webpack')
+const setup = require('./exports.js')
+const Promise = require('es6-promise').polyfill()
 
 module.exports = (env, argv) => {
   const inProduction = argv.mode === 'production'
@@ -15,14 +14,19 @@ module.exports = (env, argv) => {
     },
     externals: {
       $: 'jQuery',
+      jquery: 'jQuery',
       EntryForm: 'EntryForm',
     },
     optimization: {
       splitChunks: {
+        minChunks: 3,
         cacheGroups: {
-          commons: {
-            name: "vendor",
-            chunks: "all",
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            minChunks: 3,
+            name: 'vendor',
+            enforce: true,
+            chunks: 'all',
           }
         }
       }
@@ -37,13 +41,7 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new webpack.ProvidePlugin({EntryForm: 'EntryForm'}),
-      new BrowserSyncPlugin({
-        host: 'localhost',
-        notify: false,
-        port: 3000,
-        files: ['./javascript/dev/*.js'],
-        proxy: 'localhost/canopy',
-      }),
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     ],
     module: {
       rules: [
@@ -70,8 +68,16 @@ module.exports = (env, argv) => {
       ]
     }
   }
-  
+
   if (inDevelopment) {
+    const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
+    settings.plugins.push(new BrowserSyncPlugin({
+      host: 'localhost',
+      notify: false,
+      port: 3000,
+      files: ['./javascript/dev/*.js'],
+      proxy: 'localhost/canopy',
+    }))
     settings.devtool = 'inline-source-map'
     settings.output = {
       path: setup.path.join(setup.APP_DIR, 'dev'),
@@ -80,10 +86,18 @@ module.exports = (env, argv) => {
   }
 
   if (inProduction) {
+    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+    settings.plugins.push(new BundleAnalyzerPlugin())
+
     const AssetsPlugin = require('assets-webpack-plugin')
     const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+    settings.plugins.push(
+      new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})
+    )
     settings.plugins.push(new UglifyJsPlugin({extractComments: true}))
-    settings.plugins.push(new AssetsPlugin({filename: 'assets.json', prettyPrint: true,}))
+    settings.plugins.push(
+      new AssetsPlugin({filename: 'assets.json', prettyPrint: true,})
+    )
     settings.output = {
       path: setup.path.join(setup.APP_DIR, 'build'),
       filename: '[name].[chunkhash:8].min.js',
