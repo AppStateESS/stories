@@ -86,8 +86,8 @@ module.exports = (env, argv) => {
   }
 
   if (inProduction) {
-    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-    settings.plugins.push(new BundleAnalyzerPlugin())
+    //const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+    //settings.plugins.push(new BundleAnalyzerPlugin())
 
     const AssetsPlugin = require('assets-webpack-plugin')
     const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
