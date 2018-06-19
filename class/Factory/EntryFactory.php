@@ -713,6 +713,10 @@ class EntryFactory extends BaseFactory
 
     public function view($id, $isAdmin = false)
     {
+        $settings = new \phpws2\Settings;
+        if ($settings->get('stories', 'hideDefault')) {
+            \Layout::hideDefault(true);
+        }
         try {
             $entry = $this->load($id);
             $data = $this->data($entry, !$isAdmin);
@@ -721,9 +725,7 @@ class EntryFactory extends BaseFactory
             }
             $this->includeCards($entry);
             if (stristr($entry->content, 'twitter')) {
-                $data['twitter'] = $this->loadTwitterScript(true);
-            } else {
-                $data['twitter'] = '';
+                $this->loadTwitterScript(true);
             }
             $address = \Canopy\Server::getSiteUrl();
             $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
@@ -739,8 +741,8 @@ class EntryFactory extends BaseFactory
                 $data['commentCode'] = null;
             }
 
-            $data['caption'] = $this->scriptView('Caption', false);
-            $data['tooltip'] = $this->scriptView('Tooltip', false);
+            $this->scriptView('Caption', false);
+            $this->scriptView('Tooltip', false);
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             $this->addStoryCss();
