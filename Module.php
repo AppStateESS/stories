@@ -42,6 +42,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
             'showComments' => 0,
             'showAuthor' => 0,
             'commentCode' => '',
+            'hideDefault' => 0,
             'listStories' => 1,
             'listStoryAmount' => 6,
             'listStoryFormat' => 0,

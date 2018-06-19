@@ -11,6 +11,7 @@ export default class Settings extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      hideDefault: 0,
       listStories: 0,
       listStoryAmount: 3,
       listStoryFormat: 0,
@@ -115,10 +116,7 @@ export default class Settings extends Component {
       ? 'are'
       : 'is'
 
-    const storyCount = `stor${
-    this.state.deleted > 1
-      ? 'ies'
-      : 'y'}`
+    const storyCount = `stor${this.state.deleted > 1 ? 'ies': 'y'}`
 
     if (this.state.deleted > 0) {
       const lock = (
@@ -191,8 +189,6 @@ export default class Settings extends Component {
               </div>
             </div>
           </div>
-        </div>
-        <div className="row">
           <div className="col-md-6">
             <div className="settings">
               <h3>Authors</h3>
@@ -200,6 +196,15 @@ export default class Settings extends Component {
                 handle={this.saveSetting.bind(this, 'showAuthor')}
                 checked={this.state.showAuthor}
                 label="Show author profile on story"/>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>View</h3>
+              <BigCheckbox
+                handle={this.saveSetting.bind(this, 'hideDefault')}
+                checked={this.state.hideDefault}
+                label="Hide side bar when viewing stories"/>
             </div>
           </div>
           <div className="col-md-6">

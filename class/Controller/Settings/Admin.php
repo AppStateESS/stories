@@ -37,34 +37,41 @@ use stories\Factory\StoryMenu;
 
 class Admin extends RoleController
 {
+
     public function loadFactory()
     {
         $this->factory = new Factory;
     }
-    
+
     public function listHtmlCommand(Request $request)
     {
+        \Layout::hideDefault(true);
         \Menu::disableMenu();
         $settings = new \phpws2\Settings();
+        $settingsArray['hideDefault'] = $settings->get('stories', 'hideDefault');
         $settingsArray['listStories'] = $settings->get('stories', 'listStories');
-        $settingsArray['listStoryAmount'] = $settings->get('stories', 'listStoryAmount');
-        $settingsArray['listStoryFormat'] = $settings->get('stories', 'listStoryFormat');
+        $settingsArray['listStoryAmount'] = $settings->get('stories',
+                'listStoryAmount');
+        $settingsArray['listStoryFormat'] = $settings->get('stories',
+                'listStoryFormat');
         $settingsArray['commentCode'] = $settings->get('stories', 'commentCode');
-        $settingsArray['showComments'] = $settings->get('stories', 'showComments');
+        $settingsArray['showComments'] = $settings->get('stories',
+                'showComments');
         $settingsArray['showAuthor'] = $settings->get('stories', 'showAuthor');
         $settingsArray['deleted'] = $this->factory->needPurging();
-        
-        return $this->factory->scriptView('Settings', true, array('settings'=>$settingsArray));
+
+        return $this->factory->scriptView('Settings', true,
+                        array('settings' => $settingsArray));
     }
-    
+
     public function postCommand(Request $request)
     {
         $this->factory->post($request);
     }
-    
+
     public function purgePostCommand(Request $request)
     {
         return $this->factory->purgeDeleted();
     }
-         
+
 }
