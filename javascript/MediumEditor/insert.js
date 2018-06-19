@@ -30,12 +30,10 @@ const editor = new MediumEditor('.entry-form', {
     ]
   },
 })
-
 // This code defaults the cursor to the first line. The cursor ends up above
 // the content and causes problems. It is better to have them click to get
 // started.
 //editor.selectElement(document.querySelector('.entry-form'))
-
 $('.entry-form').mediumInsert({
   editor: editor,
   addons: {
@@ -54,6 +52,7 @@ $('.entry-form').mediumInsert({
       }
     },
     embeds: {
+      label: '<i class="fab fa-youtube"></i>',
       actions: {
         remove: {
           label: '<span class="fa fa-times"></span>',
