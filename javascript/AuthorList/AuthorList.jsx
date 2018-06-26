@@ -8,6 +8,8 @@ import PictureOverlay from './PictureOverlay'
 import AuthorOverlay from './AuthorOverlay'
 import './style.css'
 
+/* global $ */
+
 export default class AuthorList extends Component {
   constructor(props) {
     super(props)
@@ -73,7 +75,7 @@ export default class AuthorList extends Component {
 
   currentAuthor() {
     if (this.state.currentKey === null) {
-      return null
+      return {}
     }
     return this.state.listing[this.state.currentKey]
   }
