@@ -45,9 +45,9 @@ const AuthorRow = (props) => {
           <i className="fas fa-edit"></i>
         </button>
       </td>
-      <td className="align-middle">{picture}</td>
+      <td className="align-middle d-flex justify-content-center">{picture}</td>
       <td className="align-middle">{name}</td>
-      <td className="align-middle">{email}</td>
+      <td className="align-middle"><a href={`mailto:${email}`}>{email}</a></td>
       <td className="align-middle">{lastLogged}</td>
     </tr>
   )
