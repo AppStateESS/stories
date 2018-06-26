@@ -34,6 +34,8 @@ export default class EntryList extends Component {
 
     this.offset = 0
     this.delay
+    this.lastSearch
+    
     this.publish = this.publish.bind(this)
     this.showMore = this.showMore.bind(this)
     this.saveTags = this.saveTags.bind(this)
@@ -126,6 +128,10 @@ export default class EntryList extends Component {
 
   load() {
     let tags = []
+    if (this.state.search !== this.lastSearch) {
+      this.offset = 0
+    }
+    this.lastSearch = this.state.search
     const sendData = {
       search: this.state.search,
       sortBy: this.state.sortBy,
