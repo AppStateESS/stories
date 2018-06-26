@@ -64,6 +64,8 @@ class StoriesUpdate
                 $this->update('1.1.3');
             case $this->compare('1.1.4'):
                 $this->update('1.1.4');
+            case $this->compare('1.1.5'):
+                $this->update('1.1.5');
         }
         return $this->content;
     }
@@ -120,6 +122,12 @@ class StoriesUpdate
         $changes[] = 'Fixed entry listing search not working with offsets.';
         
         $this->addContent('1.1.4', $changes);
+    }
+    private function v1_1_5()
+    {
+        $changes[] = 'Fixed tags javascript warning.';
+        
+        $this->addContent('1.1.5', $changes);
     }
 
     private function addContent($version, array $changes)

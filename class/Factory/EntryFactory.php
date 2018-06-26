@@ -301,7 +301,8 @@ class EntryFactory extends BaseFactory
         $status = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
         $entryVars = $entry->getStringVars();
         $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
-        $jsonVars = array('entry' => $entryVars, 'tags' => $tagFactory->listTags(true), 'status' => $status);
+        $tags = $tagFactory->listTags(true);
+        $jsonVars = array('entry' => $entryVars, 'tags' => empty($tags) ? array() : $tags, 'status' => $status);
         $vars['publishBar'] = $this->scriptView('Publish', true, $jsonVars);
         $vars['tagBar'] = $this->scriptView('TagBar');
         $vars['authorBar'] = $this->scriptView('AuthorBar');
