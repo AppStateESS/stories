@@ -60,8 +60,6 @@ class StoriesUpdate
                 $this->update('1.1.1');
             case $this->compare('1.1.2'):
                 $this->update('1.1.2');
-            case $this->compare('1.1.3'):
-                $this->update('1.1.3');
         }
         return $this->content;
     }
@@ -102,15 +100,11 @@ class StoriesUpdate
     {
         $changes[] = 'Fixed publish problems';
         $changes[] = 'Reconfigured webpack and made packages more compact.';
-        $this->addContent('1.1.2', $changes);
-    }
-
-    private function v1_1_3()
-    {
         $changes[] = 'Added option to hide side panel on view.';
         $changes[] = 'Interface fixes.';
         $changes[] = 'Fixed Font Awesome icon on editor insertion.';
-        $this->addContent('1.1.3', $changes);
+        $changes[] = 'Fixed entry listing search not working with offsets.';
+        $this->addContent('1.1.2', $changes);
     }
 
     private function addContent($version, array $changes)
