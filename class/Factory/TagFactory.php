@@ -226,7 +226,7 @@ EOF;
         $tags = implode('', $options);
         $content = <<<EOF
     <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag <i class="fas fa-caret-down"></i></a></span>
-    <div class="invisible">
+    <div class="d-none">
          <div id="entry-$entryId" class="tag-list">
                 <ul class="list-unstyled">
                 $tags
