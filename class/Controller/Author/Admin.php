@@ -30,11 +30,16 @@
 
 namespace stories\Controller\Author;
 
-use Canopy\Request;
+use Canopy\Request, stories\Factory\AuthorFactory;
+
 
 class Admin extends User
 {
-
+    /**
+     * @var stories\Factory\AuthorFactory
+     */
+    protected $factory;
+    
     protected function listHtmlCommand(Request $request)
     {
         \Menu::disableMenu();
@@ -61,6 +66,15 @@ class Admin extends User
     protected function putCommand(Request $request)
     {
         return $this->factory->put($this->id, $request);
+    }
+    
+    protected function unauthoredJsonCommand(Request $request)
+    {
+        return $this->factory->getUnauthored();
+    }
+    
+    protected function createPostCommand(Request $request) {
+        return $this->factory->createAuthor($request->pullPostInteger('userId'));
     }
 
 }
