@@ -129,6 +129,12 @@ class StoriesUpdate
         
         $this->addContent('1.1.5', $changes);
     }
+    private function v1_2_0()
+    {
+        $changes[] = 'Added ability to add authors.';
+        
+        $this->addContent('1.2.0', $changes);
+    }
 
     private function addContent($version, array $changes)
     {
