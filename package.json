@@ -25,7 +25,7 @@
     "browser-sync-webpack-plugin": "^2.2.2",
     "canopy-react-bigcheckbox": "^0.1.8",
     "canopy-react-buttongroup": "^0.1.4",
-    "canopy-react-overlay": "^0.1.6",
+    "canopy-react-overlay": "^0.1.7",
     "css-loader": "^1.0.0",
     "es6-promise": "^4.2.4",
     "expose-loader": "^0.7.5",
@@ -47,10 +47,9 @@
     "strip-loader": "^0.1.2",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    "velocity-react": "^1.4.1",
     "webpack": "^4.16.1",
     "webpack-bundle-analyzer": "^2.13.1",
-    "webpack-cli": "^3.0.8"
+    "webpack-cli": "^3.1.0"
   },
   "scripts": {
     "dev": "webpack --mode development --config webpack.config.js --watch",
