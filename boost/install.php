@@ -19,26 +19,30 @@
  * MA 02110-1301  USA
  */
 
+use phpws2\Database;
+
 function stories_install(&$content)
 {
-    $db = \phpws2\Database::getDB();
+    $db = Database::getDB();
     $db->begin();
 
     try {
         $entry = new \stories\Resource\EntryResource;
-        $entry->createTable($db);
+        $entryTable = $entry->createTable($db);
         $db->clearTables();
 
         $author = new \stories\Resource\AuthorResource;
-        $author->createTable($db);
+        $authorTable = $author->createTable($db);
+        $unique = new Database\Unique($authorTable->getDataType('userId'));
+        $unique->add();
         $db->clearTables();
 
         $feature = new \stories\Resource\FeatureResource;
-        $feature->createTable($db);
+        $featureTable = $feature->createTable($db);
         $db->clearTables();
 
         $tag = new \stories\Resource\TagResource;
-        $tag->createTable($db);
+        $tagTable = $tag->createTable($db);
         $db->clearTables();
 
         $tagToEntry = $db->buildTable('storiestagtoentry');
@@ -59,6 +63,21 @@ function stories_install(&$content)
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
         $db->rollback();
+        if (isset($entryTable)) {
+            $entryTable->drop(true);
+        }
+        if (isset($authorTable)) {
+            $authorTable->drop(true);
+        }
+        if (isset($featureTable)) {
+            $featureTable->drop(true);
+        }
+        if (isset($tagToEntry)) {
+            $tagToEntry->drop(true);
+        }
+        if (isset($entryToFeature)) {
+            $entryToFeature->drop(true);
+        }
         throw $e;
     }
     $db->commit();
