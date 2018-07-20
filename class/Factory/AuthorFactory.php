@@ -69,14 +69,23 @@ class AuthorFactory extends BaseFactory
         }
     }
 
+    public function createAuthor($userId)
+    {
+        $user = new \PHPWS_User($userId);
+        if (empty($user->getUsername())) {
+            throw new \Exception('User not found');
+        }
+        $author = $this->build();
+        $author->userId = $user->getId();
+        $author->name = $user->getDisplayName();
+        $author->email = $user->getEmail();
+        $author->pic = null;
+        return self::saveResource($author);
+    }
+
     public function createFromCurrentUser()
     {
-        $author = $this->build();
-        $author->userId = \Current_User::getId();
-        $author->name = \Current_User::getDisplayName();
-        $author->pic = null;
-        $author->email = \Current_User::getEmail();
-        return self::saveResource($author);
+        return $this->createAuthor(\Current_User::getId());
     }
 
     public function getByUserId($userId)
@@ -155,8 +164,9 @@ class AuthorFactory extends BaseFactory
             return $result;
         }
     }
-    
-    public function jsonSelectList() {
+
+    public function jsonSelectList()
+    {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesauthor');
         $tbl->addField('id', 'value');
@@ -164,13 +174,80 @@ class AuthorFactory extends BaseFactory
         $tbl->addOrderBy('name');
         return $db->select();
     }
-    
+
     public function put($authorId, Request $request)
     {
         $author = $this->load($authorId);
         $author->name = $request->pullPutString('name');
         $author->email = $request->pullPutString('email');
         return self::saveResource($author);
+    }
+
+    private function getPermissionUsers()
+    {
+        $db = Database::getDB();
+
+        $permissionTable = $db->addTable('stories_permissions', null, false);
+        $permissionTable->addFieldConditional('permission_level', 2);
+
+        $groupsTable = $db->addTable('users_groups');
+        $groupsTable->addField('id');
+        $groupsTable->addField('user_id');
+        $conditional = $db->createConditional($permissionTable->getField('group_id'),
+                $groupsTable->getField('id'));
+        $join1 = $db->joinResources($groupsTable, $permissionTable,
+                $conditional, 'left');
+        $result = $db->select();
+
+        $userList = array();
+        foreach ($result as $group) {
+            if ($group['user_id'] == '0') {
+                $db2 = Database::getDB();
+                $members = $db2->addTable('users_members', null, false);
+                $groups = $db2->addTable('users_groups');
+                $db2->joinResources($members, $groups,
+                        $db2->createConditional($members->getField('member_id'),
+                                $groups->getField('id')));
+                $members->addFieldConditional('group_id', $group['id']);
+                $groups->addField('user_id');
+                while ($userId = $db2->selectColumn()) {
+                    $userList[] = $userId;
+                }
+            } else {
+                $userList[] = $group['user_id'];
+            }
+        }
+        
+        $db3 = Database::getDB();
+        $users = $db3->addTable('users');
+        $users->addField('id');
+        $users->addFieldConditional('deity', 1);
+        while ($userId = $db3->selectColumn()) {
+            $userList[] = $userId;
+        }
+        return $userList;
+    }
+
+    /**
+     * Returns an array of users who are not currently authors
+     */
+    public function getUnauthored()
+    {
+        $userList = $this->getPermissionUsers();
+
+        $db = Database::getDB();
+        $authorTable = $db->addTable('storiesauthor', null, false);
+        $usersTable = $db->addTable('users');
+        $usersTable->addField('id');
+        $usersTable->addField('username');
+        $usersTable->addField('display_name');
+        $usersTable->addFieldConditional('id', $userList, 'in');
+        $conditional = $db->createConditional($usersTable->getField('id'),
+                $authorTable->getField('userId'));
+        $db->joinResources($usersTable, $authorTable, $conditional, 'left');
+        $authorTable->addFieldConditional('userId', null, 'is');
+        $result = $db->select();
+        return $result;
     }
 
 }
