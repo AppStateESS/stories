@@ -41,7 +41,7 @@ const AuthorRow = (props) => {
   return (
     <tr className="align-items-center">
       <td className="align-middle">
-        <button className="btn btn-primary btn-sm" onClick={props.update}>
+        <button className="btn btn-primary btn-sm" onClick={props.showForm}>
           <i className="fas fa-edit"></i>
         </button>
       </td>
@@ -55,7 +55,7 @@ const AuthorRow = (props) => {
 
 AuthorRow.propTypes = {
   author: PropTypes.object,
-  update: PropTypes.func,
+  showForm: PropTypes.func,
   thumbnail: PropTypes.func,
 }
 

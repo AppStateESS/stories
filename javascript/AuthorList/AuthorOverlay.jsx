@@ -1,8 +1,8 @@
 'use strict'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {VelocityTransitionGroup} from 'velocity-react'
 import Overlay from 'canopy-react-overlay'
+import AuthorForm from './AuthorForm'
 
 /* global $ */
 
@@ -12,6 +12,24 @@ export default class AuthorOverlay extends Component {
     this.updateName = this.updateName.bind(this)
     this.updateEmail = this.updateEmail.bind(this)
     this.saveAuthor = this.saveAuthor.bind(this)
+    this.createAuthor = this.createAuthor.bind(this)
+  }
+  
+  createAuthor(userId) {
+    if (parseInt(userId) === -1) {
+      return
+    }
+    $.ajax({
+      url: 'stories/Author/create',
+      data: {userId},
+      dataType: 'json',
+      type: 'post',
+      success: ()=>{
+        this.props.reload()
+        this.props.close()
+      },
+      error: ()=>{}
+    })
   }
 
   saveAuthor() {
@@ -20,14 +38,15 @@ export default class AuthorOverlay extends Component {
       url: './stories/Author/' + author.id,
       data: {
         name: author.name,
-        email: author.email
+        email: author.email,
       },
       dataType: 'json',
       type: 'put',
       success: function () {
+        this.props.updateAuthorList()
         this.props.close()
       }.bind(this),
-      error: function () {}.bind(this)
+      error: function () {}.bind(this),
     })
   }
 
@@ -44,44 +63,21 @@ export default class AuthorOverlay extends Component {
   }
 
   render() {
-    const fadeIn = {
-      animation: "fadeIn"
+    let title = 'Update author'
+    if (parseInt(this.props.author.id) === 0) {
+      title = 'Create author'
     }
-    const fadeOut = {
-      animation: "fadeOut"
-    }
-
-    const {author} = this.props
     return (
-      <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
-        <Overlay
-          show={this.props.show}
-          close={this.props.close}
-          width="400px"
-          height="350px"
-          title="Update author">
-          <div className="form-group">
-            <label>Name:</label>
-            <input
-              type="text"
-              name="name"
-              value={author.name}
-              onChange={this.updateName}
-              className="form-control"/>
-          </div>
-          <div className="form-group">
-            <label>Email:</label>
-            <input
-              type="text"
-              name="email"
-              value={author.email}
-              onChange={this.updateEmail}
-              className="form-control"/>
-          </div>
-          <button className="btn btn-primary btn-block mt-2" onClick={this.saveAuthor}>Save</button>
-          <button className="btn btn-outline-dark btn-block" onClick={this.props.close}>Close</button>
-        </Overlay>
-      </VelocityTransitionGroup>
+      <Overlay
+        show={this.props.show}
+        fade={true}
+        close={this.props.close}
+        width="400px"
+        height="350px"
+        title={title}>
+        <AuthorForm {...this.props} updateName={this.updateName} updateEmail={this.updateEmail} update={this.saveAuthor} create={this.createAuthor}/>
+        <button className="btn btn-outline-dark btn-block" onClick={this.props.close}>Close</button>
+      </Overlay>
     )
   }
 }
@@ -90,5 +86,8 @@ AuthorOverlay.propTypes = {
   show: PropTypes.bool,
   close: PropTypes.func,
   updateAuthor: PropTypes.func,
-  author: PropTypes.object
+  author: PropTypes.object,
+  updateAuthorList: PropTypes.func,
+  reload: PropTypes.func,
+  unAuthored: PropTypes.array,
 }
