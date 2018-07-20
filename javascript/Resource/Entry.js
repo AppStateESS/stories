@@ -10,7 +10,7 @@ export default class Entry {
     this.deleted = false
     this.expirationDate = 0
     this.publishDate = 0
-    this.published = false
+    this.published = '0'
     this.summary = ''
     this.thumbnail = ''
     this.title = '',
