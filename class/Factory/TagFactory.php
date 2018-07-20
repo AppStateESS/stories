@@ -214,7 +214,7 @@ class TagFactory extends BaseFactory
         
         if (count($tags) == 0) {
             return <<<EOF
-<span class="tagged" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag</a></span>
+<span>Filed under: <a href="./stories/Tag/$firstTag">$firstTag</a></span>
 EOF;
         }
         
@@ -223,13 +223,14 @@ EOF;
 <li><a class="tag-link pointer" href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
 EOF;
         }
-        $tags = implode('', $options);
+        
+        $tagOptions = implode('', $options);
         $content = <<<EOF
     <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag <i class="fas fa-caret-down"></i></a></span>
     <div class="d-none">
          <div id="entry-$entryId" class="tag-list">
                 <ul class="list-unstyled">
-                $tags
+                $tagOptions
                 </ul>
          </div>
     </div>
