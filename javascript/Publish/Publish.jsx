@@ -2,7 +2,6 @@
 import React, {Component} from 'react'
 import moment from 'moment'
 import PublishOverlay from '../AddOn/PublishOverlay'
-import {VelocityTransitionGroup} from 'velocity-react'
 import PropTypes from 'prop-types'
 
 /* global $ */
@@ -15,7 +14,7 @@ export default class Publish extends Component {
       title: props.title,
       publishOverlay: false,
       published: props.published,
-      publishDate: props.publishDate
+      publishDate: props.publishDate,
     }
     this.publishStory = this.publishStory.bind(this)
     this.setPublishDate = this.setPublishDate.bind(this)
@@ -33,14 +32,14 @@ export default class Publish extends Component {
       url: `./stories/Entry/${this.state.id}`,
       data: {
         param: 'published',
-        value: value
+        value: value,
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
-        this.setState({published: value.toString(), publishOverlay: false,})
+        this.setState({published: value.toString(), publishOverlay: false})
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
@@ -53,26 +52,19 @@ export default class Publish extends Component {
       url: `./stories/Entry/${this.state.id}`,
       data: {
         param: 'publishDate',
-        value: this.state.publishDate
+        value: this.state.publishDate,
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
         this.setOverlay(false)
       }.bind(this),
-      error: function () {}.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
   render() {
     const now = moment().format('X')
-    const fadeIn = {
-      animation: "fadeIn"
-    }
-
-    const fadeOut = {
-      animation: "fadeOut"
-    }
 
     const publishOverlay = (
       <PublishOverlay
@@ -98,11 +90,12 @@ export default class Publish extends Component {
 
     return (
       <div>
-        <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
-          {publishOverlay}
-        </VelocityTransitionGroup>
-        <button role="button"
-          className={`btn ${(this.state.published) == '1' ? 'btn-success': 'btn-outline-dark'} btn-sm`}
+        {publishOverlay}
+        <button
+          role="button"
+          className={`btn ${ (this.state.published) == '1'
+            ? 'btn-success'
+            : 'btn-outline-dark'} btn-sm`}
           onClick={this.setOverlay.bind(this, true)}>{publishLink}</button>
       </div>
     )
@@ -113,5 +106,5 @@ Publish.propTypes = {
   id: PropTypes.string,
   publishDate: PropTypes.string,
   title: PropTypes.string,
-  published: PropTypes.string
+  published: PropTypes.string,
 }

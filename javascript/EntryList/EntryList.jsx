@@ -5,11 +5,11 @@ import EntryRow from './EntryRow'
 import PublishOverlay from '../AddOn/PublishOverlay'
 import TagOverlay from '../AddOn/TagOverlay'
 import ThumbnailOverlay from './ThumbnailOverlay'
-import {VelocityTransitionGroup} from 'velocity-react'
 import moment from 'moment'
 import Navbar from '../AddOn/Navbar'
 import SearchBar from '../AddOn/SearchBar'
 import SortBy from './SortBy'
+import Entry from '../Resource/Entry'
 import './style.css'
 
 /* global $ */
@@ -29,13 +29,13 @@ export default class EntryList extends Component {
       thumbnailOverlay: false,
       sortByTagId: 0,
       moreRows: true,
-      tags: []
+      tags: [],
     }
 
     this.offset = 0
     this.delay
     this.lastSearch
-    
+
     this.publish = this.publish.bind(this)
     this.showMore = this.showMore.bind(this)
     this.saveTags = this.saveTags.bind(this)
@@ -61,7 +61,8 @@ export default class EntryList extends Component {
 
   currentEntry() {
     if (this.state.currentKey === null) {
-      return null
+      const entry = new Entry
+      return entry
     }
     return this.state.listing[this.state.currentKey]
   }
@@ -135,7 +136,7 @@ export default class EntryList extends Component {
     const sendData = {
       search: this.state.search,
       sortBy: this.state.sortBy,
-      sortByTagId: this.state.sortByTagId
+      sortByTagId: this.state.sortByTagId,
     }
     if (this.offset > 0) {
       sendData.offset = this.offset
@@ -145,7 +146,7 @@ export default class EntryList extends Component {
         tags = data.tags
       }
       if (data.listing == null) {
-        this.setState({listing: false, loading: false, tags: tags, moreRows: false,})
+        this.setState({listing: false, loading: false, tags: tags, moreRows: false})
       } else {
         let listing
         if (this.offset > 0) {
@@ -154,7 +155,7 @@ export default class EntryList extends Component {
           listing = data.listing
         }
         this.setState(
-          {listing: listing, loading: false, tags: tags, moreRows: data.more_rows,}
+          {listing: listing, loading: false, tags: tags, moreRows: data.more_rows}
         )
       }
     }.bind(this))
@@ -189,7 +190,7 @@ export default class EntryList extends Component {
         entry.tags.push(newTag)
         this.setState({tags})
         this.updateEntry(entry)
-      }.bind(this),
+      }.bind(this)
     })
   }
 
@@ -210,15 +211,15 @@ export default class EntryList extends Component {
         values: [
           {
             param: 'published',
-            value: this.currentEntry().published,
+            value: this.currentEntry().published
           }, {
             param: 'publishDate',
-            value: this.currentEntry().publishDate,
+            value: this.currentEntry().publishDate
           },
         ]
       },
       dataType: 'json',
-      type: 'patch',
+      type: 'patch'
     })
   }
 
@@ -239,7 +240,7 @@ export default class EntryList extends Component {
 
   closeOverlay() {
     this.setState(
-      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null,}
+      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null}
     )
     this.unlockBody()
   }
@@ -265,7 +266,7 @@ export default class EntryList extends Component {
           listing.splice(key, 1)
           this.setState({listing: listing})
         }.bind(this),
-        error: function () {}.bind(this),
+        error: function () {}.bind(this)
       })
     }
   }
@@ -275,13 +276,13 @@ export default class EntryList extends Component {
       url: `./stories/Entry/${this.currentEntry().id}`,
       data: {
         param: 'publishDate',
-        value: this.currentEntry().publishDate,
+        value: this.currentEntry().publishDate
       },
       dataType: 'json',
       type: 'patch',
       success: function () {
         this.closeOverlay()
-      }.bind(this),
+      }.bind(this)
     })
   }
 
@@ -290,13 +291,13 @@ export default class EntryList extends Component {
       url: './stories/Tag/attach',
       data: {
         entryId: this.currentEntry().id,
-        tags: this.currentEntry().tags,
+        tags: this.currentEntry().tags
       },
       dataType: 'json',
       type: 'post',
       success: function () {
         this.closeOverlay()
-      }.bind(this),
+      }.bind(this)
     })
   }
 
@@ -324,14 +325,6 @@ export default class EntryList extends Component {
       </div>
     }
 
-    const fadeIn = {
-      animation: "fadeIn"
-    }
-
-    const fadeOut = {
-      animation: "fadeOut"
-    }
-
     const showMore = (
       this.state.moreRows === true
         ? <div className="text-center">
@@ -342,49 +335,50 @@ export default class EntryList extends Component {
 
     let rightSide = [
       <SortBy updateSort={this.updateSort} sortBy={this.state.sortBy} key="0"/>,
-      <SearchBar key="1"
+      <SearchBar
+        key="1"
         search={this.state.search}
         clearSearch={this.clearSearch}
         handleChange={this.searchChange}/>,
     ]
 
-    const header = {title: 'Stories list', url: './stories/Listing'}
+    const header = {
+      title: 'Stories list',
+      url: './stories/Listing',
+    }
 
-    const leftSide = (<li className="nav-item"><a className="nav-link" href="./stories/Entry/create"><i className="fa fa-book"></i>&nbsp;Create a new story</a></li>)
+    const leftSide = (
+      <li className="nav-item">
+        <a className="nav-link" href="./stories/Entry/create">
+          <i className="fa fa-book"></i>&nbsp;Create a new story</a>
+      </li>
+    )
+    
+    const currentEntry = this.currentEntry()
 
     return (
       <div className="stories-listing">
-        <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
-          {
-            this.state.publishOverlay
-              ? <PublishOverlay
-                  savePublishDate={this.savePublishDate}
-                  title={this.currentEntry().title}
-                  isPublished={this.currentEntry().published}
-                  publishDate={this.currentEntry().publishDate}
-                  setPublishDate={this.setPublishDate}
-                  publish={this.publish}
-                  unpublish={this.unpublish}/>
-              : null
-          }
-        </VelocityTransitionGroup>
-        <VelocityTransitionGroup enter={fadeIn} leave={fadeOut}>
-          {
-            this.state.tagOverlay
-              ? <TagOverlay
-                  tagChange={this.tagChange}
-                  entryTags={this.currentEntry().tags}
-                  tags={this.state.tags}
-                  saveTags={this.saveTags}
-                  title={this.currentEntry().title}
-                  newOptionClick={this.newOptionClick}/>
-              : null
-          }
-        </VelocityTransitionGroup>
+        <PublishOverlay
+          show={this.state.publishOverlay}
+          savePublishDate={this.savePublishDate}
+          title={currentEntry.title}
+          isPublished={currentEntry.published}
+          publishDate={currentEntry.publishDate}
+          setPublishDate={this.setPublishDate}
+          publish={this.publish}
+          unpublish={this.unpublish}/>
+        <TagOverlay
+          show={this.state.tagOverlay}
+          tagChange={this.tagChange}
+          entryTags={currentEntry.tags}
+          tags={this.state.tags}
+          saveTags={this.saveTags}
+          title={currentEntry.title}
+          newOptionClick={this.newOptionClick}/>
         <ThumbnailOverlay
           thumbnailOverlay={this.state.thumbnailOverlay}
           updateEntry={this.updateEntry}
-          entry={this.currentEntry()}
+          entry={currentEntry}
           close={this.closeOverlay}/>
         <Navbar leftSide={leftSide} rightSide={rightSide} header={header}/>
         <div>{listing}</div>
