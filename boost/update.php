@@ -24,6 +24,8 @@
  * THE SOFTWARE.
  */
 
+use phpws2\Database;
+
 function stories_update(&$content, $currentVersion)
 {
     $update = new StoriesUpdate($content, $currentVersion);
@@ -66,6 +68,8 @@ class StoriesUpdate
                 $this->update('1.1.4');
             case $this->compare('1.1.5'):
                 $this->update('1.1.5');
+            case $this->compare('1.2.0'):
+                $this->update('1.2.0');
         }
         return $this->content;
     }
@@ -101,7 +105,7 @@ class StoriesUpdate
         $changes[] = 'New UI ease-of-use changes.';
         $this->addContent('1.1.1', $changes);
     }
-    
+
     private function v1_1_2()
     {
         $changes[] = 'Fixed publish problems';
@@ -120,19 +124,26 @@ class StoriesUpdate
     private function v1_1_4()
     {
         $changes[] = 'Fixed entry listing search not working with offsets.';
-        
+
         $this->addContent('1.1.4', $changes);
     }
+
     private function v1_1_5()
     {
         $changes[] = 'Fixed tags javascript warning.';
-        
+
         $this->addContent('1.1.5', $changes);
     }
+
     private function v1_2_0()
     {
+        $db = Database::getDB();
+        $author = $db->addTable('storiesauthor');
+        $unique = new Database\Unique($author->getDataType('userId'));
+        $unique->add();
+        $changes[] = 'Auther table user id made unique.';
         $changes[] = 'Added ability to add authors.';
-        
+
         $this->addContent('1.2.0', $changes);
     }
 
