@@ -30,20 +30,21 @@
 
 namespace stories\Controller\Author;
 
-use Canopy\Request, stories\Factory\AuthorFactory;
-
+use Canopy\Request,
+    stories\Factory\AuthorFactory;
 
 class Admin extends User
 {
+
     /**
      * @var stories\Factory\AuthorFactory
      */
     protected $factory;
-    
+
     protected function listHtmlCommand(Request $request)
     {
         \Menu::disableMenu();
-        return $this->factory->scriptView('AuthorList');
+        return $this->view->scriptView('AuthorList');
     }
 
     protected function listJsonCommand(Request $request)
@@ -52,29 +53,40 @@ class Admin extends User
         $data['moreRows'] = $this->factory->moreRows;
         return $data;
     }
-    
+
     protected function selectJsonCommand(Request $request)
     {
-        return array('listing'=>$this->factory->jsonSelectList());
+        return array('listing' => $this->factory->jsonSelectList());
     }
-    
+
     protected function photoPostCommand(Request $request)
     {
         return $this->factory->savePhoto($request);
     }
-    
+
     protected function putCommand(Request $request)
     {
         return $this->factory->put($this->id, $request);
     }
     
+    protected function restorePatchCommand(Request $request)
+    {
+        return $this->factory->restore($this->id);
+    }
+
     protected function unauthoredJsonCommand(Request $request)
     {
         return $this->factory->getUnauthored();
     }
-    
-    protected function createPostCommand(Request $request) {
+
+    protected function createPostCommand(Request $request)
+    {
         return $this->factory->createAuthor($request->pullPostInteger('userId'));
+    }
+
+    protected function deleteCommand(Request $request)
+    {
+        return $this->factory->delete($this->id);
     }
 
 }
