@@ -23,6 +23,7 @@ namespace stories\Controller\Listing;
 
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
+use stories\View\EntryView as View;
 use stories\Controller\RoleController;
 
 class User extends RoleController
@@ -37,11 +38,16 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
+    
+    protected function loadView()
+    {
+        $this->view = new View;
+    }
 
     protected function listHtmlCommand(Request $request)
     {
-        $entryFactory = new Factory;
-        return $entryFactory->showStories($request);
+        $entryView = new View;
+        return $entryView->listing($request);
     }
 
 }
