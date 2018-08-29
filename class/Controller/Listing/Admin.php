@@ -50,13 +50,13 @@ class Admin extends User
     {
         \Menu::disableMenu();
 
-        return $this->factory->scriptView('EntryList');
+        return $this->view->scriptView('EntryList');
     }
     
     protected function adminJsonCommand(Request $request)
     {
         $tagFactory = new TagFactory;
-        $result = $this->factory->adminListView($request);
+        $result = $this->view->adminListView($request);
         $result['tags'] = $tagFactory->listTags(true);
         return $result;
     }
