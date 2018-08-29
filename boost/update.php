@@ -70,6 +70,8 @@ class StoriesUpdate
                 $this->update('1.1.5');
             case $this->compare('1.2.0'):
                 $this->update('1.2.0');
+            case $this->compare('1.3.0'):
+                $this->update('1.3.0');
         }
         return $this->content;
     }
@@ -141,10 +143,29 @@ class StoriesUpdate
         $author = $db->addTable('storiesauthor');
         $unique = new Database\Unique($author->getDataType('userId'));
         $unique->add();
-        $changes[] = 'Auther table user id made unique.';
+        $changes[] = 'Author table user id made unique.';
         $changes[] = 'Added ability to add authors.';
 
         $this->addContent('1.2.0', $changes);
+    }
+
+    private function v1_3_0()
+    {
+        $db = Database::getDB();
+        $entryTable = $db->addTable('storiesentry');
+        $dt = new \phpws2\Database\Datatype\Smallint($entryTable,
+                'imageOrientation');
+        $dt->setDefault(0);
+        $dt->add();
+        
+        $authorTable = $db->addTable('storiesauthor');
+        $dt = new \phpws2\Database\Datatype\Smallint($authorTable, 'deleted');
+        $dt->setDefault(0);
+        $dt->add();
+        
+        $changes[] = 'Added summary image positioning.';
+
+        $this->addContent('1.3.0', $changes);
     }
 
     private function addContent($version, array $changes)
