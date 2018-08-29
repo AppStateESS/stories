@@ -3,7 +3,7 @@
 	<module>
 		<title>core</title>
 		<properName>Canopy Core</properName>
-		<version>3.0.1</version>
+		<version>3.0.5</version>
 		<url>http://github.com/AppStateESS/canopy/</url>
 	</module>
 </dependency>
