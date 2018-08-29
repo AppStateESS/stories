@@ -45,7 +45,7 @@ class Admin extends User
         \Menu::disableMenu();
         $entry = $this->factory->load($this->id);
         StoryMenu::viewStoryLink($entry);
-        return $this->factory->form($entry,
+        return $this->view->form($entry,
                         $request->pullGetBoolean('new', true));
     }
 
@@ -57,6 +57,11 @@ class Admin extends User
     protected function putCommand(Request $request)
     {
         return array('entryId' => $this->factory->put($this->id, $request));
+    }
+    
+    protected function orientationPutCommand(Request $request)
+    {
+        return array('entryId'=> $this->factory->changeOrientation($this->id, $request->pullPutInteger('orientation')));
     }
 
     protected function patchCommand(Request $request)
