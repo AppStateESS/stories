@@ -23,30 +23,39 @@ namespace stories\Controller\Entry;
 
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
+use stories\View\EntryView as View;
 use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
 class User extends RoleController
 {
-
     /**
      * @var stories\Factory\EntryFactory Factory
      */
     protected $factory;
+    /**
+     * @var stories\View\EntryView View
+     */
+    protected $view;
 
     protected function loadFactory()
     {
         $this->factory = new Factory;
     }
+    
+    protected function loadView()
+    {
+        $this->view = new View;
+    }
 
     protected function viewHtmlCommand(Request $request)
     {
-        $style = StoryMenu::mediumCSSLink();
-        return $style . $this->factory->view($this->id, $this->role->isAdmin());
+        \Layout::addJSHeader(StoryMenu::mediumCSSLink());
+        return $this->view->view($this->id, $this->role->isAdmin());
     }
     
     protected function listHtmlCommand(Request $request)
     {
-        return $this->factory->showStories($request);
+        return $this->view->listing($request);
     }
 }
