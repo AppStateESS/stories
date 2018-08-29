@@ -32,20 +32,18 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
 
     public function getSettingDefaults()
     {
-        // segmentSize : how many stories to show on the admin list page
         // listStoryFormat : 0 - summary, 1 - full
         // featureFormat : 0 - dynamic, 1 - horizontal, 2 - portrait
         $settings = array(
-            'image_max_width' => 1920,
-            'image_max_height' => 1080,
-            'segmentSize' => 10,
-            'showComments' => 0,
-            'showAuthor' => 0,
             'commentCode' => '',
             'hideDefault' => 0,
+            'image_max_width' => 1920,
+            'image_max_height' => 1080,
             'listStories' => 1,
             'listStoryAmount' => 6,
             'listStoryFormat' => 0,
+            'showComments' => 0,
+            'showAuthor' => 0,
             'twitterDefault' => '');
         return $settings;
     }
@@ -100,14 +98,14 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         if (!$request->isGet() || $request->getUrl() != '/') {
             return;
         }
-        $entryFactory = new \stories\Factory\EntryFactory;
         $featureFactory = new \stories\Factory\FeatureFactory();
         $settings = new \phpws2\Settings;
         \Layout::add($featureFactory->show($request), 'stories', 'features',
                 true);
 
         if ($settings->get('stories', 'listStories')) {
-            \Layout::add($entryFactory->showStories($request), 'stories',
+            $view = new \stories\View\EntryView;
+            \Layout::add($view->listing($request), 'stories',
                     'stories', true);
         }
     }
