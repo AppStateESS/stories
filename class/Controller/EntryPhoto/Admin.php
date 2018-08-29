@@ -39,6 +39,11 @@ class Admin extends RoleController
         $this->factory = new Factory;
     }
 
+    protected function loadView()
+    {
+        
+    }
+
     protected function postCommand(Request $request)
     {
         return $this->factory->save($request);
