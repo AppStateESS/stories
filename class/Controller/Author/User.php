@@ -32,6 +32,7 @@ namespace stories\Controller\Author;
 
 use Canopy\Request;
 use stories\Factory\AuthorFactory as Factory;
+use stories\View\AuthorView as View;
 use stories\Controller\RoleController;
 
 class User extends RoleController
@@ -45,6 +46,11 @@ class User extends RoleController
     public function loadFactory()
     {
         $this->factory = new Factory;
+    }
+    
+    public function loadView()
+    {
+        $this->view = new View;
     }
 
 }
