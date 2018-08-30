@@ -19,6 +19,7 @@ class AuthorResource extends BaseResource
     protected $email;
     protected $userId;
     protected $twitterUsername;
+    protected $deleted;
     
     protected $table = 'storiesauthor';
     
@@ -33,5 +34,6 @@ class AuthorResource extends BaseResource
         $this->pic->allowNull(true);
         $this->email = new \phpws2\Variable\Email(null, 'email');
         $this->userId = new \phpws2\Variable\IntegerVar(0, 'userId');
+        $this->deleted = new \phpws2\Variable\SmallInteger(0, 'deleted');
     }
 }
