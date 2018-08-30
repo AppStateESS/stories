@@ -3,7 +3,7 @@
   <div class="circle-frame"><img src="<?=$authorPic?>" /></div>
   <?php endif;?>
   <div class="posted">
-    <?php if ($showAuthor):?>
+    <?php if ($showAuthor && !empty($authorName)):?>
     <div class="author-name">By <a class="author-email" href="mailto:<?=$authorEmail?>"><?=$authorName?></a></div>
     <?php endif;?>
     <?php if ($published):?>
