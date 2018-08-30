@@ -26,6 +26,16 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
 
     abstract public function build();
 
+    public function getStoriesRootDirectory()
+    {
+        return PHPWS_SOURCE_DIR . 'mod/stories/';
+    }
+
+    public function getStoriesRootUrl()
+    {
+        return PHPWS_SOURCE_HTTP . 'mod/stories/';
+    }
+
     public function load($id)
     {
         if (empty($id)) {
@@ -39,50 +49,6 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         return $resource;
     }
 
-    /**
-     * 
-     * @staticvar boolean $vendor_included
-     * @param string $view_name
-     * @param boolean $add_anchor
-     * @param array $vars
-     * @return string
-     */
-    public function scriptView($view_name, $add_anchor = true, $vars = null)
-    {
-        static $vendor_included = false;
-        if (!$vendor_included) {
-            $script[] = $this->getScript('vendor');
-            $vendor_included = true;
-        }
-        if (!empty($vars)) {
-            $script[] = $this->addScriptVars($vars);
-        }
-        $script[] = $this->getScript($view_name);
-        $react = implode("\n", $script);
-        \Layout::addJSHeader($react);
-        if ($add_anchor) {
-            $content = <<<EOF
-<div id="$view_name"></div>
-EOF;
-            return $content;
-        }
-    }
-
-    private function addScriptVars($vars)
-    {
-        if (empty($vars)) {
-            return null;
-        }
-        foreach ($vars as $key => $value) {
-            if (is_array($value)) {
-                $varList[] = "const $key = " . json_encode($value) . ';';
-            } else {
-                $varList[] = "const $key = '$value';";
-            }
-        }
-        return '<script type="text/javascript">' . implode('', $varList) . '</script>';
-    }
-
     protected function walkingCase($name)
     {
         if (stripos($name, '_')) {
@@ -94,80 +60,6 @@ EOF;
         } else {
             return ucfirst($name);
         }
-    }
-
-    protected function getStoriesRootDirectory()
-    {
-        return PHPWS_SOURCE_DIR . 'mod/stories/';
-    }
-
-    protected function getStoriesRootUrl()
-    {
-        return PHPWS_SOURCE_HTTP . 'mod/stories/';
-    }
-
-    private function getScript($scriptName)
-    {
-        $jsDirectory = $this->getStoriesRootUrl() . 'javascript/';
-        if (STORIES_REACT_DEV) {
-            $path = "{$jsDirectory}dev/$scriptName.js";
-        } else {
-            $path = $jsDirectory . 'build/' . $this->getAssetPath($scriptName);
-        }
-        $script = "<script type='text/javascript' src='$path'></script>";
-        return $script;
-    }
-
-    private function getAssetPath($scriptName)
-    {
-        $rootDirectory = $this->getStoriesRootDirectory();
-        if (!is_file($rootDirectory . 'assets.json')) {
-            exit('Missing assets.json file. Run npm run prod in stories directory.');
-        }
-        $jsonRaw = file_get_contents($rootDirectory . 'assets.json');
-        $json = json_decode($jsonRaw, true);
-        if (!isset($json[$scriptName]['js'])) {
-            throw new \Exception('Script file not found among assets.');
-        }
-        return $json[$scriptName]['js'];
-    }
-
-    public function relativeTime($date)
-    {
-        $timepassed = time() - mktime(0, 0, 0, strftime('%m', $date),
-                        strftime('%d', $date), strftime('%Y', $date));
-
-        $rawday = ($timepassed / 86400);
-        $days = floor($rawday);
-
-        switch ($days) {
-            case 0:
-                return 'today at ' . strftime('%l:%M%P', $date);
-
-            case 1:
-                return 'yesterday at ' . strftime('%l:%M%P', $date);
-
-            case -1:
-                return 'tomorrow at ' . strftime('%l:%M%P', $date);
-
-            case ($days > 0 && $days < STORIES_DAY_THRESHOLD):
-                return "$days days ago";
-
-            case ($days < 0 && abs($days) < STORIES_DAY_THRESHOLD):
-                return 'in ' . abs($days) . ' days';
-
-            default:
-                if (strftime('%Y', $date) != strftime('%Y')) {
-                    return strftime('%b %e, %g', $date);
-                } else {
-                    return strftime('%b %e', $date);
-                }
-        }
-    }
-
-    public function addStoryCss()
-    {
-        \Layout::addToStyleList('mod/stories/css/story.css');
     }
 
 }
