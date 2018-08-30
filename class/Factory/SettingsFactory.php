@@ -51,11 +51,38 @@ class SettingsFactory extends BaseFactory
     {
         $param = $request->pullPostString('param');
         $value = $request->pullPostVar('value');
-
-        $settings = new \phpws2\Settings();
-        $settings->set('stories', $param, $value);
+        if ($param == 'listStoryAmount') {
+            if ($value > 20) {
+                $value = 20;
+            } elseif ($value == 0) {
+                $value = 1;
+            }
+        }
+        \phpws2\Settings::set('stories', $param, $value);
     }
-    
+
+    /**
+     * All setting pulled from phpws2\Settings for stories
+     * @see stories\Module::getSettingDefaults
+     * 
+     * @staticvar type $settingList
+     * @return type
+     */
+    public function listing()
+    {
+        static $settingList;
+        if (empty($settingList)) {
+            $module = new \stories\Module;
+            $defaults = $module->getSettingDefaults();
+            $keys = array_keys($defaults);
+            foreach ($keys as $settingName) {
+                $settingList[$settingName] = \phpws2\Settings::get('stories',
+                                $settingName);
+            }
+        }
+        return $settingList;
+    }
+
     public function needPurging()
     {
         $db = Database::getDB();
@@ -66,7 +93,7 @@ class SettingsFactory extends BaseFactory
         $deleted = $db->selectColumn();
         return $deleted;
     }
-    
+
     public function purgeDeleted()
     {
         $entryFactory = new EntryFactory;
@@ -74,7 +101,7 @@ class SettingsFactory extends BaseFactory
         $tbl = $db->addTable('storiesentry');
         $tbl->addField('id');
         $tbl->addFieldConditional('deleted', 1);
-        while($id = $db->selectColumn()) {
+        while ($id = $db->selectColumn()) {
             $entryFactory->purge($id);
         }
         return true;
