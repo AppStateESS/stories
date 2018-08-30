@@ -172,6 +172,7 @@ class AuthorFactory extends BaseFactory
         $tbl->addField('id', 'value');
         $tbl->addField('name', 'label');
         $tbl->addOrderBy('name');
+        $tbl->addFieldConditional('deleted', 0);
         return $db->select();
     }
 
@@ -248,6 +249,24 @@ class AuthorFactory extends BaseFactory
         $authorTable->addFieldConditional('userId', null, 'is');
         $result = $db->select();
         return $result;
+    }
+    
+    public function delete($authorId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesauthor');
+        $tbl->addValue('deleted', 1);
+        $tbl->addFieldConditional('id', $authorId);
+        return $db->update();
+    }
+
+    public function restore($authorId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesauthor');
+        $tbl->addValue('deleted', 0);
+        $tbl->addFieldConditional('id', $authorId);
+        return $db->update();
     }
 
 }
