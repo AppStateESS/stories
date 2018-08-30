@@ -38,6 +38,20 @@ const EntryRow = (props) => {
     urlTitle
   } = entry
 
+  const publishNowPrompt = () => {
+    return (
+      <div className="alert alert-warning">Currently unpublished but you may&nbsp;
+        <a
+          href="#"
+          className="alert-link"
+          onClick={(e) => {
+            e.preventDefault()
+            publishStory()
+          }}>publish it now.</a>
+      </div>
+    )
+  }
+
   const mailto = 'mailto:' + authorEmail
 
   let image = noImage()
@@ -48,10 +62,12 @@ const EntryRow = (props) => {
   let publishLabel
   let publishInfo
   if (published == 0) {
-    publishInfo = <span className="badge badge-info"><abbr title="Stories without content will remain unpublished">Unpublished</abbr></span>
+    publishInfo = <span className="badge badge-warning">
+      <abbr title="Stories without content will remain unpublished">Unpublished</abbr>
+    </span>
   } else {
     if (publishDate >= moment().format('X')) {
-      publishLabel = 'Publish on'
+      publishLabel = <strong>Publish on:</strong>
     } else {
       publishLabel = <strong>Published</strong>
     }
@@ -96,9 +112,13 @@ const EntryRow = (props) => {
       </div>
     </div>
   )
-
   return (
     <div className={rowClass}>
+      {
+        published === '0'
+          ? publishNowPrompt()
+          : null
+      }
       <div className="row">
         <div className="col-sm-2">
           <div className="entry-image" onClick={props.thumbnailForm}>
