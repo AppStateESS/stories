@@ -71,6 +71,12 @@ class EntryResource extends BaseResource
      * @var phpws2\Variable\BooleanVar
      */
     protected $forceFeature;
+    
+    /**
+     *
+     * @var phpws2\Variable\SmallInteger
+     */
+    protected $imageOrientation;
 
     /**
      * Time after the story may be published.
@@ -133,11 +139,11 @@ class EntryResource extends BaseResource
     {
         parent::__construct();
         $this->authorEmail = new \phpws2\Variable\Email(null, 'authorEmail');
-        $this->authorEmail->allowEmpty(true);
+        $this->authorEmail->allowNull(true);
         $this->authorEmail->setIsTableColumn(false);
         $this->authorId = new \phpws2\Variable\IntegerVar(0, 'authorId');
         $this->authorName = new \phpws2\Variable\StringVar(null, 'authorName');
-        $this->authorName->allowEmpty(true);
+        $this->authorName->allowNull(true);
         $this->authorName->setIsTableColumn(false);
         $this->authorPic = new \phpws2\Variable\FileVar(null, 'authorPic');
         $this->authorPic->allowNull(true);
@@ -146,6 +152,7 @@ class EntryResource extends BaseResource
         $this->content->addAllowedTags(STORIES_CONTENT_TAGS);
         $this->createDate = new \phpws2\Variable\DateTime(0, 'createDate');
         $this->createDate->stamp();
+        $this->imageOrientation = new \phpws2\Variable\SmallInteger(0, 'imageOrientation');
         $this->updateDate = new \phpws2\Variable\DateTime(0, 'updateDate');
         $this->updateDate->stamp();
         $this->deleted = new \phpws2\Variable\BooleanVar(false, 'deleted');
@@ -193,8 +200,8 @@ class EntryResource extends BaseResource
             unset($vars['summary']);
         }
         
-        $vars['createDateRelative'] = $factory->relativeTime($this->createDate->get());
-        $vars['publishDateRelative'] = $factory->relativeTime($this->publishDate->get());
+        $vars['createDateRelative'] = $this->relativeTime($this->createDate->get());
+        $vars['publishDateRelative'] = $this->relativeTime($this->publishDate->get());
         if (!is_array($hide) || !in_array('tags', $hide)) {
             $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
         }
