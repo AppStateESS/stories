@@ -153,18 +153,36 @@ class StoriesUpdate
     {
         $db = Database::getDB();
         $entryTable = $db->addTable('storiesentry');
-        $dt = new \phpws2\Database\Datatype\Smallint($entryTable,
-                'imageOrientation');
-        $dt->setDefault(0);
-        $dt->add();
-        
-        $authorTable = $db->addTable('storiesauthor');
-        $dt = new \phpws2\Database\Datatype\Smallint($authorTable, 'deleted');
-        $dt->setDefault(0);
-        $dt->add();
-        
-        $changes[] = 'Added summary image positioning.';
+        if (!$entryTable->columnExists('imageOrientation')) {
+            $dt = new \phpws2\Database\Datatype\Smallint($entryTable,
+                    'imageOrientation');
+            $dt->setDefault(0);
+            $dt->add();
+        }
 
+        $authorTable = $db->addTable('storiesauthor');
+        if (!$authorTable->columnExists('deleted')) {
+            $dt = new \phpws2\Database\Datatype\Smallint($authorTable, 'deleted');
+            $dt->setDefault(0);
+            $dt->add();
+        }
+
+        if ($db->getDatabaseType() == 'mysql') {
+            $dt2 = \phpws2\Database\Datatype::factory($authorTable, 'userId',
+                            'int');
+            $dt2->setUnsigned(false);
+            $authorTable->alter($authorTable->getDataType('userId'), $dt2);
+        }
+        $query = 'ALTER TABLE storiesauthor ADD CONSTRAINT userId FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE';
+        $db->exec($query);
+
+        $changes[] = 'Added summary image positioning.';
+        $changes[] = 'Added foreign key to author userId.';
+        $changes[] = 'Stories more graceful if author is missing.';
+        $changes[] = 'Authors may be disabled and deleted with user removal.';
+        $changes[] = 'Unpublished warning in story list view.';
+        $changes[] = 'Interface changes for more information';
+                
         $this->addContent('1.3.0', $changes);
     }
 
