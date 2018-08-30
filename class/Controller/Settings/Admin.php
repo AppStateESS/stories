@@ -32,35 +32,34 @@ namespace stories\Controller\Settings;
 
 use Canopy\Request;
 use stories\Factory\SettingsFactory as Factory;
+use stories\View\SettingsView as View;
 use stories\Controller\RoleController;
 use stories\Factory\StoryMenu;
 
 class Admin extends RoleController
 {
 
+    /**
+     * @var stories\Factory\SettingsFactory
+     */
+    protected $factory;
+    
     public function loadFactory()
     {
         $this->factory = new Factory;
+    }
+    
+    public function loadView(){
+        $this->view = new View;
     }
 
     public function listHtmlCommand(Request $request)
     {
         \Layout::hideDefault(true);
         \Menu::disableMenu();
-        $settings = new \phpws2\Settings();
-        $settingsArray['hideDefault'] = $settings->get('stories', 'hideDefault');
-        $settingsArray['listStories'] = $settings->get('stories', 'listStories');
-        $settingsArray['listStoryAmount'] = $settings->get('stories',
-                'listStoryAmount');
-        $settingsArray['listStoryFormat'] = $settings->get('stories',
-                'listStoryFormat');
-        $settingsArray['commentCode'] = $settings->get('stories', 'commentCode');
-        $settingsArray['showComments'] = $settings->get('stories',
-                'showComments');
-        $settingsArray['showAuthor'] = $settings->get('stories', 'showAuthor');
+        $settingsArray = $this->factory->listing();
         $settingsArray['deleted'] = $this->factory->needPurging();
-
-        return $this->factory->scriptView('Settings', true,
+        return $this->view->scriptView('Settings', true,
                         array('settings' => $settingsArray));
     }
 
