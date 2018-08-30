@@ -27,12 +27,19 @@ const PublishOverlay = ({
     <button className="btn btn-outline-dark btn-block" onClick={savePublishDate}>Close</button>
   )
 
+  const now = parseInt(moment().format('X'))
+  const relative = moment(publishDate * 1000).format('LLL')
+  
   if (isPublished == 0) {
-    publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publish}>Publish</button>
+    let publishLabel = 'Publish now!'
+    if (publishDate > now) {
+      publishLabel = `Publish after ${relative}`
+    }
+    publishButton = <button className="btn btn-primary btn-block mb-1" onClick={publish}>{publishLabel}</button>
   } else {
     publishButton = <button className="btn btn-info btn-block mb-1" onClick={unpublish}>Unpublish</button>
   }
-
+  
   return (
     <Overlay
       show={show}
