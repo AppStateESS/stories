@@ -34,7 +34,7 @@ namespace stories\Controller\Tag;
 
 use Canopy\Request;
 use stories\Factory\TagFactory as Factory;
-use stories\Factory\EntryFactory;
+use stories\View\EntryView;
 use stories\Controller\RoleController;
 
 class User extends RoleController
@@ -50,6 +50,11 @@ class User extends RoleController
         $this->factory = new Factory;
     }
     
+    protected function loadView()
+    {
+        
+    }
+    
     protected function entryJsonCommand(Request $request)
     {
         return $this->factory->getTagsByEntryId($request->pullGetInteger('entryId'), true);
@@ -57,12 +62,12 @@ class User extends RoleController
     
     protected function listHtmlCommand(Request $request)
     {   
-        $entryFactory = new EntryFactory;
+        $entryView = new EntryView;
         $vars = $request->pullGetVars();
         $vars['tag'] = $this->id;
         $request->setGetVars($vars);
        
-        $content = $entryFactory->showStories($request);
+        $content = $entryView->showStories($request);
         if (empty($content)) {
             return '<p>No stories found for this tag.</p>';
         }
