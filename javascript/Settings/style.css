@@ -1,5 +1,4 @@
 .settings {
-  font-size : 20px;
   border : 1px solid #e3e3e3;
   border-radius : 6px;
   padding : 1em;
@@ -12,4 +11,8 @@
 
 div.settings h3 {
   margin-top : 0;
+}
+
+.raw-input {
+  width : 50px;
 }
