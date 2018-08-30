@@ -11,15 +11,16 @@ export default class Settings extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      advanceListType: 1,
+      commentCode: '',
+      deleted: 0,
       hideDefault: 0,
       listStories: 0,
       listStoryAmount: 3,
       listStoryFormat: 0,
-      commentCode: '',
+      purgeVerified: false,
       showComments: 0,
-      showAuthor: 0,
-      deleted: 0,
-      purgeVerified: false
+      showAuthor: 0
     }
     this.setCommentCode = this.setCommentCode.bind(this)
     this.setShowComments = this.setShowComments.bind(this)
@@ -32,14 +33,27 @@ export default class Settings extends Component {
     this.setState(this.props.settings)
   }
 
-  toggleVerified() {
-    this.setState({
-      purgeVerified: !this.state.purgeVerified
+  purgeDeleted() {
+    $.ajax({
+      url: 'stories/Settings/purge',
+      dataType: 'json',
+      type: 'post',
+      success: function () {
+        window.location.reload(true)
+      }.bind(this),
+      error: function () {}.bind(this)
     })
   }
 
   saveSetting(param, value) {
     let setting
+    if (param === 'listStoryAmount') {
+      if (value > 20) {
+        value = 20
+      } else if (value == 0) {
+        value = 2
+      }
+    } 
     if (typeof(value) === 'boolean') {
       setting = value
         ? 1
@@ -69,15 +83,9 @@ export default class Settings extends Component {
     this.saveSetting('showComments', value)
   }
 
-  purgeDeleted() {
-    $.ajax({
-      url: 'stories/Settings/purge',
-      dataType: 'json',
-      type: 'post',
-      success: function(){
-        window.location.reload(true)
-      }.bind(this),
-      error: function(){}.bind(this)
+  toggleVerified() {
+    this.setState({
+      purgeVerified: !this.state.purgeVerified
     })
   }
 
@@ -101,6 +109,16 @@ export default class Settings extends Component {
       },
     ]
 
+    const advanceListType = [
+      {
+        value: '1',
+        label: 'Scroll'
+      }, {
+        value: '2',
+        label: 'Click',
+      },
+    ]
+
     const formatButton = [
       {
         value: 0,
@@ -116,7 +134,9 @@ export default class Settings extends Component {
       ? 'are'
       : 'is'
 
-    const storyCount = `stor${this.state.deleted > 1 ? 'ies': 'y'}`
+    const storyCount = `stor${this.state.deleted > 1
+      ? 'ies'
+      : 'y'}`
 
     if (this.state.deleted > 0) {
       const lock = (
@@ -148,26 +168,53 @@ export default class Settings extends Component {
           <div className="col-md-6">
             <div className="settings">
               <h3>Front page</h3>
+              <p>Always available on&nbsp;
+                <a href="./stories/Listing">Listing page</a>.</p>
               <div className="mb-1">
                 <BigCheckbox
                   handle={this.saveSetting.bind(this, 'listStories')}
                   checked={this.state.listStories}
                   label="List stories on front page"/>
               </div>
-              <div className="indent clearfix">
-                <div>Stories per page</div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>Authors</h3>
+              <BigCheckbox
+                handle={this.saveSetting.bind(this, 'showAuthor')}
+                checked={this.state.showAuthor}
+                label="Show author profile on story"/>
+            </div>
+          </div>
+          <div className="col-sm-6">
+            <div className="settings">
+              <h3>Listing</h3>
+              <h4 className="mt-2">Story display type</h4>
+              <ButtonGroup
+                buttons={formatButton}
+                activeColor="success"
+                handle={this.saveSetting.bind(this, 'listStoryFormat')}
+                match={this.state.listStoryFormat}/>
+              <h4 className="mt-3">Stories per page</h4>
+              <div className="d-flex align-items-center">
                 <ButtonGroup
                   buttons={amountButtons}
                   handle={this.saveSetting.bind(this, 'listStoryAmount')}
                   activeColor="success"
                   match={this.state.listStoryAmount}/>
-                <div className="mt-2">Story display type</div>
-                <ButtonGroup
-                  buttons={formatButton}
-                  activeColor="success"
-                  handle={this.saveSetting.bind(this, 'listStoryFormat')}
-                  match={this.state.listStoryFormat}/>
+                <input
+                  className="form-control raw-input ml-3"
+                  maxsize="2"
+                  size="2"
+                  name="listStoryAmount"
+                  onChange={e => {
+                    this.saveSetting('listStoryAmount', e.target.value)
+                  }}
+                  value={this.state.listStoryAmount}
+                  type="text"/>
               </div>
+              <p className="text-muted">Story limit: 1 - 20</p>
             </div>
           </div>
           <div className="col-md-6">
@@ -191,15 +238,6 @@ export default class Settings extends Component {
           </div>
           <div className="col-md-6">
             <div className="settings">
-              <h3>Authors</h3>
-              <BigCheckbox
-                handle={this.saveSetting.bind(this, 'showAuthor')}
-                checked={this.state.showAuthor}
-                label="Show author profile on story"/>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="settings">
               <h3>View</h3>
               <BigCheckbox
                 handle={this.saveSetting.bind(this, 'hideDefault')}
@@ -218,7 +256,6 @@ export default class Settings extends Component {
     )
   }
 }
-
 Settings.propTypes = {
   settings: PropTypes.object
 }
