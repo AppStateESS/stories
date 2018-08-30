@@ -92,6 +92,37 @@ export default class AuthorList extends Component {
       this.setState({unauthored: data})
     }.bind(this))
   }
+  
+  restoreAuthor(key) {
+    const {listing} = this.state
+    const author = listing[key]
+    $.ajax({
+      url: './stories/Author/' + author.id + '/restore', 
+      dataType: 'json',
+      type: 'patch',
+      success: ()=>{
+        author.deleted = '0'
+        this.setState({listing})
+      },
+      error: ()=>{}
+    })
+  }
+  
+  removeAuthor(key) {
+    const {listing} = this.state
+    const author = listing[key]
+    $.ajax({
+      url: './stories/Author/' + this.state.listing[key].id,
+      data: {},
+      dataType: 'json',
+      type: 'delete',
+      success: ()=>{
+        author.deleted = '1'
+        this.setState({listing})
+      },
+      error: ()=>{}
+    })
+  }
 
   render() {
     const rightSide = [
@@ -128,13 +159,15 @@ export default class AuthorList extends Component {
     } else if (this.state.listing == null || this.state.listing[0] == null) {
       listing = <div>No authors found.</div>
     } else {
-      let rows = this.state.listing.map(function (value, key) {
+      let rows = this.state.listing.map((value, key) => {
         return <AuthorRow
           key={key}
           author={value}
+          removeAuthor={this.removeAuthor.bind(this, key)}
+          restoreAuthor={this.restoreAuthor.bind(this, key)}
           showForm={this.authorForm.bind(this, key)}
           thumbnail={this.thumbnailForm.bind(this, key)}/>
-      }.bind(this))
+      })
       listing = (
         <table className="table table-striped">
           <tbody>
