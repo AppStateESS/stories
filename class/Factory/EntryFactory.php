@@ -28,7 +28,7 @@ require_once PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
 class EntryFactory extends BaseFactory
 {
 
-    public $more_rows = true;
+    public $more_rows = false;
 
     public function build()
     {
@@ -50,7 +50,7 @@ class EntryFactory extends BaseFactory
         $authorTbl->addField('email', 'authorEmail');
         $db->joinResources($entryTbl, $authorTbl,
                 $db->createConditional($entryTbl->getField('authorId'),
-                        $authorTbl->getField('id')));
+                        $authorTbl->getField('id')), 'left');
         $entryTbl->addFieldConditional(('id'), $id);
         $entry = $this->build();
         $db->selectInto($entry);
@@ -65,53 +65,22 @@ class EntryFactory extends BaseFactory
         return $entry;
     }
 
-    private function pullOptions(Request $request)
+    private function defaultListOptions()
     {
-        $listStoryAmount = \phpws2\Settings::get('stories', 'listStoryAmount');
-        // if offset not set, default 0
-        $page = (int) $request->pullGetInteger('page', true);
-        if ($page > 1) {
-            $offsetSize = $listStoryAmount * ($page - 1);
-        } else {
-            $offset = $request->pullGetInteger('offset', true);
-            if ($offset > 0) {
-                $offsetSize = $listStoryAmount * $offset;
-            } else {
-                $offsetSize = 0;
-            }
-            $page = 1;
-        }
-
-        $orderBy = $request->pullGetString('sortBy', true);
-        if (!in_array($orderBy, array('publishDate', 'title', 'updateDate'))) {
-            $orderBy = 'publishDate';
-        }
-
-        $search = $request->pullGetString('search', true);
-
-        $tag = str_replace('%20', ' ', $request->pullGetString('tag', true));
-
-        $options = array(
-            'search' => $search,
-            'orderBy' => $orderBy,
-            'limit' => $listStoryAmount,
-            'offset' => $offsetSize,
-            'page' => $page,
-            'tag' => $tag
-        );
-        return $options;
-    }
-
-    public function adminListView(Request $request)
-    {
-        $options = $this->pullOptions($request);
-        $options['limit'] = 10;
-        $options['hideExpired'] = false;
-        $options['showAuthor'] = true;
-        $options['publishedOnly'] = false;
-        $result['listing'] = $this->pullList($options);
-        $result['more_rows'] = $this->more_rows;
-        return $result;
+        return array('publishedOnly' => false,
+            'hideExpired' => true,
+            'sortBy' => 'publishDate',
+            'limit' => 10,
+            'includeContent' => true,
+            'publishedOnly' => true,
+            'showAuthor' => false,
+            'offset' => 0,
+            'page' => 1,
+            'tag' => null,
+            'vars' => null,
+            'titleRequired' => false,
+            'mustHaveThumbnail' => false,
+            'showTagLinks' => true);
     }
 
     /**
@@ -119,7 +88,7 @@ class EntryFactory extends BaseFactory
      * 
      * Options:
      * hideExpired: [true] Don't show expired entries
-     * orderBy: [publishDate] Which column to order by
+     * sortBy: [publishDate] Which column to order by
      * limit: [6] Total number of entries to pull
      * includeContent: [true] Include content in the pull 
      * publishedOnly: [true] Only show published entries
@@ -140,21 +109,7 @@ class EntryFactory extends BaseFactory
         // if true, don't add fields to the query
         $limitedVars = false;
         $now = time();
-        $settings = new \phpws2\Settings();
-        $defaultOptions = array('publishedOnly' => false,
-            'hideExpired' => true,
-            'orderBy' => 'publishDate',
-            'limit' => $settings->get('stories', 'listStoryAmount'),
-            'includeContent' => true,
-            'publishedOnly' => true,
-            'showAuthor' => false,
-            'offset' => 0,
-            'page' => 1,
-            'tag' => null,
-            'vars' => null,
-            'titleRequired' => false,
-            'mustHaveThumbnail' => false,
-            'showTagLinks' => true);
+        $defaultOptions = $this->defaultListOptions();
 
         if (is_array($options)) {
             $options = array_merge($defaultOptions, $options);
@@ -170,6 +125,7 @@ class EntryFactory extends BaseFactory
             }
         } else {
             $tbl->addField('id');
+            $tbl->addField('imageOrientation');
             $tbl->addField('createDate');
             $tbl->addField('expirationDate');
             $tbl->addField('publishDate');
@@ -235,35 +191,55 @@ class EntryFactory extends BaseFactory
                     $db->createConditional($tbl->getField('authorId'),
                             $tbl2->getField('id')), 'left');
         }
-        if (isset($options['orderBy'])) {
-            $tbl->addOrderBy($options['orderBy'],
-                    $options['orderBy'] === 'title' ? 'asc' : 'desc');
+        if (isset($options['sortBy'])) {
+            $tbl->addOrderBy($options['sortBy'],
+                    $options['sortBy'] === 'title' ? 'asc' : 'desc');
         }
 
         if ($options['offset'] < 1 && (int) $options['page'] > 1) {
             $options['offset'] = ((int) $options['page'] - 1) * $options['limit'];
         }
 
-        if (isset($options['limit']) && $options['limit'] > 0) {
-            if (isset($options['offset'])) {
-                $db->setLimit($options['limit'], $options['offset']);
-            } else {
-                $db->setLimit($options['limit']);
-            }
+        /**
+         * To get an accurate test to see if there are more entries for 
+         * a Next page button, we ask for one more row than the current limit
+         */
+        $limit = ((int) $options['limit']) + 1;
+
+        if (isset($options['offset'])) {
+            $db->setLimit($limit, $options['offset']);
+        } else {
+            $db->setLimit($limit);
         }
+
         // limitedVars was not well thought out. used mostly for features
         // story choice which only uses title and id
         if ($limitedVars) {
             return $db->select();
         }
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
+
         if (empty($objectList)) {
             return null;
         }
+
+        $totalRows = count($objectList);
+        if ($totalRows > $options['limit']) {
+            // if there are more rows than the options[limit], we set more_rows
+            // to true and pop the extra (remember we asked for one extra row)
+            // off the end.
+            //
+            $this->more_rows = true;
+            array_pop($objectList);
+        } else {
+            $this->more_rows = false;
+        }
+
         $tagFactory = new TagFactory;
         $address = \Canopy\Server::getSiteUrl();
         foreach ($objectList as $entry) {
             $row = $entry->getStringVars();
+
             $row['currentUrl'] = $address . 'stories/Entry/' . $row['urlTitle'];
             if ($options['showTagLinks']) {
                 $row['tagLinks'] = $tagFactory->getTagLinks($row['tags'],
@@ -271,9 +247,7 @@ class EntryFactory extends BaseFactory
             }
             $listing[] = $row;
         }
-        if (count($listing) < $options['limit']) {
-            $this->more_rows = false;
-        }
+
         return $listing;
     }
 
@@ -293,38 +267,6 @@ class EntryFactory extends BaseFactory
         return self::saveResource($entry);
     }
 
-    public function form(Resource $entry, $new = false)
-    {
-        $tagFactory = new TagFactory();
-
-        $sourceHttp = PHPWS_SOURCE_HTTP;
-        $status = $new ? 'Draft' : 'Last updated ' . $this->relativeTime($entry->updateDate);
-        $entryVars = $entry->getStringVars();
-        $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
-        $tags = $tagFactory->listTags(true);
-        $jsonVars = array('entry' => $entryVars, 'tags' => empty($tags) ? array() : $tags, 'status' => $status);
-        $vars['publishBar'] = $this->scriptView('Publish', true, $jsonVars);
-        $vars['tagBar'] = $this->scriptView('TagBar');
-        $vars['authorBar'] = $this->scriptView('AuthorBar');
-        $vars['navbar'] = $this->scriptView('Navbar');
-
-        $vars['home'] = $sourceHttp;
-        $this->loadTwitterScript(true);
-        $this->scriptView('MediumEditorPack', false);
-        $this->scriptView('EntryForm', false);
-        $this->scriptView('Sortable', false);
-
-        $insertSource = "{$sourceHttp}mod/stories/javascript/MediumEditor/insert.js";
-        \Layout::addJSHeader("<script src='$insertSource'></script>");
-
-        \Layout::addJSHeader('<script>editor.setContent(entry.content)</script>');
-
-        $template = new \phpws2\Template($vars);
-        $this->mediumCSSOverride();
-        $template->setModuleTemplate('stories', 'Entry/Form.html');
-        return $template->get();
-    }
-
     /**
      * Pulls an entry by the urlTitle or null if not found
      * @param string $urlTitle
@@ -342,31 +284,6 @@ class EntryFactory extends BaseFactory
         $entry = $this->build();
         $entry->setVars($data);
         return $entry;
-    }
-
-    public function mediumCSSOverride()
-    {
-        $css = "mod/stories/css/MediumOverrides.css";
-        \Layout::addToStyleList($css);
-    }
-
-    /**
-     * Adds the medium-insert overlay that allows videos to be edited.
-     * @param type $content
-     * @return type
-     */
-    public function prepareFormContent($content)
-    {
-        $content = str_replace("\n", '', $content);
-        $suffix = '<p class="medium-insert-active"><br /></p>';
-        if (preg_match('@<p class="medium-insert-active"><br /></p>$@', $content)) {
-            $suffix = null;
-        }
-        $contentReady = preg_replace("/<\/figure>/",
-                        '</figure><div class="medium-insert-embeds-overlay"></div>',
-                        $content) . $suffix;
-        $fixCaption = str_replace('<figcaption', '<figcaption contenteditable="true"', $contentReady);
-        return $fixCaption;
     }
 
     protected function loadAuthor(Resource $entry, AuthorResource $author)
@@ -395,6 +312,14 @@ class EntryFactory extends BaseFactory
         if (empty($entry->title)) {
             $entry->published = false;
         }
+        return $this->save($entry);
+    }
+
+    public function changeOrientation(int $entryId, int $orientation)
+    {
+        $entry = $this->load($entryId);
+        $entry->stamp();
+        $entry->imageOrientation = $orientation;
         return $this->save($entry);
     }
 
@@ -508,6 +433,7 @@ class EntryFactory extends BaseFactory
     {
         $photoFactory = new EntryPhotoFactory();
         $content = $entry->content;
+        $content = str_replace('<br>', "\r\n", $content);
         libxml_use_internal_errors(true);
         $doc = new \DomDocument;
         $doc->loadHtml(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
@@ -580,11 +506,13 @@ class EntryFactory extends BaseFactory
         $summaryFound = false;
         $summaryCount = $pStart;
         $summaryLimit = $p->length - $pStart;
+
         while (!$summaryFound && $summaryCount <= $summaryLimit) {
             if ($p->length > $summaryCount) {
                 $pNode = $p->item($summaryCount);
                 $pContent = trim($pNode->textContent);
                 if (!empty($pContent)) {
+                    $pContent = nl2br($pContent);
                     $entry->summary = "<p>$pContent</p>";
                     $summaryFound = true;
                 }
@@ -683,76 +611,6 @@ class EntryFactory extends BaseFactory
         $db->delete();
     }
 
-    private function includeFacebookCards(Resource $entry)
-    {
-        $vars = $entry->getStringVars(true);
-        $templateFile = PHPWS_SOURCE_DIR . 'mod/stories/api/Facebook/meta.html';
-        $template = new \phpws2\Template($vars, $templateFile);
-        return $template->get();
-    }
-
-    private function includeTwitterCards(Resource $entry)
-    {
-        $vars = $entry->getStringVars(true);
-        $settings = new \phpws2\Settings;
-
-        // need to pull author twitter name
-        $twitterUsername = $settings->get('stories', 'twitterDefault');
-        if (!empty($twitterUsername)) {
-            $vars['twitterUsername'] = $twitterUsername;
-        }
-        $templateFile = PHPWS_SOURCE_DIR . 'mod/stories/api/Twitter/meta.html';
-        $template = new \phpws2\Template($vars, $templateFile);
-        return $template->get();
-    }
-
-    private function includeCards(Resource $entry)
-    {
-        \Layout::addJSHeader($this->includeFacebookCards($entry));
-        \Layout::addJSHeader($this->includeTwitterCards($entry));
-    }
-
-    public function view($id, $isAdmin = false)
-    {
-        $settings = new \phpws2\Settings;
-        if ($settings->get('stories', 'hideDefault')) {
-            \Layout::hideDefault(true);
-        }
-        try {
-            $entry = $this->load($id);
-            $data = $this->data($entry, !$isAdmin);
-            if (empty($data)) {
-                throw new ResourceNotFound;
-            }
-            $this->includeCards($entry);
-            if (stristr($entry->content, 'twitter')) {
-                $this->loadTwitterScript(true);
-            }
-            $address = \Canopy\Server::getSiteUrl();
-            $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
-            $data['publishInfo'] = $this->publishBlock($data);
-            $data['shareButtons'] = $this->shareButtons($data);
-            \Layout::addJSHeader($this->mediumCSSOverride());
-            $data['cssOverride'] = '';
-            $data['isAdmin'] = $isAdmin;
-            if (\phpws2\Settings::get('stories', 'showComments')) {
-                $data['commentCode'] = \phpws2\Settings::get('stories',
-                                'commentCode');
-            } else {
-                $data['commentCode'] = null;
-            }
-
-            $this->scriptView('Caption', false);
-            $this->scriptView('Tooltip', false);
-            $template = new \phpws2\Template($data);
-            $template->setModuleTemplate('stories', 'Entry/View.html');
-            $this->addStoryCss();
-            return $template->get();
-        } catch (ResourceNotFound $e) {
-            return $this->notFound();
-        }
-    }
-
     private function tooltipScript()
     {
         return <<<EOF
@@ -760,132 +618,11 @@ class EntryFactory extends BaseFactory
 EOF;
     }
 
-    public function publishBlock($data, $tag = null)
-    {
-        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
-        $tagFactory = new TagFactory;
-        if (!empty($data['tags'])) {
-            $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
-                    $data['id'], $tag);
-        } else {
-            $data['tagList'] = null;
-        }
-        $data['showAuthor'] = $showAuthor;
-        $data['publishDateRelative'] = ucfirst($data['publishDateRelative']);
-
-        $template = new \phpws2\Template($data);
-        $template->setModuleTemplate('stories', 'Publish.html');
-        return $template->get();
-    }
-
-    public function shareButtons($data)
-    {
-        $template = new \phpws2\Template($data);
-        $template->setModuleTemplate('stories', 'ShareButtons.html');
-        return $template->get();
-    }
-
     public function notFound()
     {
         $template = new \phpws2\Template();
         $template->setModuleTemplate('stories', 'Entry/NotFound.html');
         return $template->get();
-    }
-
-    /**
-     * Called from Module.php not a controller
-     * 
-     * @param Request $request
-     * @return string
-     */
-    public function showStories(Request $request)
-    {
-        $options = $this->pullOptions($request);
-        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
-        $options['showAuthor'] = $showAuthor;
-        $tag = empty($options['tag']) ? null : $options['tag'];
-        $list = $this->pullList($options);
-        if (empty($list)) {
-            return null;
-        }
-        $this->addStoryCss();
-        //listStoryFormat  - 0 is summary, 1 full
-        if ($tag) {
-            $data['title'] = "Stories for tag <strong>$tag</strong>";
-            // tag searches show stories in summary mode
-            $format = 0;
-        } else {
-            $data['title'] = null;
-            $format = Settings::get('stories', 'listStoryFormat');
-        }
-
-        // Twitter feeds don't show up in summary view
-        if ($format) {
-            \Layout::addJSHeader($this->loadTwitterScript());
-        }
-        
-        $data['list'] = $this->addAccessories($list, $tag);
-        \Layout::addJSHeader(StoryMenu::mediumCSSLink());
-        \Layout::addJSHeader($this->mediumCSSOverride());
-        $data['style'] = '';
-        $data['isAdmin'] = \Current_User::allow('stories');
-        $data['showAuthor'] = $showAuthor;
-        $this->scriptView('Caption', false);
-        $this->scriptView('Tooltip', false);
-
-        if ($options['page'] > 1) {
-            $data['prevpage'] = $options['page'] - 1;
-        } else {
-            $data['prevpage'] = null;
-        }
-        if ($this->more_rows) {
-            $data['nextpage'] = $options['page'] + 1;
-        } else {
-            $data['nextpage'] = null;
-        }
-
-        if (empty($options['tag'])) {
-            $data['url'] = 'Listing';
-        } else {
-            $data['url'] = 'Tag/' . $options['tag'];
-        }
-        $template = new \phpws2\Template($data);
-        $templateFile = $format ? 'FrontPageFull.html' : 'FrontPageSummary.html';
-        $template->setModuleTemplate('stories', $templateFile);
-
-        return $template->get();
-    }
-
-    private function addAccessories($list, $tag = null)
-    {
-        foreach ($list as $key => $value) {
-            $newlist[$key] = $value;
-            $newlist[$key]['publishInfo'] = $this->publishBlock($value, $tag);
-            $newlist[$key]['shareButtons'] = $this->shareButtons($value);
-        }
-        return $newlist;
-    }
-
-    /**
-     * Medium editor insert doesn't initialize the Twitter embed. Has to be done
-     * manually. The editor includes a script call to widgets BUT that is stripped
-     * by our parser. It also showed it at different times. Just in case, 
-     * there is the include parameter if we get repeat includes.
-     * @param boolean $include - If true, include a link to twitter's widget file.
-     * @return string
-     */
-    private function loadTwitterScript($include = true)
-    {
-        $includeFile = '<script src="//platform.twitter.com/widgets.js"></script>';
-        $homeHttp = PHPWS_SOURCE_HTTP;
-        $script = <<<EOF
-<script src="{$homeHttp}mod/stories/javascript/MediumEditor/loadTwitter.js"></script>
-EOF;
-        if ($include) {
-            \Layout::addJSHeader($includeFile . $script);
-        } else {
-            \Layout::addJSHeader($script);
-        }
     }
 
     /**
