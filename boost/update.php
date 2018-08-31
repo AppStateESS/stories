@@ -72,6 +72,8 @@ class StoriesUpdate
                 $this->update('1.2.0');
             case $this->compare('1.3.0'):
                 $this->update('1.3.0');
+            case $this->compare('1.3.1'):
+                $this->update('1.3.1');
         }
         return $this->content;
     }
@@ -184,6 +186,12 @@ class StoriesUpdate
         $changes[] = 'Interface changes for more information';
                 
         $this->addContent('1.3.0', $changes);
+    }
+    
+    private function v1_3_1() {
+        $changes[] = 'Fixed bad function call for story listing.';
+        $changes[] = 'Stripping default caption text.';
+        $this->addContent('1.3.1', $changes);
     }
 
     private function addContent($version, array $changes)
