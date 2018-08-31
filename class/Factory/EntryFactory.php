@@ -687,6 +687,7 @@ EOF;
         // Removes medium buttons
         $content = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
                         '', $content));
+        $content = str_replace('Type caption for image (optional)', '', $content);
         // Removes extra medium paragraphs padded to end of content
         $content = $this->removeExtraParagraphs($content);
         // Removes extra headers sometimes padded on end
