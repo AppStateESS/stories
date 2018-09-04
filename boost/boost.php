@@ -19,7 +19,7 @@
  * MA 02110-1301  USA
  */
 $proper_name = 'Stories';
-$version = '1.3.1';
+$version = '1.3.2';
 $register = false;
 $unregister = false;
 $import_sql = false;
