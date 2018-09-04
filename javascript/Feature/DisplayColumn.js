@@ -4,18 +4,28 @@ import PropTypes from 'prop-types'
 import Select from 'react-select'
 import MoveButton from './MoveButton'
 import 'react-select/dist/react-select.min.css'
-import {maxZoom, minZoom} from './config'
+import {maxZoom, minZoom,} from './config'
+
+/* global $ */
 
 class DisplayColumn extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       showButtons: false,
-      dragging: false
+      dragging: false,
     }
     this.moveButtons = this.moveButtons.bind(this)
     this.zoomOut = this.zoomOut.bind(this)
     this.zoomIn = this.zoomIn.bind(this)
+  }
+
+  componentDidMount() {
+    $('#feature-note').popover({
+      html: true,
+      content: '<span>To be featured, a story must be <strong>published</strong> with a title and image</span>',
+      trigger: 'hover'
+    })
   }
 
   setShowButtons(value) {
@@ -31,10 +41,15 @@ class DisplayColumn extends React.Component {
     const zoom = parseInt(this.props.entry.zoom) + 5
     this.props.setZoom(zoom)
   }
-  
 
   moveButtons() {
-    const {moveThumb, stopMove, holdThumb, resetThumb, entry} = this.props
+    const {
+      moveThumb,
+      stopMove,
+      holdThumb,
+      resetThumb,
+      entry,
+    } = this.props
 
     if (this.state.showButtons === false || entry.entryId == 0) {
       return null
@@ -63,7 +78,11 @@ class DisplayColumn extends React.Component {
                 <td>
                   <MoveButton dir="left" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
                 </td>
-                <td><button className="btn btn-secondary btn-sm" onClick={resetThumb}><i className="fas fa-fw fa-redo"></i></button></td>
+                <td>
+                  <button className="btn btn-secondary btn-sm" onClick={resetThumb}>
+                    <i className="fas fa-fw fa-redo"></i>
+                  </button>
+                </td>
                 <td>
                   <MoveButton dir="right" {...{holdThumb, stopMove, moveThumb,cX, cY}}/>
                 </td>
@@ -79,10 +98,16 @@ class DisplayColumn extends React.Component {
           </table>
         </div>
         <div className="zoom-buttons">
-          <button disabled={zoom == minZoom} className="btn btn-sm btn-secondary" onClick={this.zoomOut}>
+          <button
+            disabled={zoom == minZoom}
+            className="btn btn-sm btn-secondary"
+            onClick={this.zoomOut}>
             <i className="fas fa-search-minus"></i>
           </button>
-          <button disabled={zoom == maxZoom} className="btn btn-sm btn-secondary" onClick={this.zoomIn}>
+          <button
+            disabled={zoom == maxZoom}
+            className="btn btn-sm btn-secondary"
+            onClick={this.zoomIn}>
             <i className="fas fa-search-plus"></i>
           </button>
         </div>
@@ -98,7 +123,7 @@ class DisplayColumn extends React.Component {
       stories,
       applyStory,
       clearStory,
-      previousEmpty
+      previousEmpty,
     } = this.props
     const _class = 'story-feature ' + format
     const position = `${entry.x}% ${entry.y}%`
@@ -106,7 +131,7 @@ class DisplayColumn extends React.Component {
     const thumbnailStyle = {
       backgroundImage: `url('${entry.story.thumbnail}')`,
       backgroundSize: zoom + '%',
-      backgroundPosition: position,
+      backgroundPosition: position
     }
 
     let clearButton
@@ -115,24 +140,30 @@ class DisplayColumn extends React.Component {
     }
 
     const selectCss = {
-      width: '80%',
-      float: 'left',
-      marginRight: '10px'
+      width: '80%'
     }
 
     let storyList = <em>No published stories available</em>
     if (stories !== undefined) {
       let storyOptions = stories.map(function (value) {
-        return {value: value.id, label: value.title,}
+        return {value: value.id, label: value.title}
       })
       if (previousEmpty) {
         storyList = null
       } else {
         storyList = (
           <div className="mb-1">
-            <div style={selectCss}>
+            <div className="float-left mr-2" style={selectCss}>
               <Select options={storyOptions} value={0} onChange={applyStory}/>
             </div>{clearButton}
+            <div
+              className="badge badge-info pointer"
+              style={{
+                clear: 'both'
+              }}
+              id="feature-note"
+              data-toggle="popover"
+              data-container="body">Story not showing up?</div>
           </div>
         )
       }
@@ -189,7 +220,7 @@ DisplayColumn.propTypes = {
   setZoom: PropTypes.func,
   holdThumb: PropTypes.func,
   thumbnailForm: PropTypes.func,
-  previousEmpty: PropTypes.bool,
+  previousEmpty: PropTypes.bool
 }
 
 export default DisplayColumn
