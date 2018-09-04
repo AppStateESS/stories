@@ -28,6 +28,7 @@ namespace stories\Factory;
 
 use stories\Resource\FeatureResource as Resource;
 use stories\Factory\EntryFactory;
+use stories\View\EntryView;
 use phpws2\Database;
 use phpws2\Settings;
 use Canopy\Request;
@@ -121,15 +122,6 @@ class FeatureFactory extends BaseFactory
         $feature['entries'] = $entries;
     }
 
-    private function featureColumn($entry, $format, $columns)
-    {
-        $vars = $entry['story'];
-        $entryFactory = new EntryFactory;
-        $vars['publishInfo'] = $entryFactory->publishBlock($vars);
-        $vars['thumbnailStyle'] = $this->thumbnailStyle($entry);
-        return $vars;
-    }
-
     private function trimCharactersCount($format, $columns, $title)
     {
         $titleLength = round(strlen($title) * 1.1);
@@ -203,43 +195,6 @@ class FeatureFactory extends BaseFactory
         return substr($content, 0, $lastSpace) . '...';
     }
 
-    private function thumbnailStyle($entry)
-    {
-        $thumbnail = $entry['story']['thumbnail'];
-        $x = $entry['x'];
-        $y = $entry['y'];
-        $zoom = $entry['zoom'];
-        return <<<EOF
-background-image : url('$thumbnail');background-position: {$x}% {$y}%;background-size: {$zoom}%;
-EOF;
-    }
-
-    private function featureRow($feature, $showAuthor)
-    {
-        foreach ($feature['entries'] as $entry) {
-            $vars['entries'][] = $this->featureColumn($entry,
-                    $feature['format'], $feature['columns']);
-        }
-        switch ($feature['columns']) {
-            case '2':
-                $bsClass = 'col-sm-6';
-                break;
-            case '3':
-                $bsClass = 'col-sm-4';
-                break;
-            case '4':
-                $bsClass = 'col-sm-6 col-md-3';
-                break;
-        }
-        $vars['bsClass'] = $bsClass;
-        $vars['format'] = 'story-feature ' . $feature['format'];
-        $vars['featureTitle'] = $feature['title'];
-        $vars['showAuthor'] = $showAuthor;
-        $template = new \phpws2\Template($vars);
-        $template->setModuleTemplate('stories', 'Feature.html');
-        return $template->get();
-    }
-
     public function loadEntries(Resource $feature)
     {
         $entries = $feature->entries;
@@ -260,29 +215,6 @@ EOF;
         }
         $feature->entries = $entries;
     }
-
-    public function show(Request $request)
-    {
-        $features = $this->listing();
-        if (empty($features)) {
-            return;
-        }
-
-        $showAuthor = Settings::get('stories', 'showAuthor');
-
-        foreach ($features as $f) {
-            if (empty($f['entries'])) {
-                continue;
-            }
-            $featureStack[] = $this->featureRow($f, $showAuthor);
-        }
-        if (empty($featureStack)) {
-            return null;
-        }
-        $this->addStoryCss();
-        return '<div id="story-feature-list">' . implode('', $featureStack) . '</div>';
-    }
-
 
     public function delete($featureId)
     {

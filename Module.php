@@ -98,9 +98,9 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         if (!$request->isGet() || $request->getUrl() != '/') {
             return;
         }
-        $featureFactory = new \stories\Factory\FeatureFactory();
+        $featureView = new \stories\View\FeatureView;
         $settings = new \phpws2\Settings;
-        \Layout::add($featureFactory->show($request), 'stories', 'features',
+        \Layout::add($featureView->show($request), 'stories', 'features',
                 true);
 
         if ($settings->get('stories', 'listStories')) {
