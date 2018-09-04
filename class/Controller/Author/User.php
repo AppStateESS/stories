@@ -47,10 +47,20 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
-    
+
     public function loadView()
     {
         $this->view = new View;
+    }
+
+    protected function listHtmlCommand(Request $request)
+    {
+        \Current_User::requireLogin();
+    }
+    
+    protected function listJsonCommand(Request $request)
+    {
+        \phpws2\Error::errorPage(401);
     }
 
 }
