@@ -175,11 +175,8 @@ class StoriesUpdate
             $dt2->setUnsigned(false);
             $authorTable->alter($authorTable->getDataType('userId'), $dt2);
         }
-        $query = 'ALTER TABLE storiesauthor ADD CONSTRAINT userId FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE';
-        $db->exec($query);
 
         $changes[] = 'Added summary image positioning.';
-        $changes[] = 'Added foreign key to author userId.';
         $changes[] = 'Stories more graceful if author is missing.';
         $changes[] = 'Authors may be disabled and deleted with user removal.';
         $changes[] = 'Unpublished warning in story list view.';
@@ -192,6 +189,11 @@ class StoriesUpdate
         $changes[] = 'Fixed bad function call for story listing.';
         $changes[] = 'Stripping default caption text.';
         $this->addContent('1.3.1', $changes);
+    }
+    
+    private function v1_3_2() {
+        $changes[] = 'Removed foreign key constraint on users table.';
+        $this->addContent('1.3.2', $changes);
     }
 
     private function addContent($version, array $changes)
