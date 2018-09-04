@@ -23,3 +23,5 @@ define('STORIES_DAY_THRESHOLD', 3);
 define('STORIES_THUMB_TARGET_WIDTH', 800);
 define('STORIES_THUMB_TARGET_HEIGHT', 800);
 
+// Puts a hard limit on the EntryFactory::pullList method
+define('STORIES_HARD_LIMIT', 100);
