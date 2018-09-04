@@ -61,9 +61,9 @@ class Admin extends RoleController
         $options = array(
             'vars' => array('id', 'title'),
             'includeContent' => false,
-            'orderBy' => 'title',
             'titleRequired' => true,
             'limit' => 0,
+            'sortBy'=> 'publishDate',
             'mustHaveThumbnail' => true,
             'asResource' => false,
             'showTagLinks' => false);
