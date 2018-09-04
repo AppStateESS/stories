@@ -74,6 +74,8 @@ class StoriesUpdate
                 $this->update('1.3.0');
             case $this->compare('1.3.1'):
                 $this->update('1.3.1');
+            case $this->compare('1.3.2'):
+                $this->update('1.3.2');
         }
         return $this->content;
     }
@@ -193,6 +195,10 @@ class StoriesUpdate
     
     private function v1_3_2() {
         $changes[] = 'Removed foreign key constraint on users table.';
+        $changes[] = 'Fixed Feature bugs due to View class inclusion.';
+        $changes[] = 'Feature story selection ordered by publish date descending.';
+        $changes[] = 'Hard limit on story retrieval added.';
+        $changes[] = 'Added note to feature to explain why story may not appear.';
         $this->addContent('1.3.2', $changes);
     }
 
