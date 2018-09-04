@@ -24,6 +24,9 @@ use phpws2\Settings;
 use Canopy\Request;
 
 require_once PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
+if (!defined('STORIES_HARD_LIMIT')) {
+    define('STORIES_HARD_LIMIT', 100);
+}
 
 class EntryFactory extends BaseFactory
 {
@@ -204,13 +207,19 @@ class EntryFactory extends BaseFactory
          * To get an accurate test to see if there are more entries for 
          * a Next page button, we ask for one more row than the current limit
          */
-        $limit = ((int) $options['limit']) + 1;
-
-        if (isset($options['offset'])) {
-            $db->setLimit($limit, $options['offset']);
-        } else {
-            $db->setLimit($limit);
+        if ($options['limit'] != 0) {
+            if ($options['limit'] > STORIES_HARD_LIMIT) {
+                $limit = STORIES_HARD_LIMIT;
+            } else {
+                $limit = ((int) $options['limit']) + 1;
+                if (isset($options['offset'])) {
+                    $db->setLimit($limit, $options['offset']);
+                } else {
+                    $db->setLimit($limit);
+                }
+            }
         }
+
 
         // limitedVars was not well thought out. used mostly for features
         // story choice which only uses title and id
