@@ -26,16 +26,6 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
 
     abstract public function build();
 
-    public function getStoriesRootDirectory()
-    {
-        return PHPWS_SOURCE_DIR . 'mod/stories/';
-    }
-
-    public function getStoriesRootUrl()
-    {
-        return PHPWS_SOURCE_HTTP . 'mod/stories/';
-    }
-
     public function load($id)
     {
         if (empty($id)) {

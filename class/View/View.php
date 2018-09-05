@@ -45,7 +45,7 @@ abstract class View
 
     protected function getScript($scriptName)
     {
-        $jsDirectory = $this->factory->getStoriesRootUrl() . 'javascript/';
+        $jsDirectory = $this->getStoriesRootUrl() . 'javascript/';
         if (STORIES_REACT_DEV) {
             $path = "{$jsDirectory}dev/$scriptName.js";
         } else {
@@ -96,6 +96,16 @@ abstract class View
 EOF;
             return $content;
         }
+    }
+
+    public function getStoriesRootDirectory()
+    {
+        return PHPWS_SOURCE_DIR . 'mod/stories/';
+    }
+
+    public function getStoriesRootUrl()
+    {
+        return PHPWS_SOURCE_HTTP . 'mod/stories/';
     }
 
 }

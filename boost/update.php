@@ -76,6 +76,8 @@ class StoriesUpdate
                 $this->update('1.3.1');
             case $this->compare('1.3.2'):
                 $this->update('1.3.2');
+            case $this->compare('1.3.3'):
+                $this->update('1.3.3');
         }
         return $this->content;
     }
@@ -200,6 +202,11 @@ class StoriesUpdate
         $changes[] = 'Hard limit on story retrieval added.';
         $changes[] = 'Added note to feature to explain why story may not appear.';
         $this->addContent('1.3.2', $changes);
+    }
+    
+    private function v1_3_3() {
+        $changes[] = 'Fixed production mode error.';
+        $this->addContent('1.3.3', $changes);
     }
 
     private function addContent($version, array $changes)
