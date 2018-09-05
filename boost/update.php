@@ -78,6 +78,8 @@ class StoriesUpdate
                 $this->update('1.3.2');
             case $this->compare('1.3.3'):
                 $this->update('1.3.3');
+            case $this->compare('1.3.4'):
+                $this->update('1.3.4');
         }
         return $this->content;
     }
@@ -207,6 +209,11 @@ class StoriesUpdate
     private function v1_3_3() {
         $changes[] = 'Fixed production mode error.';
         $this->addContent('1.3.3', $changes);
+    }
+
+    private function v1_3_4() {
+        $changes[] = 'Removed foreign key from install.';
+        $this->addContent('1.3.4', $changes);
     }
 
     private function addContent($version, array $changes)

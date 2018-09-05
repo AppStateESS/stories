@@ -34,8 +34,6 @@ function stories_install(&$content)
         $author = new \stories\Resource\AuthorResource;
         $authorTable = $author->createTable($db);
         $usersTable = $db->buildTable('users');
-        $foreignKey = new Database\ForeignKey($authorTable->getDataType('userId'), $usersTable->getDataType('id'), Database\ForeignKey::CASCADE, null, 'userId');
-        $foreignKey->add();
         $db->clearTables();
 
         $feature = new \stories\Resource\FeatureResource;
