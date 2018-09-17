@@ -59,7 +59,7 @@ abstract class View
     {
         $rootDirectory = $this->getStoriesRootDirectory();
         if (!is_file($rootDirectory . 'assets.json')) {
-            exit('Missing assets.json file. Run npm run prod in stories directory.');
+            exit('Missing assets.json file. Run npm run build in stories directory.');
         }
         $jsonRaw = file_get_contents($rootDirectory . 'assets.json');
         $json = json_decode($jsonRaw, true);

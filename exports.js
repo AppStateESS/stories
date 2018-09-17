@@ -15,5 +15,6 @@ exports.entry = {
   Tooltip: exports.APP_DIR + '/Tooltip/index.js',
   Caption: exports.APP_DIR + '/Caption/index.js',
   Sortable: exports.APP_DIR + '/Sortable/index.js',
+  Share: exports.APP_DIR + '/Share/index.jsx',
   ImageOrientation: exports.APP_DIR + '/ImageOrientation/index.jsx'
 }
