@@ -27,10 +27,12 @@ twitterwidget {
   margin: 0 auto;
 }
 
-/* medium forces a 100px height on its embed iframe. This doesn't work with instagram */
+/* medium forces a 100px height on its embed iframe. This doesn't work with instagram 
+*/
+
 @media screen and (min-width: 616px) {
     div.medium-insert-embed>div>div>div {
-        height: 182px !important;
+        min-height: 182px !important;
     }
 }
 
