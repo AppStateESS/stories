@@ -48,11 +48,13 @@ class Admin extends User
 
     protected function adminHtmlCommand(Request $request)
     {
-        \Menu::disableMenu();
+        if (class_exists('\Menu')) {
+            \Menu::disableMenu();
+        }
 
         return $this->view->scriptView('EntryList');
     }
-    
+
     protected function adminJsonCommand(Request $request)
     {
         $tagFactory = new TagFactory;

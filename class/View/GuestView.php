@@ -12,19 +12,7 @@
 
 namespace stories\View;
 
-use stories\Factory\AuthorFactory as Factory;
-
-class AuthorView extends View
+class GuestView
 {
-
-    /**
-     * @var stories\Factory\AuthorFactory
-     */
-    protected $factory;
-
-    public function __construct()
-    {
-        $this->factory = new Factory;
-    }
-
+    //put your code here
 }

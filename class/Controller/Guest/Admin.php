@@ -10,36 +10,34 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace stories\Controller\Share;
+namespace stories\Controller\Guest;
 
 use Canopy\Request;
-use stories\Factory\ShareFactory as Factory;
-use stories\View\ShareView as View;
+use stories\Factory\GuestFactory as Factory;
+use stories\View\GuestView as View;
 use stories\Controller\RoleController;
 
 class Admin extends RoleController
 {
+
     /**
-     * @var stories\Factory\ShareFactory
+     * @var stories\Factory\GuestFactory
      */
     protected $factory;
-    
+
     /**
-     * @var stories\View\ShareView
+     * @var stories\View\GuestView
      */
     protected $view;
-    
-    public function loadFactory()
+
+    protected function loadFactory()
     {
         $this->factory = new Factory;
     }
     
-    public function loadView(){
-        $this->view = new View;
-    }
-    
-    public function listHtmlCommand(Request $request)
+    protected function loadView()
     {
-        return $this->view->scriptView('Share');
+        $this->View = new View;
     }
+
 }

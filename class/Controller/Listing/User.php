@@ -49,5 +49,10 @@ class User extends RoleController
         $entryView = new View;
         return $entryView->listing($request);
     }
+    
+     protected function adminHtmlCommand(Request $request)
+     {
+         \Current_User::requireLogin();
+     }
 
 }
