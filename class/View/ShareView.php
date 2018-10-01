@@ -14,7 +14,7 @@ namespace stories\View;
 
 use stories\Factory\ShareFactory as Factory;
 
-class ShareView
+class ShareView extends View
 {
 
     public function __construct()

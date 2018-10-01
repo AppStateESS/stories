@@ -11,10 +11,21 @@
  */
 
 namespace stories\Factory;
+
+use stories\Resource\HostResource as Resource;
 use phpws2\Database;
 use Canopy\Request;
 
-class ShareFactory
+class HostFactory extends BaseFactory
 {
-    //put your code here
+
+    public function build($data = null)
+    {
+        $resource = new Resource;
+        if ($data) {
+            $resource->setVars($data);
+        }
+        return $resource;
+    }
+
 }

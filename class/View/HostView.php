@@ -11,20 +11,15 @@
  */
 
 namespace stories\View;
+use stories\Factory\HostFactory as Factory;
 
-use stories\Factory\AuthorFactory as Factory;
+namespace stories\View;
 
-class AuthorView extends View
+class HostView extends View
 {
-
     /**
-     * @var stories\Factory\AuthorFactory
+     *
+     * @var stories\Factory\HostFactory
      */
     protected $factory;
-
-    public function __construct()
-    {
-        $this->factory = new Factory;
-    }
-
 }

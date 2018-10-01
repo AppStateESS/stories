@@ -51,7 +51,7 @@ class StoryMenu
     {
         
         $link = <<<EOF
-<a href="./stories/Entry/{$entry->id}/{$entry->urlTitle}"><i class="fa fa-book"></i> View story</a>
+<a href="./stories/Entry/{$entry->id}/{$entry->urlTitle}"><i class="fas fa-book"></i> View story</a>
 EOF;
         \MiniAdmin::add('stories', $link);
     }

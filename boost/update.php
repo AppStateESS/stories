@@ -216,6 +216,13 @@ class StoriesUpdate
         $this->addContent('1.3.4', $changes);
     }
 
+    private function v1_4_0() {
+        $db = Database::getDB();
+        $share = new \stories\Resource\ShareResource;
+        $share->createTable($db);
+        $this->addContent('1.4.0', $changes);
+    }
+
     private function addContent($version, array $changes)
     {
         $changes_string = implode("\n+ ", $changes);
