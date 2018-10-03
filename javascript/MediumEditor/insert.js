@@ -51,6 +51,7 @@ $('.entry-form').mediumInsert({
       }
     },
     embeds: {
+      oembedProxy: './stories/Embed/view/',
       label: '<i class="fab fa-youtube"></i>',
       actions: {
         remove: {
