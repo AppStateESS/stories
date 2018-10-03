@@ -5,13 +5,13 @@ const EntryForm = new EntryFormClass($('#story-status'), entry)
 const editor = new MediumEditor('.entry-form', {
   placeholder: {
     text: 'Click here to start your story...',
-    hideOnClick: true,
+    hideOnClick: true
   },
   buttonLabels: 'fontawesome',
   paste: {
-    forcePlainTest: true,
+    forcePlainTest: true
   },
-  disableDoubleReturn : false,
+  disableDoubleReturn: false,
   autoLink: true,
   imageDragging: false,
   toolbar: {
@@ -26,14 +26,13 @@ const editor = new MediumEditor('.entry-form', {
       'unorderedlist',
       'indent',
       'outdent',
-      'removeFormat',
+      'removeFormat'
     ]
-  },
+  }
 })
-// This code defaults the cursor to the first line. The cursor ends up above
-// the content and causes problems. It is better to have them click to get
-// started.
-//editor.selectElement(document.querySelector('.entry-form'))
+// This code defaults the cursor to the first line. The cursor ends up above the
+// content and causes problems. It is better to have them click to get started.
+// editor.selectElement(document.querySelector('.entry-form'))
 $('.entry-form').mediumInsert({
   editor: editor,
   addons: {
@@ -61,26 +60,36 @@ $('.entry-form').mediumInsert({
             $event.which = 8
             $(document).trigger($event)
             EntryForm.cleanUpEmbed($(el[0]))
-          },
+          }
         }
       }
-    },
+    }
   }
 })
 
-$('#entry-title').blur(function () {
-  EntryForm.entry.title = $(this).val()
-  EntryForm.save()
-})
-
-const blurContentSave = function () {
-  saveContent(editor)
+const debounce = (func, delay) => {
+  let inDebounce
+  return function () {
+    const context = this
+    const args = arguments
+    clearTimeout(inDebounce)
+    inDebounce = setTimeout(() => func.apply(context, args), delay)
+  }
 }
 
-const saveContent = function (editor) {
+// Prevents saving until something is updated.
+let contentAltered = false
+
+const saveContent = function () {
   EntryForm.entry.content = editor.getContent()
   EntryForm.save()
 }
+
+$('.entry-form').mouseleave(debounce(function () {
+  if (contentAltered) {
+    saveContent()
+  }
+}, 3000))
 
 // Without this, the throttle will run save twice.
 let delaySave = true
@@ -90,14 +99,17 @@ const triggerAutoSave = () => {
     delaySave = false
     return
   }
+  contentAltered = true
   saveContent(editor)
   delaySave = true
 }
 const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 3000)
 editor.subscribe('editableInput', throttledAutoSave)
-editor.subscribe('blur', blurContentSave)
+editor.subscribe('blur', debounce(function () {
+  saveContent()
+}, 3000))
 
-editor.subscribe('editableDrop', function(e, element) {
+editor.subscribe('editableDrop', function (e, element) {
   if (e.dataTransfer.files.length < 1) {
     return true
   } else {
@@ -105,8 +117,11 @@ editor.subscribe('editableDrop', function(e, element) {
   }
 })
 
-var handleImageDropped = function(e, element) {
-  var data, file, fileUploadOptions, imagePlugin
+var handleImageDropped = function (e, element) {
+  var data,
+    file,
+    fileUploadOptions,
+    imagePlugin
   data = e.dataTransfer.files
   imagePlugin = $.data(element, 'plugin_mediumInsertImages')
   file = $(imagePlugin.templates['src/js/templates/images-fileupload.hbs']())
@@ -116,24 +131,23 @@ var handleImageDropped = function(e, element) {
     acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
     formData: imagePlugin.options.fileUploadOptions.formData,
     dropZone: null,
-    add: function(e, data) {
+    add: function (e, data) {
       $.proxy(imagePlugin, 'uploadAdd', e, data)()
     },
-    done: function(e, data) {
+    done: function (e, data) {
       $.proxy(imagePlugin, 'uploadDone', e, data)()
     }
   }
   if (new XMLHttpRequest().upload) {
-    fileUploadOptions.progress = function(e, data) {
+    fileUploadOptions.progress = function (e, data) {
       return $.proxy(imagePlugin, 'uploadProgress', e, data)()
     }
-    fileUploadOptions.progressall = function(e, data) {
+    fileUploadOptions.progressall = function (e, data) {
       return $.proxy(imagePlugin, 'uploadProgressall', e, data)()
     }
   }
   file.fileupload(fileUploadOptions)
-  file.fileupload('add', {
-    files: data
-  })
+  file.fileupload('add', {files: data})
+
   return false
 }
