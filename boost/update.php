@@ -80,6 +80,8 @@ class StoriesUpdate
                 $this->update('1.3.3');
             case $this->compare('1.3.4'):
                 $this->update('1.3.4');
+            case $this->compare('1.4.0'):
+                $this->update('1.4.0');
         }
         return $this->content;
     }
@@ -214,6 +216,13 @@ class StoriesUpdate
     private function v1_3_4() {
         $changes[] = 'Removed foreign key from install.';
         $this->addContent('1.3.4', $changes);
+    }
+
+    private function v1_4_0() {
+        $changes[] = 'Saving occurs on mouse leaving form. Should help more frequent saving.';
+        $changes[] = 'Rewrote embed code. No longer reliant on external service.';
+        
+        $this->addContent('1.4.0', $changes);
     }
 
     private function addContent($version, array $changes)
