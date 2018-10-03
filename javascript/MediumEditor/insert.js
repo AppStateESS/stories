@@ -68,7 +68,8 @@ $('.entry-form').mediumInsert({
   }
 })
 
-const debounce = (func, delay) => {
+const debounce = (func) => {
+  const delay = 2000
   let inDebounce
   return function () {
     const context = this
@@ -90,7 +91,7 @@ $('.entry-form').mouseleave(debounce(function () {
   if (contentAltered) {
     saveContent()
   }
-}, 3000))
+}))
 
 // Without this, the throttle will run save twice.
 let delaySave = true
@@ -108,7 +109,7 @@ const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 3000)
 editor.subscribe('editableInput', throttledAutoSave)
 editor.subscribe('blur', debounce(function () {
   saveContent()
-}, 3000))
+}))
 
 editor.subscribe('editableDrop', function (e, element) {
   if (e.dataTransfer.files.length < 1) {
