@@ -156,7 +156,7 @@ class EntryView extends View
 
         // Twitter feeds don't show up in summary view
         if ($format) {
-            \Layout::addJSHeader($this->loadTwitterScript());
+            $this->loadTwitterScript();
         }
 
         $data['list'] = $this->addAccessories($list, $tag);

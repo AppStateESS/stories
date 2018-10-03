@@ -410,7 +410,7 @@ class EntryFactory extends BaseFactory
             return;
         } else {
             // duplicate found, update title with timestamp
-            $entry->urlTitle = $entry->urlTitle . '-' . time();
+            $entry->urlTitle = $entry->urlTitle . '-' . $entry->id;
         }
     }
 
@@ -646,6 +646,7 @@ EOF;
     /**
      * Removed the data-embed-code div medium editor adds.
      * @param string $content
+     * @deprecated
      * @return string
      */
     private function cleanEmbed($content)
@@ -656,6 +657,7 @@ EOF;
 
     /**
      * Facebook does zeroes out the container_width
+     * @deprecated
      * @param string $content
      */
     private function cleanFacebook($content)
@@ -664,9 +666,40 @@ EOF;
                 $content);
     }
 
+    /**
+     * The Flickr oEmbed calls a script when pulled down. This script creates
+     * an iframe and moved forward. The iframe is useless, the script and the
+     * anchor tag called prior are the important components.
+     * 
+     * The true code is stuck in the data-embed-code div. This script grabs the 
+     * embed code and saves it as content
+     * before it is flushed. This only happens when Flickr is present.
+     * @param string $content
+     */
+    private function cleanFlickr($content)
+    {
+        $matches = [];
+        $embedString = '/<div data-embed-code="(&amp;lt;a data-flickr-embed=.*)"><iframe/';
+        preg_match($embedString, $content, $matches);
+        //Flickr not found
+        if (empty($matches)) {
+            return $content;
+        }
+        $embedCode = html_entity_decode(html_entity_decode($matches[1]));
+        $final = preg_replace('/<div data-embed-code=".*<\/div>/',
+                "<div class=\"medium-insert-active medium-flickr-embed\">$embedCode</div>",
+                $content);
+        return $final;
+    }
+
+    /**
+     * @deprecated
+     * @param type $content
+     * @return type
+     */
     private function cleanTwitter($content)
     {
-        return str_replace('<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>',
+        return preg_replace('/<script.*platform\.twitter\.com[^>]+><\/script>/',
                 '', $content);
     }
 
@@ -686,6 +719,7 @@ EOF;
         return str_replace(' contenteditable="true"', '', $content);
     }
 
+
     /**
      * Cleans up the content string that is imported from Medium Editor.
      * Medium editor content contains remnants of its controls.
@@ -696,7 +730,9 @@ EOF;
         // Removes medium buttons
         $content = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
                         '', $content));
+
         $content = str_replace('Type caption for image (optional)', '', $content);
+        $content = str_replace('Type caption (optional)', '', $content);
         // Removes extra medium paragraphs padded to end of content
         $content = $this->removeExtraParagraphs($content);
         // Removes extra headers sometimes padded on end
@@ -705,9 +741,8 @@ EOF;
         $content = $this->removeMediumOverlay($content);
         // Removed http:// url from images making them relative
         $content = $this->relativeImages($content);
-        $content = $this->cleanEmbed($content);
-        $content = $this->cleanFacebook($content);
-        $content = $this->cleanTwitter($content);
+        $content = $this->cleanFlickr($content);
+        //$content = $this->cleanTwitter($content);
         // Removed the contenteditable="true" left in the figcaption
         // (or anywhere else)
         $content = $this->removeEditable($content);
