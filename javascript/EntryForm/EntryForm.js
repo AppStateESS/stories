@@ -50,7 +50,7 @@ export default class EntryForm {
     if (entry.content.match(/<img src="data:image\//)) {
       return
     }
-    this.status.html('<span><i class="fas fa-cog fa-spin fa-fw"></i>Saving...</span>')
+    this.status.html('<span><i class="fas fa-cog fa-spin fa-fw"></i>&nbsp;Saving...</span>')
     $.ajax({
       url: './stories/Entry/' + entry.id,
       data: entry,
@@ -60,7 +60,7 @@ export default class EntryForm {
         const ts = new Date()
         const timestring = ts.toLocaleTimeString('en-US')
         setTimeout(function(){
-          this.status.html(`<span class="text-success"><i class="fa fa-check"></i>Saved @ ${timestring}</span>`)
+          this.status.html(`<span class="text-success"><i class="fa fa-check"></i>&nbsp;Saved @ ${timestring}</span>`)
         }.bind(this), 1000)
       }.bind(this),
       error: function () {
