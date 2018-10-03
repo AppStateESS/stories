@@ -82,6 +82,8 @@ class BaseController extends \phpws2\Http\Controller
     {
         try {
             return parent::execute($request);
+        } catch (\stories\Exception\PrivilegeMissing $e) {
+            \Current_User::requireLogin();
         } catch (\Exception $e) {
             // Friendly error catch here if needed.
             $friendly = new FriendlyError($this->getModule());
