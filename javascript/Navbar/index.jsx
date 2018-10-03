@@ -22,7 +22,7 @@ let leftSide
 if (entry.urlTitle.length > 0) {
   leftSide = (
     <li>
-      <a className="nav-link" href={`./stories/${entry.urlTitle}`}>View story</a>
+      <a className="nav-link" href={`./stories/Entry/${entry.id}/${entry.urlTitle}`}>View story</a>
     </li>
   )
 }
