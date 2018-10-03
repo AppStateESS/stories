@@ -1,0 +1,82 @@
+div.entry-form .medium-insert-embeds figure figcaption,
+div.entry-form .medium-insert-images figure figcaption,
+div.entry-form .mediumInsert figure figcaption,
+div.entry-form .mediumInsert-embeds figure figcaption {
+  color: #4e4e4e;
+  font-size: 14px;
+  text-align: left;
+}
+
+div.story-content figure figcaption,
+div.story-entry .medium-insert-embeds figure figcaption,
+div.story-entry .medium-insert-images figure figcaption,
+div.story-entry .mediumInsert figure figcaption,
+div.story-entry .mediumInsert-embeds figure figcaption {
+  color: #4e4e4e;
+  font-size: 14px;
+  text-align: left;
+}
+
+div.medium-insert-images.medium-insert-images-right figure figcaption {
+  margin-left: 0 !important;
+}
+
+div.medium-insert-images.medium-insert-images-left figure figcaption {
+  margin-left: 0 !important;
+}
+
+twitterwidget {
+  margin: 0 auto;
+}
+/* medium forces a 100px height on its embed iframe. This doesn't work with instagram 
+*/
+@media screen and (min-width: 616px) {
+  div.medium-insert-embed > div > div > div {
+    min-height: 182px !important;
+  }
+}
+@media screen and (max-width: 616px) {
+  .story-content {
+    .medium-insert-embeds-left.mediumInsert-embeds,
+    .medium-insert-embeds-right.mediumInsert-embeds,
+    .medium-insert-embeds.medium-insert-embeds-left,
+    .medium-insert-embeds.medium-insert-embeds-right,
+    .medium-insert-embeds.medium-insert-embeds-right,
+    .medium-insert-images-right.mediumInsert,
+    .medium-insert-images.medium-insert-images-right {
+      max-width: 100%;
+      float: none;
+      margin: 10px auto;
+      width: auto;
+    }
+
+    .medium-insert-embeds.medium-insert-embeds-left,
+    .medium-insert-images-left.mediumInsert,
+    .medium-insert-images.medium-insert-images-left {
+      max-width: 100%;
+      float: none;
+      margin: 10px auto;
+    }
+  }
+}
+
+iframe.instagram-media {
+  min-width: 100px !important;
+}
+
+// div.medium-insert-embed {
+//   div {
+//     overflow: hidden;
+//     padding-top: 56.25%;
+//     position: relative;
+// 
+//     iframe.flickr-embed-frame {
+//       border: 0;
+//       height: 100% !important;
+//       left: 0;
+//       position: absolute;
+//       top: 0;
+//       width: 100% !important;
+//     }
+//   }
+// }
