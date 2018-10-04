@@ -27,47 +27,49 @@ class EmbedView extends View
 
     public function embed(Request $request)
     {
-        return $this->getEmbed($request->pullGetString('url'));
+        $id = $request->shiftCommand();
+        return $this->getEmbed($request->pullGetString('url'), $id);
     }
 
-    public function getEmbed($url)
+    public function getEmbed($url, $id)
     {
         switch (1) {
             case preg_match('/^https?:\/\/(www\.)?youtube\.com/', $url):
-                $result =  $this->youtube($url);
+                $json = $this->youtube($url);
                 break;
 
             case preg_match('/https?:\/\/vimeo.com/', $url):
-                $result =  $this->vimeo($url);
+                $json = $this->vimeo($url);
                 break;
 
             case preg_match('/https?:\/\/twitter.com/', $url):
-                $result =  $this->twitter($url);
+                $json = $this->twitter($url);
                 break;
 
             case preg_match('/https?:\/\/(www\.)?instagram.com/', $url):
-                $result =  $this->instagram($url);
+                $json = $this->instagram($url);
                 break;
 
             case preg_match('/https?:\/\/(www\.)?facebook.com/', $url):
-                $result =  $this->facebook($url);
+                $json = $this->facebook($url);
                 break;
 
             case preg_match('/https?:\/\/(www\.)?soundcloud.com/', $url):
-                $result =  $this->soundcloud($url);
+                $json = $this->soundcloud($url);
                 break;
 
             case preg_match('/https?:\/\/(www\.)?flickr.com/', $url):
-                $result =  $this->flickr($url);
+                $json = $this->flickr($url);
                 break;
 
             default:
                 return null;
         }
-        if (!is_array($result) && !is_object($result)) {
+        if (!is_array($json) && !is_object($json)) {
             throw new \Exception('Expected an array or object result from embed');
         }
-        return $result;
+        $this->addThumbnail($json, $id);
+        return $json;
     }
 
     public function flickr($url)
@@ -84,10 +86,9 @@ class EmbedView extends View
 
     public function youtube($url)
     {
-        $id = preg_replace('/.*v=(\w+)$/', '\\1', $url);
-        return array(
-            'html' => "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.2493%;\"><iframe src=\"https://www.youtube.com/embed/$id?rel=0&amp;showinfo=0\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen scrolling=\"no\"></iframe></div>"
-        );
+        $result = file_get_contents("https://www.youtube.com/oembed?url=$url");
+        $json = json_decode($result);
+        return $json;
     }
 
     public function instagram($url)
@@ -123,10 +124,26 @@ class EmbedView extends View
 
     public function vimeo($url)
     {
-        $id = preg_replace('/.*\/(\d+)$/', '\\1', $url);
-        return array(
-            "html" => "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.2493%;\"><iframe src=\"https://player.vimeo.com/video/$id?byline=0&amp;badge=0&amp;portrait=0&amp;title=0\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen scrolling=\"no\"></iframe></div>"
-        );
+        $result = file_get_contents("https://vimeo.com/api/oembed.json?url=$url");
+        $json = json_decode($result);
+        return $json;
     }
+    
+    private function addThumbnail($json, $id)
+    {
+        if (empty($json->thumbnail_url)) {
+            return;
+        }
+        $entryFactory = new \stories\Factory\EntryFactory;
+        $entry = $entryFactory->load($id);
+        if (empty($entry->thumbnail)) {
+            $entry->thumbnail = $json->thumbnail_url;
+        }
+        if (empty($entry->leadImage)) {
+            $entry->leadImage = $json->thumbnail_url;
+        }
+        $entryFactory->save($entry);
+    }
+
 
 }
