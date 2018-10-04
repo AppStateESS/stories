@@ -210,32 +210,6 @@ https://img.youtube.com/vi/$youTubeId/0.jpg
 EOF;
     }
 
-    public function saveYouTubeImage($entryId, $src)
-    {
-        $youtubeId = $this->getYouTubeId($src);
-        if (empty($youtubeId)) {
-            return false;
-        }
-        $url = $this->getYouTubeThumbUrl($youtubeId);
-        $content = file_get_contents($url);
-        if (empty($content)) {
-            return false;
-        }
-        $imageName = $youtubeId . '.jpg';
-        $imagePath = $this->getImagePath($entryId);
-        $fullPath = $imagePath . $imageName;
-        if (!is_dir($imagePath)) {
-            mkdir($imagePath, 0755);
-        }
-
-        if (file_put_contents($fullPath, $content) !== false) {
-            $thumbnail = $this->createThumbnail($imagePath, $imageName);
-            return array('thumbnail' => $thumbnail, 'image' => $fullPath);
-        } else {
-            return false;
-        }
-    }
-
     public function getImageFilename($url)
     {
         $urlArray = explode('/', $url);
