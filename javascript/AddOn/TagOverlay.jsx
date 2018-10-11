@@ -1,7 +1,7 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import Overlay from 'canopy-react-overlay'
+import Overlay from '@essappstate/canopy-react-overlay'
 import Tags from './Tags'
 import 'react-select/dist/react-select.min.css'
 

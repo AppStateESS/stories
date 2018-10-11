@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Overlay from 'canopy-react-overlay'
+import Overlay from '@essappstate/canopy-react-overlay'
 import moment from 'moment'
 
 const PublishOverlay = ({

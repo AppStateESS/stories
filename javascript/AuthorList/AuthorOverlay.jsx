@@ -1,7 +1,7 @@
 'use strict'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Overlay from 'canopy-react-overlay'
+import Overlay from '@essappstate/canopy-react-overlay'
 import AuthorForm from './AuthorForm'
 
 /* global $ */
