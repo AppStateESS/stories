@@ -1,23 +1,35 @@
 'use strict'
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
+import CurrentGuestRow from './CurrentGuestRow'
 
-export default class CurrentGuests extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
+const CurrentGuests = ({listing, denyGuest}) => {
+  if (listing.length === 0) {
+    return <p>No current guests.</p>
   }
-
-  render() {
-    if (this.props.listing.length === 0) {
-      return <p>No guests found.</p>
-    }
-    return (<div>current guests</div>)
-  }
+  let rows = listing.map((value, key) => {
+    return <CurrentGuestRow {...value} key={key} deny={denyGuest.bind(null, key)}/>
+  })
+  return (
+    <div>
+      <table className="table table-striped">
+        <tbody>
+          <tr>
+            <th>Action</th>
+            <th>Site</th>
+            <th>Contact</th>
+            <th>Accepted</th>
+          </tr>
+          {rows}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 CurrentGuests.propTypes = {
   listing: PropTypes.array,
+  denyGuest: PropTypes.func,
 }
 
-CurrentGuests.defaultProps = {}
+export default CurrentGuests

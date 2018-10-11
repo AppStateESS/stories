@@ -1,18 +1,18 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import GuestRow from './GuestRow'
+import HostRow from './HostRow'
 
-const GuestRequests = ({listing, acceptRequest, denyRequest}) => {
+const Hosts = ({listing, deleteHost, setAuthKey}) => {
   if (listing.length === 0) {
     return <p>No guest requests in queue.</p>
   }
   let rows = listing.map((value, key) => {
-    return <GuestRow
+    return <HostRow
       {...value}
       key={key}
-      accept={acceptRequest.bind(null, key)}
-      deny={denyRequest.bind(null, key)}/>
+      deleteHost={deleteHost.bind(null, key)}
+      setAuthKey={setAuthKey.bind(null, key)}/>
   })
   return (
     <div>
@@ -21,8 +21,8 @@ const GuestRequests = ({listing, acceptRequest, denyRequest}) => {
           <tr>
             <th>Action</th>
             <th>Site</th>
-            <th>Contact</th>
-            <th>Submitted</th>
+            <th>Url</th>
+            <th>Authkey</th>
           </tr>
           {rows}
         </tbody>
@@ -31,10 +31,10 @@ const GuestRequests = ({listing, acceptRequest, denyRequest}) => {
   )
 }
 
-GuestRequests.propTypes = {
+Hosts.propTypes = {
   listing: PropTypes.array,
-  acceptRequest: PropTypes.func,
-  denyRequest: PropTypes.func
+  deleteHost: PropTypes.func,
+  setAuthKey: PropTypes.func
 }
 
-export default GuestRequests
+export default Hosts

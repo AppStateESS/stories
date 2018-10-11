@@ -17,27 +17,19 @@ use stories\Factory\GuestFactory as Factory;
 use stories\View\GuestView as View;
 use stories\Controller\RoleController;
 
-class Admin extends RoleController
+class Admin extends User
 {
 
-    /**
-     * @var stories\Factory\GuestFactory
-     */
-    protected $factory;
-
-    /**
-     * @var stories\View\GuestView
-     */
-    protected $view;
-
-    protected function loadFactory()
+    public function acceptPutCommand(Request $request)
     {
-        $this->factory = new Factory;
+        $this->factory->acceptRequest($this->id);
+        return ['success' => true];
     }
-    
-    protected function loadView()
+
+    public function denyGuestPutCommand(Request $request)
     {
-        $this->View = new View;
+        $this->factory->denyGuest($this->id);
+        return ['success' => true];
     }
 
 }

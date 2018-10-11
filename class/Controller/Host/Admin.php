@@ -30,7 +30,7 @@ class Admin extends RoleController
      * @var stories\Factory\HostFactory
      */
     protected $hostFactory;
-    
+
     /**
      * @var stories\Factory\GuestFactory
      */
@@ -46,23 +46,45 @@ class Admin extends RoleController
         $this->guestFactory = new GuestFactory;
         $this->hostFactory = new HostFactory;
     }
-    
+
     protected function loadView()
     {
         $this->view = new View;
     }
-    
+
     public function listHtmlCommand(Request $request)
     {
-        return $this->view->scriptView('ShareHost');
+        $vars['siteName'] = \Layout::getPageTitle(true);
+        $vars['url'] = \Canopy\Server::getSiteUrl();
+        return $this->view->scriptView('ShareHost', true, $vars);
     }
-    
+
     public function listJsonCommand(Request $request)
     {
         $data = [];
         $data['currentGuests'] = $this->guestFactory->getCurrentGuests();
         $data['guestRequests'] = $this->guestFactory->getGuestRequests();
+        $data['hosts'] = $this->hostFactory->getHosts();
         return $data;
+    }
+    
+    public function postCommand(Request $request)
+    {
+        $this->hostFactory->create($request);
+        return ['success'=>true];
+    }
+    
+    public function existsJsonCommand(Request $request)
+    {
+        return ['duplicate'=> (bool) $this->hostFactory->getByUrl($request->pullGetString('url'))];
+    }
+    
+    public function putCommand(Request $request)
+    {
+        $host = $this->hostFactory->load($this->id);
+        $host->authkey = $request->pullPutString('authkey');
+        $this->hostFactory->save($host);
+        return ['success'=>true];
     }
 
 }

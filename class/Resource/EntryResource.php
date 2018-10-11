@@ -71,7 +71,7 @@ class EntryResource extends BaseResource
      * @var phpws2\Variable\BooleanVar
      */
     protected $forceFeature;
-    
+
     /**
      *
      * @var phpws2\Variable\SmallInteger
@@ -152,7 +152,8 @@ class EntryResource extends BaseResource
         $this->content->addAllowedTags(STORIES_CONTENT_TAGS);
         $this->createDate = new \phpws2\Variable\DateTime(0, 'createDate');
         $this->createDate->stamp();
-        $this->imageOrientation = new \phpws2\Variable\SmallInteger(0, 'imageOrientation');
+        $this->imageOrientation = new \phpws2\Variable\SmallInteger(0,
+                'imageOrientation');
         $this->updateDate = new \phpws2\Variable\DateTime(0, 'updateDate');
         $this->updateDate->stamp();
         $this->deleted = new \phpws2\Variable\BooleanVar(false, 'deleted');
@@ -199,7 +200,7 @@ class EntryResource extends BaseResource
         if ($holdSummary) {
             unset($vars['summary']);
         }
-        
+
         $vars['createDateRelative'] = $this->relativeTime($this->createDate->get());
         $vars['publishDateRelative'] = $this->relativeTime($this->publishDate->get());
         if (!is_array($hide) || !in_array('tags', $hide)) {

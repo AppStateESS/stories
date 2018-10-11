@@ -19,6 +19,7 @@ use phpws2\Settings;
 use stories\Factory\TagFactory;
 use stories\Factory\StoryMenu;
 use stories\Factory\SettingFactory;
+use stories\Exception\ResourceNotFound;
 
 class EntryView extends View
 {
@@ -319,6 +320,9 @@ EOF;
             if (stristr($entry->content, 'twitter')) {
                 $this->loadTwitterScript(true);
             }
+            // Removed the summary break tag
+            $data['content'] = str_replace('<p class="">::summary</p>', '',
+                    $data['content']);
             $address = \Canopy\Server::getSiteUrl();
             $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
             $data['publishInfo'] = $this->publishBlock($data);

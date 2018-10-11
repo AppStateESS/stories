@@ -38,21 +38,30 @@ class GuestResource extends BaseResource
      * Key used to communicate with destination
      * @var \phpws2\Variable\Alphanumeric
      */
-    protected $key;
+    protected $authkey;
     
     protected $email;
     
-    protected $acceptanceDeadline;
+    protected $submitDate;
+    
+    protected $acceptDate;
     
     protected $table = 'storiesguest';
     
     public function __construct()
     {
+        parent::__construct();
         $this->siteName = new \phpws2\Variable\TextOnly(null, 'siteName');
-        $this->url = new \phpws2\Variable\Url(null, 'url');
+        $this->siteName->setLimit(255);
+        //$this->url = new \phpws2\Variable\Url(null, 'url');
+        $this->url = new \phpws2\Variable\StringVar(null, 'url');
+        $this->url->setLimit(255);
         $this->status = new \phpws2\Variable\SmallInteger(0, 'status');
-        $this->key = new \phpws2\Variable\HashVar(null, 'key');
+        $this->authkey = new \phpws2\Variable\HashVar(null, 'authkey');
+        $this->authkey->setLimit(40);
         $this->email = new \phpws2\Variable\Email(null, 'email');
-        $this->acceptanceDeadline = new \phpws2\Variable\DateTime(null, 'acceptanceDeadline');
+        $this->email->setLimit(255);
+        $this->submitDate = new \phpws2\Variable\DateTime(0, 'submitDate');
+        $this->acceptDate = new \phpws2\Variable\DateTime(0, 'acceptDate');
     }
 }

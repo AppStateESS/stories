@@ -25,3 +25,7 @@ define('STORIES_THUMB_TARGET_HEIGHT', 800);
 
 // Puts a hard limit on the EntryFactory::pullList method
 define('STORIES_HARD_LIMIT', 100);
+
+define('STORIES_SUMMARY_CHARACTER_LIMIT', 300);
+
+define('STORIES_SENDMAIL', '/usr/sbin/sendmail -bs');

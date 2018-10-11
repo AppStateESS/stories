@@ -82,6 +82,8 @@ class StoriesUpdate
                 $this->update('1.3.4');
             case $this->compare('1.4.0'):
                 $this->update('1.4.0');
+            case $this->compare('1.5.0'):
+                $this->update('1.5.0');
         }
         return $this->content;
     }
@@ -189,17 +191,19 @@ class StoriesUpdate
         $changes[] = 'Authors may be disabled and deleted with user removal.';
         $changes[] = 'Unpublished warning in story list view.';
         $changes[] = 'Interface changes for more information';
-                
+
         $this->addContent('1.3.0', $changes);
     }
-    
-    private function v1_3_1() {
+
+    private function v1_3_1()
+    {
         $changes[] = 'Fixed bad function call for story listing.';
         $changes[] = 'Stripping default caption text.';
         $this->addContent('1.3.1', $changes);
     }
-    
-    private function v1_3_2() {
+
+    private function v1_3_2()
+    {
         $changes[] = 'Removed foreign key constraint on users table.';
         $changes[] = 'Fixed Feature bugs due to View class inclusion.';
         $changes[] = 'Feature story selection ordered by publish date descending.';
@@ -207,22 +211,42 @@ class StoriesUpdate
         $changes[] = 'Added note to feature to explain why story may not appear.';
         $this->addContent('1.3.2', $changes);
     }
-    
-    private function v1_3_3() {
+
+    private function v1_3_3()
+    {
         $changes[] = 'Fixed production mode error.';
         $this->addContent('1.3.3', $changes);
     }
 
-    private function v1_3_4() {
+    private function v1_3_4()
+    {
         $changes[] = 'Removed foreign key from install.';
         $this->addContent('1.3.4', $changes);
     }
 
-    private function v1_4_0() {
+    private function v1_4_0()
+    {
         $changes[] = 'Saving occurs on mouse leaving form. Should help more frequent saving.';
         $changes[] = 'Rewrote embed code. No longer reliant on external service.';
-        
+
         $this->addContent('1.4.0', $changes);
+    }
+
+    private function v1_5_0()
+    {
+        $db = Database::getDB();
+        if (!$db->tableExists('storiesguest')) {
+            $guest = new \stories\Resource\GuestResource;
+            $guestTable = $guest->createTable($db);
+        }
+        if (!$db->tableExists('storieshost')) {
+            $host = new \stories\Resource\HostResource;
+            $hostTable = $host->createTable($db);
+        }
+
+        $changes[] = 'Add ability to share stories with other sites.';
+
+        $this->addContent('1.5.0', $changes);
     }
 
     private function addContent($version, array $changes)

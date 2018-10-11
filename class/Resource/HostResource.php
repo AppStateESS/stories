@@ -15,31 +15,35 @@ namespace stories\Resource;
 class HostResource extends BaseResource
 {
     /**
-     * Name of site sending stories
+     * Name of site receiving stories
      * @var phpws2\Variable\TextOnly
      */
      protected $siteName;
      
      /**
-      * Address of sending site
+      * Address of site
       * @var phpws2\Variable\Url
       */
      protected $url;
      
      /**
-      * Key sent to site to verify their stories
+      * Host authorization key sent to site to verify stories
       * @var phpws2\Variable\HashVar
       */
-     protected $receiveKey;
+     protected $authkey;
      
-     /**
-      * @var phpws2\Variable\TextOnly
-      */
-     protected $contactName;
+     protected $table = 'storieshost';
      
-     /**
-      * @var phpws2\Variable\Email
-      */
-     protected $contactEmail;
-     
+     public function __construct()
+     {
+         parent::__construct();
+         $this->siteName = new \phpws2\Variable\TextOnly(null, 'siteName');
+         $this->siteName->setLimit(255);
+         //$this->url = new \phpws2\Variable\Url(null, 'url');
+         $this->url = new \phpws2\Variable\StringVar(null, 'url');
+         $this->url->setLimit(255);
+         $this->authkey = new \phpws2\Variable\HashVar(null, 'authkey');
+         $this->authkey->setLimit(40);
+     }
+             
 }

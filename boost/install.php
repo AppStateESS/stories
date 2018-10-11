@@ -59,6 +59,15 @@ function stories_install(&$content)
         $entryToFeature->addDataType('zoom', 'smallint');
         $entryToFeature->addDataType('sorting', 'smallint');
         $entryToFeature->create();
+
+        $guest = new \stories\Resource\GuestResource;
+        $guestTable = $guest->createTable($db);
+
+        $host = new \stories\Resource\HostResource;
+        $hostTable = $host->createTable($db);
+        $url = $hostTable->getDataType('url');
+        $unique = new \phpws2\Database\Unique($url);
+        $unique->add();
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
         $db->rollback();
@@ -71,11 +80,20 @@ function stories_install(&$content)
         if (isset($featureTable)) {
             $featureTable->drop(true);
         }
+        if (isset($tagTable)) {
+            $tagTable->drop(true);
+        }
         if (isset($tagToEntry)) {
             $tagToEntry->drop(true);
         }
         if (isset($entryToFeature)) {
             $entryToFeature->drop(true);
+        }
+        if (isset($guestTable)) {
+            $guestTable->drop(true);
+        }
+        if (isset($hostTable)) {
+            $hostTable->drop(true);
         }
         throw $e;
     }

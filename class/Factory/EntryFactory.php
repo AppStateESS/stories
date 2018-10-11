@@ -28,6 +28,10 @@ if (!defined('STORIES_HARD_LIMIT')) {
     define('STORIES_HARD_LIMIT', 100);
 }
 
+if (!defined('STORIES_SUMMARY_CHARACTER_LIMIT')) {
+    define('STORIES_SUMMARY_CHARACTER_LIMIT', 500);
+}
+
 class EntryFactory extends BaseFactory
 {
 
@@ -509,20 +513,32 @@ class EntryFactory extends BaseFactory
         $summaryCount = $pStart;
         $summaryLimit = $p->length - $pStart;
 
+        $totalCharacters = 0;
         while (!$summaryFound && $summaryCount <= $summaryLimit) {
             if ($p->length > $summaryCount) {
                 $pNode = $p->item($summaryCount);
-                $pContent = trim($pNode->textContent);
-                if (!empty($pContent)) {
-                    $pContent = nl2br($pContent);
-                    $entry->summary = "<p>$pContent</p>";
+                if ($pNode->textContent == '::summary') {
                     $summaryFound = true;
+                    break;
+                }
+                $totalCharacters += strlen($pNode->textContent);
+
+                //$pContent = trim($pNode->textContent);
+                $pContent = $pNode->C14N();
+                if (!empty($pContent)) {
+                    $summary[] = $pContent;
+                }
+                if ($totalCharacters > STORIES_SUMMARY_CHARACTER_LIMIT) {
+                    $summaryFound = true;
+                    break;
                 }
             }
             $summaryCount++;
         }
-        if ($summaryFound == false) {
+        if (empty($summary)) {
             $entry->summary = '';
+        } else {
+            $entry->summary = implode('', $summary);
         }
     }
 
@@ -660,13 +676,14 @@ EOF;
     }
 
     /**
-     * The Flickr oEmbed calls a script when pulled down. This script creates
-     * an iframe and moved forward. The iframe is useless, the script and the
-     * anchor tag called prior are the important components.
+     * The Flickr oEmbed calls a script when pulled down. This script instantly
+     * creates an iframe to replace the anchor tag. The iframe is useless;
+     * the script and the anchor tag called prior are the important components.
      * 
      * The true code is stuck in the data-embed-code div. This script grabs the 
      * embed code and saves it as content
-     * before it is flushed. This only happens when Flickr is present.
+     * before it is flushed. This only happens when Flickr is present. All other
+     * oembed scripts behave.
      * @param string $content
      */
     private function cleanFlickr($content)
@@ -711,7 +728,6 @@ EOF;
     {
         return str_replace(' contenteditable="true"', '', $content);
     }
-
 
     /**
      * Cleans up the content string that is imported from Medium Editor.
