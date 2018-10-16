@@ -19,7 +19,7 @@ use Canopy\Request;
 class HostFactory extends BaseFactory
 {
 
-    public function build($data = null)
+    public function build(array $data = null)
     {
         $resource = new Resource;
         if ($data) {
@@ -44,7 +44,7 @@ class HostFactory extends BaseFactory
         self::saveResource($host);
     }
 
-    public function getByUrl($url)
+    public function getByUrl(string $url)
     {
         //$urlObj = new \phpws2\Variable\Url($url);
         $urlObj = new \phpws2\Variable\StringVar($url);
@@ -59,9 +59,18 @@ class HostFactory extends BaseFactory
         }
     }
 
-    public function save($resource)
+    public function save(Resource $resource)
     {
         self::saveResource($resource);
+    }
+    
+    public function share(int $id, Request $request) {
+        $host = $this->load($id);
+        $entryId = $request->pullPutString('entryId');
+        
+        $url = "{$host->url}/stories/Guest/share/?json=1&authkey={$host->authkey}&entryId=$entryId";
+        $result = file_get_contents($url);
+        return json_decode($result);
     }
 
 }
