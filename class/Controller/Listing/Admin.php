@@ -51,8 +51,7 @@ class Admin extends User
         if (class_exists('\Menu')) {
             \Menu::disableMenu();
         }
-
-        return $this->view->scriptView('EntryList');
+        return $this->view->scriptView('EntryList', true, ['shareList'=> $shareList]);
     }
 
     protected function adminJsonCommand(Request $request)
