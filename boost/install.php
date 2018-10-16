@@ -33,7 +33,13 @@ function stories_install(&$content)
 
         $author = new \stories\Resource\AuthorResource;
         $authorTable = $author->createTable($db);
-        $usersTable = $db->buildTable('users');
+        $db->clearTables();
+        
+        $share = new \stories\Resource\ShareResource;
+        $shareTable = $share->createTable($db);
+        $guestId = $shareTable->getDataType('guestId');
+        $entryId = $shareTable->getDataType('entryId');
+        $shareUnique = new \phpws2\Database\Unique([$guestId, $entryId]);
         $db->clearTables();
 
         $feature = new \stories\Resource\FeatureResource;
@@ -47,8 +53,8 @@ function stories_install(&$content)
         $tagToEntry = $db->buildTable('storiestagtoentry');
         $entryId = $tagToEntry->addDataType('entryId', 'int');
         $tagId = $tagToEntry->addDataType('tagId', 'int');
-        $unique = new \phpws2\Database\Unique(array($tagId, $entryId));
-        $tagToEntry->addUnique($unique);
+        $unique1 = new \phpws2\Database\Unique(array($tagId, $entryId));
+        $tagToEntry->addUnique($unique1);
         $tagToEntry->create();
 
         $entryToFeature = $db->buildTable('storiesentrytofeature');
@@ -62,12 +68,15 @@ function stories_install(&$content)
 
         $guest = new \stories\Resource\GuestResource;
         $guestTable = $guest->createTable($db);
+        $guestUnique = new \phpws2\Database\Unique('authkey');
+        $guestTable->addUnique($unique);
 
         $host = new \stories\Resource\HostResource;
         $hostTable = $host->createTable($db);
         $url = $hostTable->getDataType('url');
-        $unique = new \phpws2\Database\Unique($url);
-        $unique->add();
+        $unique2 = new \phpws2\Database\Unique($url);
+        $unique2->add();
+        
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
         $db->rollback();
@@ -94,6 +103,9 @@ function stories_install(&$content)
         }
         if (isset($hostTable)) {
             $hostTable->drop(true);
+        }
+        if (isset($shareTable)) {
+            $shareTable->drop(true);
         }
         throw $e;
     }

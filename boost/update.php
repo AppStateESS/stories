@@ -238,10 +238,19 @@ class StoriesUpdate
         if (!$db->tableExists('storiesguest')) {
             $guest = new \stories\Resource\GuestResource;
             $guestTable = $guest->createTable($db);
+            $guestUnique = new \phpws2\Database\Unique('authkey');
+            $guestTable->addUnique($unique);
         }
         if (!$db->tableExists('storieshost')) {
             $host = new \stories\Resource\HostResource;
             $hostTable = $host->createTable($db);
+        }
+        if (!$db->tableExists('storiesshare')) {
+            $share = new \stories\Resource\ShareResource;
+            $shareTable = $share->createTable($db);
+            $guestId = $shareTable->getDataType('guestId');
+            $entryId = $shareTable->getDataType('entryId');
+            $shareUnique = new \phpws2\Database\Unique([$guestId, $entryId]);
         }
 
         $changes[] = 'Add ability to share stories with other sites.';
