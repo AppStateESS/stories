@@ -23,34 +23,8 @@ use stories\Factory\GuestFactory;
 use stories\View\HostView as View;
 use stories\Controller\RoleController;
 
-class Admin extends RoleController
+class Admin extends User
 {
-
-    /**
-     * @var stories\Factory\HostFactory
-     */
-    protected $hostFactory;
-
-    /**
-     * @var stories\Factory\GuestFactory
-     */
-    protected $guestFactory;
-
-    /**
-     * @var stories\View\HostView
-     */
-    protected $view;
-
-    protected function loadFactory()
-    {
-        $this->guestFactory = new GuestFactory;
-        $this->hostFactory = new HostFactory;
-    }
-
-    protected function loadView()
-    {
-        $this->view = new View;
-    }
 
     public function listHtmlCommand(Request $request)
     {
@@ -67,24 +41,30 @@ class Admin extends RoleController
         $data['hosts'] = $this->hostFactory->getHosts();
         return $data;
     }
-    
+
     public function postCommand(Request $request)
     {
         $this->hostFactory->create($request);
-        return ['success'=>true];
+        return ['success' => true];
     }
-    
+
     public function existsJsonCommand(Request $request)
     {
-        return ['duplicate'=> (bool) $this->hostFactory->getByUrl($request->pullGetString('url'))];
+        return ['duplicate' => (bool) $this->hostFactory->getByUrl($request->pullGetString('url'))];
     }
-    
+
     public function putCommand(Request $request)
     {
         $host = $this->hostFactory->load($this->id);
         $host->authkey = $request->pullPutString('authkey');
         $this->hostFactory->save($host);
-        return ['success'=>true];
+        return ['success' => true];
+    }
+
+    public function sharePutCommand(Request $request)
+    {
+        $json = $this->hostFactory->share($this->id, $request);
+        return $json;
     }
 
 }
