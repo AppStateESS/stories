@@ -117,7 +117,7 @@ class BaseController extends \phpws2\Http\Controller
 
     public function get(Request $request)
     {
-        if ($request->isAjax()) {
+        if ($request->isAjax() || (bool)$request->pullGetBoolean('json', true)) {
             $result = $this->controller->getJson($request);
         } else {
             $result = $this->controller->getHtml($request);
