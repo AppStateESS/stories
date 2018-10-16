@@ -30,6 +30,7 @@ function stories_uninstall(&$content)
     $db->buildTable('storiesentrytofeature')->drop(true);
     $db->buildTable('storieshost')->drop(true);
     $db->buildTable('storiesguest')->drop(true);
+    $db->buildTable('storiesshare')->drop(true);
     $shortcuts = $db->addTable('access_shortcuts');
     $shortcuts->addFieldConditional('url', 'stories:%', 'like');
     $db->delete();
