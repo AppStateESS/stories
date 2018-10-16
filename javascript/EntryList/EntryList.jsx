@@ -10,6 +10,7 @@ import Navbar from '../AddOn/Navbar'
 import SearchBar from '../AddOn/SearchBar'
 import SortBy from './SortBy'
 import Entry from '../Resource/Entry'
+import PropTypes from 'prop-types'
 import './style.css'
 
 /* global $ */
@@ -29,7 +30,9 @@ export default class EntryList extends Component {
       thumbnailOverlay: false,
       sortByTagId: 0,
       moreRows: true,
+      shareStatus: null,
       tags: [],
+      hostId: '0'
     }
 
     this.offset = 0
@@ -43,6 +46,8 @@ export default class EntryList extends Component {
     this.unpublish = this.unpublish.bind(this)
     this.tagChange = this.tagChange.bind(this)
     this.sortByTag = this.sortByTag.bind(this)
+    this.changeHost = this.changeHost.bind(this)
+    this.shareStory = this.shareStory.bind(this)
     this.updateSort = this.updateSort.bind(this)
     this.updateEntry = this.updateEntry.bind(this)
     this.clearSearch = this.clearSearch.bind(this)
@@ -92,6 +97,45 @@ export default class EntryList extends Component {
     this.updateEntry(entry)
   }
 
+  changeHost(e) {
+    this.setState({hostId: e.target.value})
+  }
+
+  shareStory() {
+    if (this.state.hostId === '0') {
+      return
+    }
+    const entry = this.currentEntry()
+
+    const icon = <span><i className="fas fa-sync fa-spin"></i></span>
+
+    const saving = (
+      <div>
+        {icon}&nbsp;Sending...
+      </div>
+    )
+    this.setState({shareStatus: saving})
+    $.ajax({
+      url: `stories/Host/${this.state.hostId}/share`,
+      data: {
+        entryId: entry.id,
+      },
+      dataType: 'json',
+      type: 'put',
+      success: (data) => {
+        if (data.error) {
+          const errorMessage = (<div className="alert alert-danger">{data.error}</div>)
+          this.setState({shareStatus: errorMessage})
+        } else if (data.success) {
+          this.setState({shareStatus: <div className="alert alert-success">Request received.</div>})
+        } else {
+          this.setState({shareStatus: <div className="alert alert-danger">Request failed.</div>})
+        }
+      },
+      error: () => {}
+    })
+  }
+
   componentDidMount() {
     this.load()
   }
@@ -136,7 +180,7 @@ export default class EntryList extends Component {
     const sendData = {
       search: this.state.search,
       sortBy: this.state.sortBy,
-      sortByTagId: this.state.sortByTagId,
+      sortByTagId: this.state.sortByTagId
     }
     if (this.offset > 0) {
       sendData.offset = this.offset
@@ -215,7 +259,7 @@ export default class EntryList extends Component {
           }, {
             param: 'publishDate',
             value: this.currentEntry().publishDate
-          },
+          }
         ]
       },
       dataType: 'json',
@@ -240,7 +284,7 @@ export default class EntryList extends Component {
 
   closeOverlay() {
     this.setState(
-      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null}
+      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null, hostId: '0', shareStatus: null}
     )
     this.unlockBody()
   }
@@ -339,12 +383,12 @@ export default class EntryList extends Component {
         key="1"
         search={this.state.search}
         clearSearch={this.clearSearch}
-        handleChange={this.searchChange}/>,
+        handleChange={this.searchChange}/>
     ]
 
     const header = {
       title: 'Stories list',
-      url: './stories/Listing',
+      url: './stories/Listing'
     }
 
     const leftSide = (
@@ -353,19 +397,24 @@ export default class EntryList extends Component {
           <i className="fa fa-book"></i>&nbsp;Create a new story</a>
       </li>
     )
-    
+
     const currentEntry = this.currentEntry()
 
     return (
       <div className="stories-listing">
         <PublishOverlay
           show={this.state.publishOverlay}
+          shareList={this.props.shareList}
+          changeHost={this.changeHost}
+          shareStory={this.shareStory}
+          hostId={this.state.hostId}
           savePublishDate={this.savePublishDate}
           title={currentEntry.title}
           isPublished={currentEntry.published}
           publishDate={currentEntry.publishDate}
           setPublishDate={this.setPublishDate}
           publish={this.publish}
+          shareStatus={this.state.shareStatus}
           unpublish={this.unpublish}/>
         <TagOverlay
           show={this.state.tagOverlay}
@@ -386,6 +435,10 @@ export default class EntryList extends Component {
       </div>
     )
   }
+}
+
+EntryList.propTypes = {
+  shareList: PropTypes.array
 }
 
 const NoEntries = () => {
