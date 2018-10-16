@@ -17,6 +17,7 @@ use phpws2\Database;
 use Canopy\Request;
 use phpws2\Variable;
 use phpws2\Template;
+use stories\Factory\ShareFactory;
 
 if (!defined('STORIES_SENDMAIL')) {
     define('STORIES_SENDMAIL', '/usr/sbin/sendmail -bs');
@@ -108,6 +109,39 @@ class GuestFactory extends BaseFactory
         $guest = $this->load($id);
         $guest->status = 2;
         self::saveResource($guest);
+    }
+
+    private function getByAuthkey($authkey)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesguest');
+        $tbl->addFieldConditional('authkey', $authkey);
+        $row = $db->selectOneRow();
+        if (empty($row)) {
+            return null;
+        } else {
+            return $this->build($row);
+        }
+    }
+
+    public function shareRequest(Request $request)
+    {
+        $authkey = $request->pullGetString('authkey');
+        $entryId = $request->pullGetInteger('entryId');
+        $guest = $this->getByAuthkey($authkey);
+        if (!$guest) {
+            return ['error' => 'Authorization not recognized.'];
+        }
+        try {
+            $shareFactory = new ShareFactory;
+            $shareFactory->create($guest, $entryId);
+        } catch (\Exception $e) {
+            if ($e->getCode() === '23000') {
+                return ['error' => 'Duplicate request.'];
+            }
+        }
+
+        return ['success' => true];
     }
 
 }
