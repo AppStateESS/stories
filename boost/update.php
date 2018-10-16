@@ -235,11 +235,18 @@ class StoriesUpdate
     private function v1_5_0()
     {
         $db = Database::getDB();
+
+        $tagToEntry = $db->getTable('storiestagtoentry');
+        $tagId = $tagToEntry->addDataType('tagId', 'int');
+        $entryId = $tagToEntry->addDataType('entryId', 'int');
+        $tagUnique = new \phpws2\Database\Unique(array($tagId, $entryId));
+        $tagUnique->add();
+
         if (!$db->tableExists('storiesguest')) {
             $guest = new \stories\Resource\GuestResource;
             $guestTable = $guest->createTable($db);
             $guestUnique = new \phpws2\Database\Unique('authkey');
-            $guestTable->addUnique($unique);
+            $guestUnique->add();
         }
         if (!$db->tableExists('storieshost')) {
             $host = new \stories\Resource\HostResource;
@@ -251,6 +258,7 @@ class StoriesUpdate
             $guestId = $shareTable->getDataType('guestId');
             $entryId = $shareTable->getDataType('entryId');
             $shareUnique = new \phpws2\Database\Unique([$guestId, $entryId]);
+            $shareUnique->add();
         }
 
         $changes[] = 'Add ability to share stories with other sites.';
