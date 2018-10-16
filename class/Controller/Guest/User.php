@@ -44,4 +44,10 @@ class User extends RoleController
     {
         return $this->view->requestAccepted();
     }
+    
+    public function shareJsonCommand(Request $request) {
+        $json = $this->factory->shareRequest($request);
+        return $json;
+    }
+    
 }
