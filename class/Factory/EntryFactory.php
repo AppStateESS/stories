@@ -578,12 +578,16 @@ class EntryFactory extends BaseFactory
         }
     }
 
-    public function data(Resource $entry, $publishOnly = true)
+    public function data(Resource $entry, $publishOnly = true, $brief = false)
     {
         if ($publishOnly && (!$entry->published && $entry->publishDate < time())) {
             return null;
         }
-        return $entry->getStringVars(true);
+        if ($brief) {
+             return $entry->getStringVars(true, ['authorEmail', 'authorId', 'authorName', 'authorPic', 'content', 'deleted', 'expirationDate', 'imageOrientation', 'leadImage', 'updateDate', 'createDateRelative', 'createDate', 'published']);
+        } else {
+            return $entry->getStringVars(true);
+        }
     }
 
     /**
@@ -760,5 +764,5 @@ EOF;
         $content = str_replace("\n", '', $content);
         return $content;
     }
-
+    
 }
