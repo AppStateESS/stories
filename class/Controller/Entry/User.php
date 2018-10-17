@@ -29,10 +29,12 @@ use stories\Controller\RoleController;
 
 class User extends RoleController
 {
+
     /**
      * @var stories\Factory\EntryFactory Factory
      */
     protected $factory;
+
     /**
      * @var stories\View\EntryView View
      */
@@ -42,7 +44,7 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
-    
+
     protected function loadView()
     {
         $this->view = new View;
@@ -53,9 +55,16 @@ class User extends RoleController
         \Layout::addJSHeader(StoryMenu::mediumCSSLink());
         return $this->view->view($this->id, $this->role->isAdmin());
     }
-    
+
     protected function listHtmlCommand(Request $request)
     {
         return $this->view->listing($request);
     }
+
+    protected function viewJsonCommand(Request $request)
+    {
+        $entry = $this->factory->load($this->id);
+        return $this->factory->data($entry, true, true);
+    }
+    
 }
