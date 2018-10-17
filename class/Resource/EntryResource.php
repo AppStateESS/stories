@@ -218,6 +218,11 @@ class EntryResource extends BaseResource
     {
         return $this->publishDate->get($format);
     }
+    
+    public function pastPublishDate()
+    {
+        return $this->publishDate->get(false) < time();
+    }
 
     /**
      * Prepare the title for a url. Shortened to 240 characters to allow room for 
