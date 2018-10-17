@@ -35,6 +35,18 @@ class HostFactory extends BaseFactory
         $tbl->addOrderBy('siteName');
         return $db->select();
     }
+    
+    public function getHostsSelect()
+    {
+        $result = $this->getHosts();
+        if (empty($result)) {
+            return [];
+        }
+        foreach ($result as $row) {
+            $hosts[] = ['value'=>$row['id'], 'label'=>$row['siteName']];
+        }
+        return $hosts;
+    }
 
     public function create(Request $request)
     {
