@@ -7,6 +7,7 @@ import Modal from '@essappstate/canopy-react-modal'
 import RequestForm from './RequestForm'
 import Navbar from '../AddOn/Navbar'
 import AuthKeyForm from './AuthKeyForm'
+import SharedStories from './SharedStories'
 import PropTypes from 'prop-types'
 
 /* global $ */
@@ -61,6 +62,8 @@ export default class ShareHost extends Component {
         <Navbar header={'Stories Sharing'} leftSide={leftside}/>
         <Modal body={requestForm}/>
         <Modal body={authKeyForm} modalId="authKeyForm" header={hostFormTitle}/>
+        <h3>Recently shared</h3>
+        <SharedStories />
         <hr/>
         <h3>Hosts</h3>
         <Hosts
@@ -99,6 +102,7 @@ export default class ShareHost extends Component {
   deleteHost(key) {
     console.log('delete host at key=', key)
   }
+  
 
   denyGuest(key) {
     $.ajax({
