@@ -25,6 +25,7 @@ use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
 use stories\Factory\TagFactory;
 use stories\Factory\StoryMenu;
+use stories\Factory\HostFactory;
 use stories\Controller\RoleController;
 
 class Admin extends User
@@ -51,6 +52,9 @@ class Admin extends User
         if (class_exists('\Menu')) {
             \Menu::disableMenu();
         }
+        $hostFactory = new HostFactory;
+        $shareList = $hostFactory->getHostsSelect();
+        
         return $this->view->scriptView('EntryList', true, ['shareList'=> $shareList]);
     }
 
