@@ -275,6 +275,7 @@ class EntryFactory extends BaseFactory
         $entry = $this->build();
         $entry->title = '';
         $entry->content = '';
+        $entry->createStamp();
         $authorFactory = new AuthorFactory;
         $this->loadAuthor($entry, $authorFactory->getByCurrentUser(true));
         return self::saveResource($entry);
