@@ -151,11 +151,9 @@ class EntryResource extends BaseResource
         $this->content = new \phpws2\Variable\StringVar(null, 'content');
         $this->content->addAllowedTags(STORIES_CONTENT_TAGS);
         $this->createDate = new \phpws2\Variable\DateTime(0, 'createDate');
-        $this->createDate->stamp();
         $this->imageOrientation = new \phpws2\Variable\SmallInteger(0,
                 'imageOrientation');
         $this->updateDate = new \phpws2\Variable\DateTime(0, 'updateDate');
-        $this->updateDate->stamp();
         $this->deleted = new \phpws2\Variable\BooleanVar(false, 'deleted');
         $this->expirationDate = new \phpws2\Variable\DateTime(0,
                 'expirationDate');
@@ -163,7 +161,6 @@ class EntryResource extends BaseResource
         $this->leadImage = new \phpws2\Variable\FileVar(null, 'leadImage');
         $this->leadImage->allowNull(true);
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
-        $this->publishDate->stamp();
         $this->publishDate->setFormat(null);
         $this->publishDate->setPrintEmpty(false);
         $this->published = new \phpws2\Variable\BooleanVar(false, 'published');
@@ -217,6 +214,11 @@ class EntryResource extends BaseResource
     public function getPublishDate($format = null)
     {
         return $this->publishDate->get($format);
+    }
+    
+    public function createStamp()
+    {
+        $this->createDate->stamp();
     }
     
     public function pastPublishDate()
