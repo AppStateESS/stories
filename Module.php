@@ -85,9 +85,10 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     {
         if (\Current_User::allow('stories')) {
             \stories\Factory\StoryMenu::addStoryLink();
-            \stories\Factory\StoryMenu::authorLink();
-            \stories\Factory\StoryMenu::featureLink();
             \stories\Factory\StoryMenu::listStoryLink();
+            \stories\Factory\StoryMenu::addShareLink();
+            \stories\Factory\StoryMenu::featureLink();
+            \stories\Factory\StoryMenu::authorLink();
             \stories\Factory\StoryMenu::adminDisplayLink();
         }
         $this->frontPage($request);
@@ -104,9 +105,8 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
                 true);
 
         if ($settings->get('stories', 'listStories')) {
-            $view = new \stories\View\EntryView;
-            \Layout::add($view->listing($request), 'stories',
-                    'stories', true);
+            $view = new \stories\View\PublishedView;
+            \Layout::add($view->listing($request), 'stories', 'stories', true);
         }
     }
 
