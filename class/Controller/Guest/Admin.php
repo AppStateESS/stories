@@ -26,10 +26,16 @@ class Admin extends User
         return ['success' => true];
     }
 
-    public function denyGuestPutCommand(Request $request)
+    public function deleteCommand(Request $request)
     {
-        $this->factory->denyGuest($this->id);
+        $this->factory->delete($this->id);
         return ['success' => true];
+    }
+    
+    public function denyPutCommand(Request $request)
+    {
+        $this->factory->denyRequest($this->id);
+        return ['success'=>true];
     }
 
 }
