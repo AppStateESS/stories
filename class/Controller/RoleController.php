@@ -31,9 +31,9 @@ abstract class RoleController
 
     public function __construct($role)
     {
+        $this->role = $role;
         $this->loadFactory();
         $this->loadView();
-        $this->role = $role;
     }
 
     /**
