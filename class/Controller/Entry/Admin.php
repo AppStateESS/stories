@@ -34,6 +34,11 @@ class Admin extends User
      */
     protected $factory;
 
+    protected function loadView()
+    {
+        $this->view = new View(true);
+    }
+
     protected function createHtmlCommand(Request $request)
     {
         $entry = $this->factory->create();
@@ -45,8 +50,7 @@ class Admin extends User
         \Menu::disableMenu();
         $entry = $this->factory->load($this->id);
         StoryMenu::viewStoryLink($entry);
-        return $this->view->form($entry,
-                        $request->pullGetBoolean('new', true));
+        return $this->view->form($entry, $request->pullGetBoolean('new', true));
     }
 
     protected function postCommand(Request $request)
@@ -58,10 +62,11 @@ class Admin extends User
     {
         return array('entryId' => $this->factory->put($this->id, $request));
     }
-    
+
     protected function orientationPutCommand(Request $request)
     {
-        return array('entryId'=> $this->factory->changeOrientation($this->id, $request->pullPutInteger('orientation')));
+        return array('entryId' => $this->factory->changeOrientation($this->id,
+                    $request->pullPutInteger('orientation')));
     }
 
     protected function patchCommand(Request $request)
