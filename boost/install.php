@@ -20,6 +20,7 @@
  */
 
 use phpws2\Database;
+use phpws2\Database\ForeignKey;
 
 function stories_install(&$content)
 {
@@ -29,32 +30,43 @@ function stories_install(&$content)
     try {
         $entry = new \stories\Resource\EntryResource;
         $entryTable = $entry->createTable($db);
-        $db->clearTables();
 
         $author = new \stories\Resource\AuthorResource;
         $authorTable = $author->createTable($db);
-        $db->clearTables();
+        
+        $guest = new \stories\Resource\GuestResource;
+        $guestTable = $guest->createTable($db);
+        $guestUnique = new \phpws2\Database\Unique($guestTable->getDataType('authkey'));
+        $guestUnique->add();
         
         $share = new \stories\Resource\ShareResource;
         $shareTable = $share->createTable($db);
-        $guestId = $shareTable->getDataType('guestId');
-        $entryId = $shareTable->getDataType('entryId');
-        $shareUnique = new \phpws2\Database\Unique([$guestId, $entryId]);
-        $db->clearTables();
+        $shareGuestId = $shareTable->getDataType('guestId');
+        $shareEntryId = $shareTable->getDataType('entryId');
+        $shareUnique = new \phpws2\Database\Unique([$shareGuestId, $shareEntryId]);
+        $shareUnique->add();
+        $shareForeign = new ForeignKey($shareGuestId, $guestTable->getDataType('id'), ForeignKey::CASCADE);
+        $shareForeign->add();
 
+        $publishTable = $db->buildTable('storiespublish');
+        $publishTable->addDataType('entryId', 'int');
+        $publishShareId = $publishTable->addDataType('shareId', 'int');
+        $publishTable->addDataType('publishDate', 'int');
+        $publishTable->create();
+        $publishForeign = new ForeignKey($publishShareId, $shareTable->getDataType('id'), ForeignKey::CASCADE);
+        $publishForeign->add();
+        
         $feature = new \stories\Resource\FeatureResource;
         $featureTable = $feature->createTable($db);
-        $db->clearTables();
 
         $tag = new \stories\Resource\TagResource;
         $tagTable = $tag->createTable($db);
-        $db->clearTables();
 
         $tagToEntry = $db->buildTable('storiestagtoentry');
         $entryId = $tagToEntry->addDataType('entryId', 'int');
         $tagId = $tagToEntry->addDataType('tagId', 'int');
-        $unique1 = new \phpws2\Database\Unique(array($tagId, $entryId));
-        $tagToEntry->addUnique($unique1);
+        $tagUnique = new \phpws2\Database\Unique(array($tagId, $entryId));
+        $tagToEntry->addUnique($tagUnique);
         $tagToEntry->create();
 
         $entryToFeature = $db->buildTable('storiesentrytofeature');
@@ -65,11 +77,6 @@ function stories_install(&$content)
         $entryToFeature->addDataType('zoom', 'smallint');
         $entryToFeature->addDataType('sorting', 'smallint');
         $entryToFeature->create();
-
-        $guest = new \stories\Resource\GuestResource;
-        $guestTable = $guest->createTable($db);
-        $guestUnique = new \phpws2\Database\Unique('authkey');
-        $guestTable->addUnique($unique);
 
         $host = new \stories\Resource\HostResource;
         $hostTable = $host->createTable($db);
@@ -86,6 +93,15 @@ function stories_install(&$content)
         if (isset($authorTable)) {
             $authorTable->drop(true);
         }
+        if (isset($shareTable)) {
+            $shareTable->drop(true);
+        }
+        if (isset($publishTable)) {
+            $publishTable->drop(true);
+        }
+        if (isset($guestTable)) {
+            $guestTable->drop(true);
+        }
         if (isset($featureTable)) {
             $featureTable->drop(true);
         }
@@ -98,14 +114,8 @@ function stories_install(&$content)
         if (isset($entryToFeature)) {
             $entryToFeature->drop(true);
         }
-        if (isset($guestTable)) {
-            $guestTable->drop(true);
-        }
         if (isset($hostTable)) {
             $hostTable->drop(true);
-        }
-        if (isset($shareTable)) {
-            $shareTable->drop(true);
         }
         throw $e;
     }
