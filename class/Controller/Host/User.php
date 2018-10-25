@@ -49,10 +49,8 @@ class User extends RoleController
 
     public function shareHtmlCommand(Request $request)
     {
-        $this->forceAjax = true;
         $result = $this->hostFactory->shareRequest($request);
         return $result;
-        //echo json_encode($result);exit;
     }
 
 }
