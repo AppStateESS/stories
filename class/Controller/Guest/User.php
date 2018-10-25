@@ -32,7 +32,7 @@ class User extends RoleController
     
     public function requestPostCommand(Request $request)
     {
-        return $this->view->requestForm($request);
+        return $this->factory->requestShare($request);
     }
     
     public function requestErrorHtmlCommand(Request $request)
@@ -43,11 +43,6 @@ class User extends RoleController
     public function requestAcceptedHtmlCommand()
     {
         return $this->view->requestAccepted();
-    }
-    
-    public function shareJsonCommand(Request $request) {
-        $json = $this->factory->shareRequest($request);
-        return $json;
     }
     
 }
