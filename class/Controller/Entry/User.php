@@ -52,8 +52,7 @@ class User extends RoleController
 
     protected function viewHtmlCommand(Request $request)
     {
-        \Layout::addJSHeader(StoryMenu::mediumCSSLink());
-        return $this->view->view($this->id, $this->role->isAdmin());
+        return $this->view->view($this->id);
     }
 
     protected function listHtmlCommand(Request $request)
@@ -63,8 +62,12 @@ class User extends RoleController
 
     protected function viewJsonCommand(Request $request)
     {
-        $entry = $this->factory->load($this->id);
-        return $this->factory->data($entry, true, true);
+        try {
+            $entry = $this->factory->load($this->id);
+            return $this->factory->shareData($entry);
+        } catch (\Exception $e) {
+            return ['error' => 'Could not retrieve story.'];
+        }
     }
-    
+
 }
