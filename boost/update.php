@@ -260,6 +260,10 @@ class StoriesUpdate
             $shareUnique = new \phpws2\Database\Unique([$guestId, $entryId]);
             $shareUnique->add();
         }
+        
+        $entryTable = $db->addTable('storiesentry');
+        $listView = new \phpws2\Database\Datatype\Smallint($entryTable, 'listView');
+        $listView->add();
 
         $changes[] = 'Add ability to share stories with other sites.';
 
