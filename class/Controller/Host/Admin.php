@@ -67,4 +67,11 @@ class Admin extends User
         return $json;
     }
 
+    public function deleteCommand(Request $request)
+    {
+        $this->hostFactory->delete($this->id);
+        $json = ['success'=> true];
+        return $json;
+    }
+
 }
