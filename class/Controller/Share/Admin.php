@@ -17,7 +17,7 @@ use stories\Factory\ShareFactory as Factory;
 use stories\View\ShareView as View;
 use stories\Controller\RoleController;
 
-class Admin extends RoleController
+class Admin extends User
 {
 
     protected function loadFactory()
