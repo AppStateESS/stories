@@ -20,6 +20,7 @@ namespace stories\Controller\Host;
 use Canopy\Request;
 use stories\Factory\HostFactory;
 use stories\Factory\GuestFactory;
+use stories\Factory\ShareFactory;
 use stories\View\HostView as View;
 use stories\Controller\RoleController;
 
@@ -35,10 +36,12 @@ class Admin extends User
 
     public function listJsonCommand(Request $request)
     {
+        $shareFactory = new ShareFactory;
         $data = [];
         $data['currentGuests'] = $this->guestFactory->getCurrentGuests();
         $data['guestRequests'] = $this->guestFactory->getGuestRequests();
         $data['hosts'] = $this->hostFactory->getHosts();
+        $data['inaccessible'] = $shareFactory->getInaccessible();
         return $data;
     }
 
