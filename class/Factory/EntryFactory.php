@@ -12,18 +12,20 @@
 
 namespace stories\Factory;
 
+use phpws2\Database;
+use phpws2\Settings;
+use Canopy\Request;
+use stories\Resource\AuthorResource;
 use stories\Resource\EntryResource as Resource;
 use stories\Resource\ThumbnailResource;
 use stories\Factory\AuthorFactory;
 use stories\Factory\TagFactory;
-use stories\Resource\AuthorResource;
+use stories\Factory\PublishFactory;
 use stories\Exception\MissingInput;
 use stories\Exception\ResourceNotFound;
-use phpws2\Database;
-use phpws2\Settings;
-use Canopy\Request;
 
 require_once PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
+
 if (!defined('STORIES_HARD_LIMIT')) {
     define('STORIES_HARD_LIMIT', 100);
 }
@@ -74,7 +76,7 @@ class EntryFactory extends BaseFactory
 
     private function defaultListOptions()
     {
-        return array('publishedOnly' => false,
+        return array(
             'hideExpired' => true,
             'sortBy' => 'publishDate',
             'limit' => 10,
@@ -99,7 +101,8 @@ class EntryFactory extends BaseFactory
      * limit: [6] Total number of entries to pull
      * includeContent: [true] Include content in the pull 
      * publishedOnly: [true] Only show published entries
-     * offset: [0] Current number of offsets using limit 
+     * showAuthor: [false] Show the author information
+     * offset: [0] Current number of offsets using limit
      * tag: [null] Limit by tag association
      * vars: [null] If array, only pull these variables
      * mustHaveThumbnail: [false] Only pull entries that have an associate thumbnail
@@ -276,6 +279,7 @@ class EntryFactory extends BaseFactory
         $entry->title = '';
         $entry->content = '';
         $entry->createStamp();
+        $entry->publishStamp();
         $authorFactory = new AuthorFactory;
         $this->loadAuthor($entry, $authorFactory->getByCurrentUser(true));
         return self::saveResource($entry);
@@ -518,13 +522,11 @@ class EntryFactory extends BaseFactory
         while (!$summaryFound && $summaryCount <= $summaryLimit) {
             if ($p->length > $summaryCount) {
                 $pNode = $p->item($summaryCount);
-                if ($pNode->textContent == '::summary') {
+                if (preg_match('/^::summary/', $pNode->textContent)) {
                     $summaryFound = true;
                     break;
                 }
                 $totalCharacters += strlen($pNode->textContent);
-
-                //$pContent = trim($pNode->textContent);
                 $pContent = $pNode->C14N();
                 if (!empty($pContent)) {
                     $summary[] = $pContent;
@@ -567,11 +569,16 @@ class EntryFactory extends BaseFactory
 
     private function patchEntry(Resource $entry, $param, $value)
     {
+        $publishFactory = new PublishFactory;
         switch ($param) {
             case 'published':
                 if ($value == '0') {
                     $featureFactory = new FeatureFactory();
                     $featureFactory->removeEntryFromAll($entry->id);
+                    $publishFactory->unpublishEntry($entry->id);
+                } else {
+                    $publishFactory->publishEntry($entry->id,
+                            $entry->publishDate);
                 }
 
             default:
@@ -579,16 +586,23 @@ class EntryFactory extends BaseFactory
         }
     }
 
-    public function data(Resource $entry, $publishOnly = true, $brief = false)
+    /**
+     * An abridged array of information about an entry used for sharing.
+     * @param Resource $entry
+     * @return array
+     */
+    public function shareData(Resource $entry)
+    {
+        return $entry->getStringVars(true,
+                        ['authorEmail', 'authorId', 'authorName', 'authorPic', 'content', 'deleted', 'expirationDate', 'leadImage', 'updateDate', 'createDateRelative', 'createDate', 'published']);
+    }
+
+    public function data(Resource $entry, $publishOnly = true)
     {
         if ($publishOnly && (!$entry->published && $entry->publishDate < time())) {
             return null;
         }
-        if ($brief) {
-             return $entry->getStringVars(true, ['authorEmail', 'authorId', 'authorName', 'authorPic', 'content', 'deleted', 'expirationDate', 'imageOrientation', 'leadImage', 'updateDate', 'createDateRelative', 'createDate', 'published']);
-        } else {
-            return $entry->getStringVars(true);
-        }
+        return $entry->getStringVars(true);
     }
 
     /**
@@ -598,6 +612,7 @@ class EntryFactory extends BaseFactory
      */
     public function delete($id)
     {
+        $publishFactory = new PublishFactory;
         $entry = $this->load($id);
         $entry->deleted = true;
 
@@ -605,6 +620,7 @@ class EntryFactory extends BaseFactory
         $featureFactory = new FeatureFactory;
         $featureFactory->removeEntryFromAll($id);
         self::saveResource($entry);
+        $publishFactory->unpublishEntry($entry->id);
     }
 
     public function purge($id)
@@ -639,13 +655,6 @@ class EntryFactory extends BaseFactory
         return <<<EOF
 <script src="mod/stories/javascript/Tooltip/index.js"></script>
 EOF;
-    }
-
-    public function notFound()
-    {
-        $template = new \phpws2\Template();
-        $template->setModuleTemplate('stories', 'Entry/NotFound.html');
-        return $template->get();
     }
 
     /**
@@ -765,5 +774,5 @@ EOF;
         $content = str_replace("\n", '', $content);
         return $content;
     }
-    
+
 }
