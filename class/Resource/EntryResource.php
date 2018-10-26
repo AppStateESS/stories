@@ -131,6 +131,13 @@ class EntryResource extends BaseResource
     protected $urlTitle;
 
     /**
+     * 0 = summary view on list
+     * 1 = full view on list
+     * @var phpws2\Variable\SmallInteger
+     */
+    protected $listView;
+
+    /**
      * @var string
      */
     protected $table = 'storiesentry';
@@ -173,6 +180,7 @@ class EntryResource extends BaseResource
         $this->tags->allowNull(true);
         $this->tags->setIsTableColumn(false);
         $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle', 255);
+        $this->listView = new \phpws2\Variable\SmallInteger(0, 'listView');
 
         $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
     }
@@ -198,8 +206,12 @@ class EntryResource extends BaseResource
             unset($vars['summary']);
         }
 
-        $vars['createDateRelative'] = $this->relativeTime($this->createDate->get());
-        $vars['publishDateRelative'] = $this->relativeTime($this->publishDate->get());
+        if (is_array($hide) && !in_array('createDate', $hide)) {
+            $vars['createDateRelative'] = $this->relativeTime($this->createDate->get());
+        }
+        if ($this->publishDate->get()) {
+            $vars['publishDateRelative'] = $this->relativeTime($this->publishDate->get());
+        }
         if (!is_array($hide) || !in_array('tags', $hide)) {
             $vars['tags'] = $tagFactory->getTagsByEntryId($this->id, true);
         }
@@ -215,12 +227,17 @@ class EntryResource extends BaseResource
     {
         return $this->publishDate->get($format);
     }
-    
+
     public function createStamp()
     {
         $this->createDate->stamp();
     }
     
+    public function publishStamp()
+    {
+        $this->publishDate->stamp();
+    }
+
     public function pastPublishDate()
     {
         return $this->publishDate->get(false) < time();
