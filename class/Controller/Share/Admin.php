@@ -46,5 +46,10 @@ class Admin extends User
     {
         return ['listing' => $this->factory->listing(0)];
     }
+    
+    public function deleteCommand(Request $request)
+    {
+        $this->factory->delete($this->id);
+    }
 
 }
