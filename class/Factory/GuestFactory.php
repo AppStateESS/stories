@@ -18,6 +18,7 @@ use Canopy\Request;
 use phpws2\Variable;
 use phpws2\Template;
 use stories\Factory\ShareFactory;
+use Canopy\Server;
 
 if (!defined('STORIES_SENDMAIL')) {
     define('STORIES_SENDMAIL', '/usr/sbin/sendmail -bs');
@@ -61,9 +62,16 @@ class GuestFactory extends BaseFactory
     {
         $guest = $this->build();
         $guest->siteName = $request->pullPostString('siteName');
-        $guest->url = $request->pullPostString('url');
+        $url = $request->pullPostString('url');
+        if (!preg_match('@^(https?:)?//@', $url)) {
+            $url = 'http://' . $url;
+        } elseif (!preg_match('@^https?:@', $url)) {
+            $url = 'http:' . $url;
+        }
+        $guest->url = $url;
         $guest->email = $request->pullPostString('email');
         $guest->submitDate = time();
+        $this->createAuthkey($guest);
         return self::saveResource($guest);
     }
 
@@ -72,7 +80,7 @@ class GuestFactory extends BaseFactory
         $guest = $this->load($id);
         $guest->status = 1;
         $guest->acceptDate = time();
-        $this->createAuthkey($guest);
+        //$this->createAuthkey($guest);
         self::saveResource($guest);
         $this->emailAcceptance($guest);
     }
@@ -80,9 +88,10 @@ class GuestFactory extends BaseFactory
     private function emailAcceptance($guest)
     {
         $transport = \Swift_SendmailTransport::newInstance(STORIES_SENDMAIL);
-
         $subject = 'Sharing accepted for site: ' . $guest->siteName;
         $from = 'noreply@' . \Canopy\Server::getSiteUrl(false, false, false);
+        $vars['hostName'] = \Layout::getPageTitle(true);
+        $vars['hostUrl'] = Server::getSiteUrl();
         $vars['authkey'] = $guest->authkey;
         $vars['siteName'] = $guest->siteName;
         $vars['url'] = $guest->url;
@@ -99,19 +108,50 @@ class GuestFactory extends BaseFactory
         $mailer->send($message);
     }
 
+    private function emailDenial($guest)
+    {
+        $transport = \Swift_SendmailTransport::newInstance(STORIES_SENDMAIL);
+
+        $subject = 'Sharing denied for site: ' . $guest->siteName;
+        $from = 'noreply@' . \Canopy\Server::getSiteUrl(false, false, false);
+        $vars['siteName'] = $guest->siteName;
+        $vars['url'] = $guest->url;
+        $vars['hostName'] = \Layout::getPageTitle(true);
+        $vars['hostUrl'] = Server::getSiteUrl();
+        $template = new Template($vars);
+        $template->setModuleTemplate('stories', 'Email/Denied.html');
+        $content = $template->get();
+
+        $message = \Swift_Message::newInstance();
+        $message->setSubject($subject);
+        $message->setFrom($from);
+        $message->setTo($guest->email);
+        $message->setBody($content, 'text/html');
+        $mailer = new \Swift_Mailer($transport);
+        $mailer->send($message);
+    }
+
     private function createAuthKey(Resource $guest)
     {
         $guest->authkey = sha1(microtime());
     }
 
-    public function denyGuest($id)
+    public function denyRequest($id)
     {
         $guest = $this->load($id);
-        $guest->status = 2;
-        self::saveResource($guest);
+        $this->emailDenial($guest);
+        self::deleteResource($guest);
     }
 
-    private function getByAuthkey($authkey)
+    public function delete($id)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesguest');
+        $tbl->addFieldConditional('id', $id);
+        $db->delete();
+    }
+
+    public function getByAuthkey($authkey)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesguest');
@@ -124,24 +164,18 @@ class GuestFactory extends BaseFactory
         }
     }
 
-    public function shareRequest(Request $request)
+    public function requestShare(Request $request)
     {
-        $authkey = $request->pullGetString('authkey');
-        $entryId = $request->pullGetInteger('entryId');
-        $guest = $this->getByAuthkey($authkey);
-        if (!$guest) {
-            return ['error' => 'Authorization not recognized.'];
-        }
         try {
-            $shareFactory = new ShareFactory;
-            $shareFactory->create($guest, $entryId);
-        } catch (\Exception $e) {
-            if ($e->getCode() === '23000') {
-                return ['error' => 'Duplicate request.'];
+            $this->newGuestRequest($request);
+            Server::forward('./stories/Guest/requestAccepted');
+        } catch (\Exception $ex) {
+            if (\Current_User::isDeity()) {
+                exit($ex->getMessage());
+            } else {
+                Server::forward('./stories/Guest/requestError');
             }
         }
-
-        return ['success' => true];
     }
 
 }
