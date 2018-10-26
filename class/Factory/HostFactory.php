@@ -28,22 +28,25 @@ class HostFactory extends BaseFactory
         return $resource;
     }
 
-    public function getHosts()
+    public function getHosts($activeOnly=false)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storieshost');
         $tbl->addOrderBy('siteName');
+        if ($activeOnly) {
+            $tbl->addFieldConditional('authkey', '', '!=');
+        }
         return $db->select();
     }
-    
+
     public function getHostsSelect()
     {
-        $result = $this->getHosts();
+        $result = $this->getHosts(true);
         if (empty($result)) {
             return [];
         }
         foreach ($result as $row) {
-            $hosts[] = ['value'=>$row['id'], 'label'=>$row['siteName']];
+            $hosts[] = ['value' => $row['id'], 'label' => $row['siteName']];
         }
         return $hosts;
     }
@@ -75,14 +78,29 @@ class HostFactory extends BaseFactory
     {
         self::saveResource($resource);
     }
-    
-    public function share(int $id, Request $request) {
+
+    public function share(int $id, Request $request)
+    {
         $host = $this->load($id);
+        if (empty($host->authkey)) {
+            return array('error'=>'Authkey not set for ' . $host->siteName);
+        }
         $entryId = $request->pullPutString('entryId');
-        
-        $url = "{$host->url}/stories/Guest/share/?json=1&authkey={$host->authkey}&entryId=$entryId";
+
+        $url = "{$host->url}/stories/Share/submit/?json=1&authkey={$host->authkey}&entryId=$entryId";
         $result = file_get_contents($url);
         return json_decode($result);
+    }
+
+    public function delete(int $id)
+    {
+        if ($id <= 0) {
+            throw new \Exception('Missing id');
+        }
+        $db = Database::getDB();
+        $tbl = $db->addTable('storieshost');
+        $tbl->addFieldConditional('id', $id);
+        return $db->delete();
     }
 
 }
