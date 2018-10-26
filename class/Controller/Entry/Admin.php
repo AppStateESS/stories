@@ -24,6 +24,7 @@ namespace stories\Controller\Entry;
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
 use stories\Factory\StoryMenu;
+use stories\View\EntryView as View;
 
 class Admin extends User
 {
