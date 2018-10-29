@@ -23,7 +23,7 @@ const PublishOverlay = ({
   if (publishDate.length !== 0) {
     formattedDate = moment.unix(publishDate).format('YYYY-MM-DDTkk:mm')
   }
-
+  
   let publishButton
   const closeButton = (
     <button className="btn btn-danger btn-block" onClick={savePublishDate}>Close</button>
@@ -88,7 +88,7 @@ PublishOverlay.propTypes = {
   shareList: PropTypes.array,
   shareStatus: PropTypes.element,
   shareStory: PropTypes.func,
-  hostId: PropTypes.string,
+  hostId: PropTypes.oneOfType([PropTypes.string,PropTypes.number,]),
   isPublished: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   unpublish: PropTypes.func,
   publish: PropTypes.func,
