@@ -15,7 +15,6 @@ namespace stories\View;
 use Canopy\Request;
 use stories\Factory\GuestFactory as Factory;
 use stories\Resource\GuestResource as Resource;
-use Canopy\Server;
 use phpws2\Template;
 
 class GuestView extends View
@@ -26,21 +25,6 @@ class GuestView extends View
     public function __construct()
     {
         $this->factory = new Factory;
-    }
-
-    public function requestForm(Request $request)
-    {
-
-        try {
-            $this->factory->newGuestRequest($request);
-            Server::forward('./stories/Guest/requestAccepted');
-        } catch (\Exception $ex) {
-            if (true || \Current_User::isDeity()) {
-                exit($ex->getMessage());
-            } else {
-                Server::forward('./stories/Guest/requestError');
-            }
-        }
     }
 
     public function requestError()
