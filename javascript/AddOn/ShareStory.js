@@ -12,8 +12,8 @@ const ShareStory = ({shareList, shareStory, changeHost, hostId}) => {
   return (
     <div className="row mb-2">
       <div className="col-8">
-        <select className="form-control" onChange={changeHost} defaultValue={hostId}>
-          <option disabled={true} value="0">Pick share site below:</option>
+        <select className="form-control" onChange={changeHost} value={hostId}>
+          <option value="0">&nbsp;</option>
           {options}
         </select>
       </div>
@@ -29,7 +29,7 @@ ShareStory.propTypes = {
   shareList: PropTypes.array,
   changeHost: PropTypes.func,
   shareStory: PropTypes.func,
-  hostId : PropTypes.string,
+  hostId : PropTypes.oneOfType([PropTypes.string,PropTypes.number,]),
 }
 
 export default ShareStory
