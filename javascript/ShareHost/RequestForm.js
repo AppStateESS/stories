@@ -12,7 +12,7 @@ export default class RequestForm extends Component {
     this.state = {
       message: null,
       hostName: 'Canopy Host',
-      hostUrl: 'http://localhost:3000/canopy',
+      hostUrl: 'http://localhost/canopy',
       guestRequestUrl: null,
       guestEmail: 'matt@fakemail.com',
       errorMessage: null
@@ -71,6 +71,7 @@ export default class RequestForm extends Component {
   }
 
   createHost(e) {
+    e.preventDefault()
     $.ajax({
       url: 'stories/Host/',
       data: {
@@ -79,7 +80,9 @@ export default class RequestForm extends Component {
       },
       dataType: 'json',
       type: 'post',
-      success: () => {},
+      success: () => {
+        $('#guest-request-form').submit()
+      },
       error: () => {
         this.setState({guestRequestUrl:'', message: 'An error occurred while saving the host.'})
         e.preventDefault()
@@ -100,8 +103,9 @@ export default class RequestForm extends Component {
             request page.</p>
           <p>If you receive an error, your site address or email were formatted incorrectly.</p>
           <form
+            id="guest-request-form"
             method="post"
-            onSubmit={e => this.createHost(e)}
+            onSubmit={this.createHost}
             action={this.state.guestRequestUrl}>
             <input type="hidden" name="siteName" value={this.props.siteName}/>
             <input type="hidden" name="url" value={this.props.url}/>
