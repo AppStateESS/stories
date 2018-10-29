@@ -83,6 +83,7 @@ class EntryView extends View
         $vars['tagBar'] = $this->scriptView('TagBar');
         $vars['authorBar'] = $this->scriptView('AuthorBar');
         $vars['navbar'] = $this->scriptView('Navbar');
+        $vars['listView'] = $this->scriptView('ListView');
 
         $vars['home'] = $sourceHttp;
         $this->loadTwitterScript(true);
@@ -280,13 +281,13 @@ EOF;
         }
         $this->includeCards($entry);
 
-        if ($entry->listView === 1) {
+        if ($entry->listView == 1) {
             if (!$twitterIncluded && stristr($entry->content, 'twitter')) {
                 $this->loadTwitterScript(true);
                 $twitterIncluded = true;
             }
 
-            $data['content'] = preg_replace('/<p class="">::summary(<br\s?/?>)</p>/',
+            $data['content'] = preg_replace('/<p class="">::summary(<br\s?\/?>)<\/p>/',
                     '', $data['content']);
             $templateFile = 'Entry/FullListView.html';
         } else {
