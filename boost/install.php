@@ -53,8 +53,6 @@ function stories_install(&$content)
         $publishShareId = $publishTable->addDataType('shareId', 'int');
         $publishTable->addDataType('publishDate', 'int');
         $publishTable->create();
-        $publishForeign = new ForeignKey($publishShareId, $shareTable->getDataType('id'), ForeignKey::CASCADE);
-        $publishForeign->add();
         
         $feature = new \stories\Resource\FeatureResource;
         $featureTable = $feature->createTable($db);
