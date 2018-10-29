@@ -4,8 +4,8 @@ import PropTypes from 'prop-types'
 
 const HostRow = ({siteName, url, authkey, deleteHost, setAuthKey}) => {
   const authkeyStr = authkey.length == 0
-    ? <em>Not set</em>
-    : authkey
+    ? <div className="bg bg-warning text-center">Not set</div>
+    : <abbr title={authkey}>{authkey.substring(0,8)}</abbr>
   return (
     <tr>
       <td>
