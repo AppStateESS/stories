@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import GuestRow from './GuestRow'
 
-const GuestRequests = ({listing, acceptRequest, denyRequest}) => {
+const GuestRequests = ({listing, acceptRequest, deny}) => {
   if (listing.length === 0) {
     return <p>No guest requests in queue.</p>
   }
@@ -12,7 +12,7 @@ const GuestRequests = ({listing, acceptRequest, denyRequest}) => {
       {...value}
       key={key}
       accept={acceptRequest.bind(null, key)}
-      deny={denyRequest.bind(null, key)}/>
+      deny={deny.bind(null, key)}/>
   })
   return (
     <div>
@@ -34,7 +34,7 @@ const GuestRequests = ({listing, acceptRequest, denyRequest}) => {
 GuestRequests.propTypes = {
   listing: PropTypes.array,
   acceptRequest: PropTypes.func,
-  denyRequest: PropTypes.func
+  deny: PropTypes.func
 }
 
 export default GuestRequests
