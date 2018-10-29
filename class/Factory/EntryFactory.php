@@ -333,14 +333,6 @@ class EntryFactory extends BaseFactory
         return $this->save($entry);
     }
 
-    public function changeOrientation(int $entryId, int $orientation)
-    {
-        $entry = $this->load($entryId);
-        $entry->stamp();
-        $entry->imageOrientation = $orientation;
-        return $this->save($entry);
-    }
-
     private function relativeImages($content)
     {
         return preg_replace('@src="https?://[\w:/]+(images/stories/\d+/[^"]+)"@',
@@ -562,7 +554,7 @@ class EntryFactory extends BaseFactory
             $value = $request->pullPatchVar('value');
             $this->patchEntry($entry, $param, $value);
         }
-
+        $entry->stamp();
         self::saveResource($entry);
         return $entry->id;
     }
