@@ -35,6 +35,7 @@ class ShareResource extends BaseResource
     protected $publishDate;
     protected $approved;
     protected $submitDate;
+    protected $inaccessible;
     protected $table = 'storiesshare';
 
     public function __construct()
@@ -44,6 +45,7 @@ class ShareResource extends BaseResource
         $this->entryId = new \phpws2\Variable\IntegerVar(null, 'entryId');
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
         $this->submitDate = new \phpws2\Variable\DateTime(0, 'submitDate');
+        $this->inaccessible = new \phpws2\Variable\SmallInteger(0, 'inaccessible');
         $this->url = new \phpws2\Variable\StringVar(null, 'url');
         $this->url->setLimit(255);
         $this->approved = new \phpws2\Variable\BooleanVar(false, 'approved');
@@ -52,6 +54,16 @@ class ShareResource extends BaseResource
     public function stampSubmit()
     {
         $this->submitDate->stamp();
+    }
+    
+    public function stampPublish()
+    {
+        $this->publishDate->stamp();
+    }
+    
+    public function incrementInaccessible()
+    {
+        $this->inaccessible->increase();
     }
 
 }
