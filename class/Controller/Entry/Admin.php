@@ -64,12 +64,6 @@ class Admin extends User
         return array('entryId' => $this->factory->put($this->id, $request));
     }
 
-    protected function orientationPutCommand(Request $request)
-    {
-        return array('entryId' => $this->factory->changeOrientation($this->id,
-                    $request->pullPutInteger('orientation')));
-    }
-
     protected function patchCommand(Request $request)
     {
         return array('entryId' => $this->factory->patch($this->id, $request));
