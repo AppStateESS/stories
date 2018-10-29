@@ -151,9 +151,9 @@ export default class Publish extends Component {
         {publishOverlay}
         <button
           role="button"
-          className={`btn ${ (this.state.published) == '1'
-            ? 'btn-success'
-            : 'btn-outline-dark'} btn-sm`}
+          className={`btn btn-block ${ (this.state.published) == '1'
+            ? 'btn-outline-success'
+            : 'btn-outline-danger'}`}
           onClick={this.setOverlay.bind(this, true)}>{publishLink}</button>
       </div>
     )
