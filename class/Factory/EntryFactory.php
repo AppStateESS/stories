@@ -721,7 +721,7 @@ EOF;
 
     private function removeExtraParagraphs($content)
     {
-        return preg_replace('/(<p class="">(<br>)?<\/p>)\n?|(<p class="medium-insert-active">(<br>)?<\/p>|<p>(<br>)?<\/p>)\n/',
+        return preg_replace('/(<p class="">(<br>)?<\/p>)\n?|(<p class="medium-insert-active">(<br>)?<\/p>|<p>(<br>)?<\/p>)\n?/',
                 '', $content);
     }
 
@@ -745,6 +745,7 @@ EOF;
         // Removes medium buttons
         $content = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
                         '', $content));
+        $content = str_replace(' class=""', '', $content);
 
         $content = str_replace('Type caption for image (optional)', '', $content);
         $content = str_replace('Type caption (optional)', '', $content);
