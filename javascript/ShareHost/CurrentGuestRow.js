@@ -7,7 +7,7 @@ const CurrentGuestRow = ({siteName, url, authkey, email, acceptDate, deny}) => {
   const acceptFormatted = moment.unix(acceptDate).format("MMM D YYYY, h:mm a")
   return (<tr>
     <td>
-      <button className="btn btn-outline-danger btn-sm mr-1" title="Deny submissions" onClick={deny}>
+      <button className="btn btn-danger btn-sm mr-1" title="Remove guest and prevent submissions" onClick={deny}>
         <i className="fas fa-times fa-fw"></i>
       </button>
     </td>
