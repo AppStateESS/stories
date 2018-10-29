@@ -1,0 +1,33 @@
+<div class="story-list-entry clearfix summary-view">
+  <?php 
+  $orient = '';
+  $forceWidth = '';
+  if ($imageOrientation == 1) {
+  $orient = ' float-left mr-2 mb-2';
+  $forceWidth = 'width : 250px'; 
+} elseif ($imageOrientation == 2) {
+  $orient = ' float-right ml-2 mb-2';
+  $forceWidth = 'width : 250px'; 
+  }
+  ?>
+  <?php if (!empty($leadImage)): ?>
+  <div class="story-image<?=$orient?>"><a href="./<?=$urlTitle?>"><img src="<?=$leadImage?>" class="img-fluid center-block" style="<?=$forceWidth?>"/></a></div>
+  <?php endif;?>
+  <div class="story-title">
+    <a href="./<?=$urlTitle?>"><h3><?=$title?></h3></a>
+  </div>
+  <div class="story-summary">
+    <?=$summary?>
+    <p><a href="<?=$urlTitle?>">Read more...</a></p>
+  </div>
+  <?=$publishInfo?>
+  <?=$shareButtons?>
+  <span class="badge badge-info permanent-link mr-1">
+    <a href="<?=$currentUrl?>"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
+  </span>
+  <?php if ($isAdmin):?>
+  <span class="badge badge-primary permanent-link">
+    <a href="./stories/Entry/<?=id?>/edit"><i class="fa fa-edit"></i>&nbsp;Edit</a>
+  </span>
+  <?php endif;?>
+</div>
