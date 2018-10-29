@@ -12,6 +12,8 @@
 
 namespace stories\View;
 
+use Canopy\Request;
+
 abstract class View
 {
 
@@ -31,16 +33,25 @@ abstract class View
         }
         return '<script type="text/javascript">' . implode('', $varList) . '</script>';
     }
+    
+    public function includeCss() {
+        $this->addStoryCss();
+        $this->mediumCssOverride();
+        $this->mediumInsertCss();
+    }
 
     public function addStoryCss()
     {
         \Layout::addToStyleList('mod/stories/css/story.css');
     }
 
-    public function mediumCSSOverride()
+    public function mediumCssOverride()
     {
-        $css = "mod/stories/css/MediumOverrides.css";
-        \Layout::addToStyleList($css);
+        \Layout::addToStyleList('mod/stories/css/MediumOverrides.css');
+    }
+    
+    public function mediumInsertCss() {
+        \Layout::addToStyleList('mod/stories/css/medium-editor-insert-plugin.min.css');
     }
 
     protected function getScript($scriptName)
@@ -106,6 +117,45 @@ EOF;
     public function getStoriesRootUrl()
     {
         return PHPWS_SOURCE_HTTP . 'mod/stories/';
+    }
+
+    public function pullListOptions(Request $request)
+    {
+        $settingFactory = new \stories\Factory\SettingsFactory;
+        $settings = $settingFactory->listing();
+        // if offset not set, default 0
+        $page = (int) $request->pullGetInteger('page', true);
+        if ($page > 1) {
+            $offsetSize = $settings['listStoryAmount'] * ($page - 1);
+        } else {
+            $offset = $request->pullGetInteger('offset', true);
+            if ($offset > 0) {
+                $offsetSize = $settings['listStoryAmount'] * $offset;
+            } else {
+                $offsetSize = 0;
+            }
+            $page = 1;
+        }
+
+        $sortBy = $request->pullGetString('sortBy', true);
+        if (!in_array($sortBy, array('publishDate', 'title', 'updateDate'))) {
+            $sortBy = 'publishDate';
+        }
+
+        $search = $request->pullGetString('search', true);
+
+        $tag = str_replace('%20', ' ', $request->pullGetString('tag', true));
+
+        $options = array(
+            'search' => $search,
+            'sortBy' => $sortBy,
+            'offset' => $offsetSize,
+            'page' => $page,
+            'tag' => $tag
+        );
+        $options['showAuthor'] = $settings['showAuthor'];
+        $options['limit'] = $settings['listStoryAmount'];
+        return $options;
     }
 
 }
