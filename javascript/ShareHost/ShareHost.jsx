@@ -8,6 +8,7 @@ import RequestForm from './RequestForm'
 import Navbar from '../AddOn/Navbar'
 import AuthKeyForm from './AuthKeyForm'
 import SharedStories from './SharedStories'
+import Inaccessible from './Inaccessible'
 import PropTypes from 'prop-types'
 
 /* global $ */
@@ -19,12 +20,14 @@ export default class ShareHost extends Component {
       guestRequests: [],
       currentGuests: [],
       hosts: [],
+      inaccessible: [],
       currentHost: null,
       currentHostKey: -1,
       loading: true
     }
     this.updateAuthKey = this.updateAuthKey.bind(this)
     this.saveAuthKey = this.saveAuthKey.bind(this)
+    this.deleteInaccessible = this.deleteInaccessible.bind(this)
   }
 
   componentDidMount() {
@@ -56,12 +59,22 @@ export default class ShareHost extends Component {
         update={this.updateAuthKey}
         save={this.saveAuthKey}/>
     )
+    let inaccessible
+    if (this.state.inaccessible.length > 0) {
+      inaccessible = (<div>
+        <h3>Inaccessible</h3>
+        <Inaccessible listing={this.state.inaccessible} deleteInaccessible={this.deleteInaccessible}/>
+        <hr />
+      </div>)
+    }
+    
     const requestForm = <RequestForm {...this.props}/>
     return (
       <div>
         <Navbar header={'Stories Sharing'} leftSide={leftside}/>
         <Modal body={requestForm}/>
         <Modal body={authKeyForm} modalId="authKeyForm" header={hostFormTitle}/>
+        {inaccessible}
         <h3>Recently shared</h3>
         <SharedStories />
         <hr/>
@@ -75,12 +88,12 @@ export default class ShareHost extends Component {
         <GuestRequests
           listing={this.state.guestRequests}
           acceptRequest={this.acceptRequest.bind(this)}
-          denyRequest={this.denyRequest.bind(this)}/>
+          deny={this.deleteRequestGuest.bind(this)}/>
         <hr/>
         <h3>Current Guests</h3>
         <CurrentGuests
           listing={this.state.currentGuests}
-          denyGuest={this.denyGuest.bind(this)}/>
+          denyGuest={this.deleteCurrentGuest.bind(this)}/>
       </div>
     )
   }
@@ -100,24 +113,44 @@ export default class ShareHost extends Component {
   }
 
   deleteHost(key) {
-    console.log('delete host at key=', key)
+    $.ajax({
+      url: 'stories/Host/' + this.state.hosts[key].id,
+      dataType: 'json',
+      type: 'delete',
+      success: ()=>{
+        this.load()
+      },
+    })
+  }
+  
+  deleteInaccessible(key) {
+    $.ajax({
+      url: `./stories/Share/${this.state.inaccessible[key].id}`,
+      dataType: 'json',
+      type: 'delete',
+      success: ()=>{
+        this.load()
+      },
+      error: ()=>{}
+    })
   }
   
 
-  denyGuest(key) {
+  deleteCurrentGuest(key) {
     $.ajax({
-      url: `./stories/Guest/${this.state.currentGuests[key].id}/denyGuest`,
+      url: `./stories/Guest/${this.state.currentGuests[key].id}`,
       dataType: 'json',
-      type: 'put',
+      type: 'delete',
       success: () => {
         this.load()
       },
       error: () => {}
     })
   }
-  denyRequest(key) {
+  
+  deleteRequestGuest(key) {
     $.ajax({
-      url: `./stories/Guest/${this.state.guestRequests[key].id}/denyGuest`,
+      url: `./stories/Guest/${this.state.guestRequests[key].id}/deny`,
       dataType: 'json',
       type: 'put',
       success: () => {
@@ -134,7 +167,7 @@ export default class ShareHost extends Component {
       type: 'get',
       success: (data) => {
         this.setState(
-          {loading: false, guestRequests: data.guestRequests, currentGuests: data.currentGuests, hosts: data.hosts}
+          {loading: false, guestRequests: data.guestRequests, currentGuests: data.currentGuests, hosts: data.hosts, inaccessible: data.inaccessible}
         )
       },
       error: () => {}
