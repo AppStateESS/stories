@@ -18,24 +18,21 @@ export default class ImageOrientation extends Component {
   update(e) {
     const orientation = e.target.value
     $.ajax({
-      url: `stories/Entry/${this.props.entry.id}/orientation`,
-      data: {orientation: orientation},
+      url: './stories/Entry/' + entry.id,
+      data: {param: 'imageOrientation', value: orientation},
       dataType: 'json',
-      type: 'put',
-      success: ()=>{
-      },
-      error: ()=>{}
+      type: 'patch',
     })
+
     this.setState({orientation})
   }
 
   render() {
     return (<div>
-      <select className="form-control" value={this.state.orientation} onChange={(e)=>this.update(e)}>
-        <option value="-1" disabled={true}>Summary image orientation</option>
-        <option value="0">Centered</option>
-        <option value="1">Left </option>
-        <option value="2">Right</option>
+      <select className="form-control input-sm" value={this.state.orientation} onChange={(e)=>this.update(e)}>
+        <option value="0">Centered thumbnail</option>
+        <option value="1">Left thumbnail</option>
+        <option value="2">Right thumbnail</option>
       </select>
     </div>)
   }
