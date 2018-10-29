@@ -8,6 +8,7 @@ exports.entry = {
   EntryForm: exports.APP_DIR + '/EntryForm/EntryForm.js',
   Publish: exports.APP_DIR + '/Publish/index.jsx',
   TagBar: exports.APP_DIR + '/TagBar/index.jsx',
+  ListView : exports.APP_DIR + '/ListView/index.jsx',
   Settings: exports.APP_DIR + '/Settings/index.jsx',
   Feature: exports.APP_DIR + '/Feature/index.jsx',
   Navbar: exports.APP_DIR + '/Navbar/index.jsx',
