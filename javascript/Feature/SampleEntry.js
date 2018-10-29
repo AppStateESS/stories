@@ -7,8 +7,10 @@ const SampleStory = {
   thumbnail: 'mod/stories/img/sample.jpg',
 }
 
-const SampleEntry = () => {
-  return {entryId: 0, x: 50, y: 50, zoom: 100, story: SampleStory}
+const SampleEntry = (srcHttp) => {
+  const copy = Object.assign({}, SampleStory)
+  copy.thumbnail = srcHttp + SampleStory.thumbnail
+  return {entryId: 0, x: 50, y: 50, zoom: 100, story: copy}
 }
 
 export default SampleEntry

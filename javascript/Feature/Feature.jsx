@@ -170,7 +170,8 @@ export default class Feature extends Component {
     this.stackEntries(feature)
     for (let i = 0; i < 4; i++) {
       if (feature.entries[i] === undefined || i >= feature.columns) {
-        feature.entries[i] = SampleEntry()
+        const sample = SampleEntry(this.props.srcHttp)
+        feature.entries[i] = sample
       }
     }
   }
