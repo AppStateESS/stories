@@ -482,17 +482,17 @@ class EntryFactory extends BaseFactory
             if ($h3->length > 0) {
                 $h3Node = $h3->item($titleCount);
                 if ($h3Node) {
-                    $title = substr(trim($h3Node->textContent), 0, 255);
+                    $title = substr(trim($h3Node->textContent), 0, 100);
                 }
             } elseif ($h4->length > 0) {
                 $h4Node = $h4->item($titleCount);
                 if ($h4Node) {
-                    $title = substr(trim($h4Node->textContent), 0, 255);
+                    $title = substr(trim($h4Node->textContent), 0, 100);
                 }
             } elseif ($p->length > 0) {
                 $pNode = $p->item($titleCount);
                 if ($pNode) {
-                    $title = substr(trim($pNode->textContent), 0, 255);
+                    $title = substr(trim($pNode->textContent), 0, 100);
                     $pStart = $titleCount + 1;
                 }
             }
@@ -565,8 +565,6 @@ class EntryFactory extends BaseFactory
         switch ($param) {
             case 'published':
                 if ($value == '0') {
-                    $featureFactory = new FeatureFactory();
-                    $featureFactory->removeEntryFromAll($entry->id);
                     $publishFactory->unpublishEntry($entry->id);
                 } else {
                     $publishFactory->publishEntry($entry->id,
