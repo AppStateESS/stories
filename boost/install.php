@@ -33,27 +33,37 @@ function stories_install(&$content)
 
         $author = new \stories\Resource\AuthorResource;
         $authorTable = $author->createTable($db);
-        
+
         $guest = new \stories\Resource\GuestResource;
         $guestTable = $guest->createTable($db);
         $guestUnique = new \phpws2\Database\Unique($guestTable->getDataType('authkey'));
         $guestUnique->add();
-        
+
         $share = new \stories\Resource\ShareResource;
         $shareTable = $share->createTable($db);
         $shareGuestId = $shareTable->getDataType('guestId');
         $shareEntryId = $shareTable->getDataType('entryId');
         $shareUnique = new \phpws2\Database\Unique([$shareGuestId, $shareEntryId]);
         $shareUnique->add();
-        $shareForeign = new ForeignKey($shareGuestId, $guestTable->getDataType('id'), ForeignKey::CASCADE);
+        $shareForeign = new ForeignKey($shareGuestId,
+                $guestTable->getDataType('id'), ForeignKey::CASCADE);
         $shareForeign->add();
 
-        $publishTable = $db->buildTable('storiespublish');
-        $publishTable->addDataType('entryId', 'int');
-        $publishShareId = $publishTable->addDataType('shareId', 'int');
-        $publishTable->addDataType('publishDate', 'int');
-        $publishTable->create();
-        
+        $featureStory = new \stories\Resource\FeatureStoryResource;
+        $featureStory->createTable($db);
+
+        $trackTable = $db->buildTable('storiestrack');
+        $trackEntryId = $trackTable->addDataType('entryId', 'int');
+        $trackHostId = $trackTable->addDataType('hostId', 'int');
+        $trackTable->create();
+        $trackUnique = new \phpws2\Database\Unique([$trackEntryId, $trackHostId]);
+        $trackUnique->add();
+
+        $publishResource = new \stories\Resource\PublishResource;
+        $publishTable = $publishResource->createTable($db);
+        $publishUnique = new \phpws2\Database\Unique([$publishTable->getDataType('entryId'), $publishTable->getDataType('shareId')]);
+        $publishUnique->add();
+
         $feature = new \stories\Resource\FeatureResource;
         $featureTable = $feature->createTable($db);
 
@@ -67,21 +77,11 @@ function stories_install(&$content)
         $tagToEntry->addUnique($tagUnique);
         $tagToEntry->create();
 
-        $entryToFeature = $db->buildTable('storiesentrytofeature');
-        $entryToFeature->addDataType('entryId', 'int');
-        $entryToFeature->addDataType('featureId', 'int');
-        $entryToFeature->addDataType('x', 'smallint');
-        $entryToFeature->addDataType('y', 'smallint');
-        $entryToFeature->addDataType('zoom', 'smallint');
-        $entryToFeature->addDataType('sorting', 'smallint');
-        $entryToFeature->create();
-
         $host = new \stories\Resource\HostResource;
         $hostTable = $host->createTable($db);
         $url = $hostTable->getDataType('url');
         $unique2 = new \phpws2\Database\Unique($url);
         $unique2->add();
-        
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
         $db->rollback();
