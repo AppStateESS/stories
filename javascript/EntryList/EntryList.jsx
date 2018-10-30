@@ -116,7 +116,7 @@ export default class EntryList extends Component {
     )
     this.setState({shareStatus: saving})
     $.ajax({
-      url: `stories/Host/${this.state.hostId}/share`,
+      url: `stories/Host/${this.state.hostId}/submit`,
       data: {
         entryId: entry.id,
       },

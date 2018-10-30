@@ -4,7 +4,7 @@ import moment from 'moment'
 import PublishOverlay from '../AddOn/PublishOverlay'
 import PropTypes from 'prop-types'
 
-/* global $ */
+/* global $, entry */
 
 export default class Publish extends Component {
   constructor(props) {
@@ -46,9 +46,9 @@ export default class Publish extends Component {
     </div>)
     this.setState({shareStatus: saving})
     $.ajax({
-      url: `stories/Host/${this.state.hostId}/share`,
+      url: `stories/Host/${this.state.hostId}/submit`,
       data: {
-        entryId: this.state.id
+        entryId: entry.id
       },
       dataType: 'json',
       type: 'put',
@@ -85,11 +85,9 @@ export default class Publish extends Component {
       error: function () {}.bind(this)
     })
   }
-  
+
   closeOverlay() {
-    this.setState(
-      {publishOverlay: false, hostId: '0', shareStatus: null}
-    )
+    this.setState({publishOverlay: false, hostId: '0', shareStatus: null})
   }
 
   setOverlay(set) {
