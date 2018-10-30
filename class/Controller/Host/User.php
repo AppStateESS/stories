@@ -39,7 +39,7 @@ class User extends RoleController
     protected function loadFactory()
     {
         $this->guestFactory = new GuestFactory;
-        $this->hostFactory = new HostFactory;
+        $this->factory = new HostFactory;
     }
 
     protected function loadView()
@@ -49,7 +49,7 @@ class User extends RoleController
 
     public function shareHtmlCommand(Request $request)
     {
-        $result = $this->hostFactory->shareRequest($request);
+        $result = $this->factory->shareRequest($request);
         return $result;
     }
 
