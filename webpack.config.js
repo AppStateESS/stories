@@ -49,7 +49,7 @@ module.exports = (env, argv) => {
           test: require.resolve('blueimp-file-upload'),
           loader: 'imports-loader?define=>false',
         }, {
-          test: require.resolve('medium-editor-insert-plugin'),
+          test: require.resolve('@essappstate/medium-editor-insert-plugin'),
           loader: 'imports-loader?define=>false',
         }, {
           test: /\.(png|woff|woff2|eot|ttf|svg)$/,
