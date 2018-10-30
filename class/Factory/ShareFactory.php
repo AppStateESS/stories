@@ -14,6 +14,7 @@ namespace stories\Factory;
 
 use phpws2\Database;
 use stories\Factory\GuestFactory;
+use stories\Factory\HostFactory;
 use stories\Factory\PublishFactory;
 use stories\Resource\ShareResource as Resource;
 use stories\Resource\GuestResource;
@@ -64,6 +65,7 @@ class ShareFactory extends BaseFactory
         }
         return $listing;
     }
+
 
     public function pullShareData($shareId)
     {
@@ -170,6 +172,54 @@ class ShareFactory extends BaseFactory
 
         $publishFactory = new PublishFactory;
         $publishFactory->deleteByShareId($id);
+    }
+
+    public function sendRemove($entryId, $hostId)
+    {
+        $hostFactory = new HostFactory;
+        $host = $hostFactory->load($hostId);
+        $url = $host->url . 'stories/Share/remove?json=1';
+
+        $data['authkey'] = $host->authkey;
+        $data['entryId'] = $entryId;
+
+        $options = array(CURLOPT_URL => $url, CURLOPT_CUSTOMREQUEST => 'PUT', CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => true, CURLOPT_POSTFIELDS => $data);
+
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        if (!$result = curl_exec($ch)) {
+            throw new \Exception('Cannot to connect to host');
+        }
+        curl_close($ch);
+    }
+
+    public function removeShare(Request $request)
+    {
+        $authkey = $request->pullPutString('authkey');
+        $entryId = $request->pullPutInteger('entryId');
+        $guestFactory = new GuestFactory;
+        $guest = $guestFactory->getByAuthkey($authkey);
+        if (!$guest) {
+            return ['error' => 'Authorization not recognized.'];
+        }
+        $shareFactory = new ShareFactory;
+        $shareId = $shareFactory->getShareId($guest->id, $entryId);
+        $this->delete($shareId);
+    }
+
+    public function getShareId(int $guestId, int $entryId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesshare');
+        $tbl->addField('id');
+        $tbl->addFieldConditional('guestId', $guestId);
+        $tbl->addFieldConditional('entryId', $entryId);
+        $row = $db->selectOne();
+        if (empty($row)) {
+            return null;
+        } else {
+            return $row['id'];
+        }
     }
 
 }
