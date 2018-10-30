@@ -23,6 +23,7 @@ namespace stories\Controller\Feature;
 
 use Canopy\Request;
 use stories\Factory\FeatureFactory as Factory;
+use stories\Factory\PublishFactory;
 use stories\View\FeatureView as View;
 use stories\Factory\EntryFactory;
 use stories\Factory\StoryMenu;
@@ -57,18 +58,10 @@ class Admin extends RoleController
     protected function listJsonCommand(Request $request)
     {
         $featureList = $this->factory->listing(array('activeOnly' => false));
-        $entryFactory = new EntryFactory();
-        $options = array(
-            'vars' => array('id', 'title'),
-            'includeContent' => false,
-            'titleRequired' => true,
-            'limit' => 0,
-            'sortBy'=> 'publishDate',
-            'mustHaveThumbnail' => true,
-            'asResource' => false,
-            'showTagLinks' => false);
+        $publishFactory = new PublishFactory;
+        
         // select list to fill in empty feature columns
-        $stories = $entryFactory->pullList($options);
+        $stories = $publishFactory->featureList();
 
         return array('featureList' => $featureList, 'stories' => $stories);
     }
