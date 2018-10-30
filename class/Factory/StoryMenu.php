@@ -43,7 +43,7 @@ class StoryMenu
     
     public static function addShareLink()
     {
-        $link = '<a href="./stories/Host"><i class="fas fa-share-alt"></i> Share</a>';
+        $link = '<a href="./stories/Share"><i class="fas fa-share-alt"></i> Share</a>';
         \MiniAdmin::add('stories', $link);
     }
 
@@ -76,7 +76,7 @@ EOF;
     
     public static function featureLink()
     {
-        $link = '<a href="./stories/Feature/"><i class="fa fa-exclamation-circle"></i> Features</a>';
+        $link = '<a href="./stories/Feature/"><i class="fa fa-th-large"></i> Features</a>';
         \MiniAdmin::add('stories', $link);
     }
 

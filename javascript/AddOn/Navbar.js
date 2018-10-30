@@ -52,7 +52,7 @@ const Navbar = (props) => {
                   <span className="fas fa-th-large"></span>&nbsp;Features</a>
                 <a className="dropdown-item" href="./stories/Author">
                   <i className="fas fa-user"></i>&nbsp;Authors</a>
-                <a className="dropdown-item" href="./stories/Host">
+                <a className="dropdown-item" href="./stories/Share">
                   <i className="fas fa-share-alt"></i>&nbsp;Share</a>
                 <a className="dropdown-item" href="./stories/Settings">
                   <i className="fas fa-cog"></i>&nbsp;Settings</a>
