@@ -13,7 +13,7 @@ import PropTypes from 'prop-types'
 
 /* global $ */
 
-export default class ShareHost extends Component {
+export default class ShareAdmin extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -162,7 +162,7 @@ export default class ShareHost extends Component {
 
   load() {
     $.ajax({
-      url: './stories/Host',
+      url: './stories/Share',
       dataType: 'json',
       type: 'get',
       success: (data) => {
@@ -207,12 +207,12 @@ export default class ShareHost extends Component {
 
 }
 
-ShareHost.propTypes = {
+ShareAdmin.propTypes = {
   siteName: PropTypes.string,
   url: PropTypes.string
 }
 
-ShareHost.defaultProps = {}
+ShareAdmin.defaultProps = {}
 
 const Loading = () => {
   return (
