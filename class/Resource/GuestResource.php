@@ -52,15 +52,15 @@ class GuestResource extends BaseResource
     {
         parent::__construct();
         $this->siteName = new \phpws2\Variable\TextOnly(null, 'siteName');
-        $this->siteName->setLimit(255);
+        $this->siteName->setLimit(100);
         //$this->url = new \phpws2\Variable\Url(null, 'url');
         $this->url = new \phpws2\Variable\StringVar(null, 'url');
-        $this->url->setLimit(255);
+        $this->url->setLimit(200);
         $this->status = new \phpws2\Variable\SmallInteger(0, 'status');
         $this->authkey = new \phpws2\Variable\HashVar(null, 'authkey');
         $this->authkey->setLimit(40);
         $this->email = new \phpws2\Variable\Email(null, 'email');
-        $this->email->setLimit(255);
+        $this->email->setLimit(100);
         $this->submitDate = new \phpws2\Variable\DateTime(0, 'submitDate');
         $this->acceptDate = new \phpws2\Variable\DateTime(0, 'acceptDate');
     }
