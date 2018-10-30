@@ -28,7 +28,7 @@ class HostFactory extends BaseFactory
         return $resource;
     }
 
-    public function getHosts($activeOnly=false)
+    public function getHosts($activeOnly = false)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storieshost');
@@ -79,19 +79,6 @@ class HostFactory extends BaseFactory
         self::saveResource($resource);
     }
 
-    public function share(int $id, Request $request)
-    {
-        $host = $this->load($id);
-        if (empty($host->authkey)) {
-            return array('error'=>'Authkey not set for ' . $host->siteName);
-        }
-        $entryId = $request->pullPutString('entryId');
-
-        $url = "{$host->url}/stories/Share/submit/?json=1&authkey={$host->authkey}&entryId=$entryId";
-        $result = file_get_contents($url);
-        return json_decode($result);
-    }
-
     public function delete(int $id)
     {
         if ($id <= 0) {
@@ -101,6 +88,38 @@ class HostFactory extends BaseFactory
         $tbl = $db->addTable('storieshost');
         $tbl->addFieldConditional('id', $id);
         return $db->delete();
+    }
+
+    public function submit(int $hostId, Request $request)
+    {
+        $entryId = $request->pullPutString('entryId');
+
+        $host = $this->load($hostId);
+        if (empty($host->authkey)) {
+            return array('error' => 'Authkey not set for ' . $host->siteName);
+        }
+
+        $url = "{$host->url}/stories/Share/submit/?json=1&authkey={$host->authkey}&entryId=$entryId";
+        $options = array(CURLOPT_URL => $url, CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => true);
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        if (!$result = curl_exec($ch)) {
+            throw new \Exception('Cannot to connect to host');
+        }
+        curl_close($ch);
+
+        $this->trackRequest($entryId, $hostId);
+
+        return json_decode($result);
+    }
+
+    private function trackRequest(int $entryId, int $hostId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiestrack');
+        $tbl->addValue('entryId', $entryId);
+        $tbl->addValue('hostId', $hostId);
+        $db->insert();
     }
 
 }
