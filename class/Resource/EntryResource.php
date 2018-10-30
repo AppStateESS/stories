@@ -175,11 +175,11 @@ class EntryResource extends BaseResource
         $this->summary->addAllowedTags(STORIES_SUMMARY_TAGS);
         $this->thumbnail = new \phpws2\Variable\FileVar(null, 'thumbnail');
         $this->thumbnail->allowNull(true);
-        $this->title = new \phpws2\Variable\TextOnly(null, 'title', 255);
+        $this->title = new \phpws2\Variable\TextOnly(null, 'title', 100);
         $this->tags = new \phpws2\Variable\ArrayVar(null, 'tags');
         $this->tags->allowNull(true);
         $this->tags->setIsTableColumn(false);
-        $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle', 255);
+        $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle', 100);
         $this->listView = new \phpws2\Variable\SmallInteger(0, 'listView');
 
         $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
