@@ -32,10 +32,30 @@ class ShareResource extends BaseResource
      * @var phpws2\Variable\Url
      */
     protected $url;
+    
+    /**
+     * @var \phpws2\Variable\DateTime
+     */
     protected $publishDate;
+    
+    /**
+     * @var \phpws2\Variable\BooleanVar
+     */
     protected $approved;
+    
+    /**
+     * @var \phpws2\Variable\DateTime
+     */
     protected $submitDate;
+    
+    /**
+     * @var \phpws2\Variable\SmallInteger
+     */
     protected $inaccessible;
+    
+    /**
+     * @var string
+     */
     protected $table = 'storiesshare';
 
     public function __construct()
@@ -47,7 +67,7 @@ class ShareResource extends BaseResource
         $this->submitDate = new \phpws2\Variable\DateTime(0, 'submitDate');
         $this->inaccessible = new \phpws2\Variable\SmallInteger(0, 'inaccessible');
         $this->url = new \phpws2\Variable\StringVar(null, 'url');
-        $this->url->setLimit(255);
+        $this->url->setLimit(200);
         $this->approved = new \phpws2\Variable\BooleanVar(false, 'approved');
     }
 
