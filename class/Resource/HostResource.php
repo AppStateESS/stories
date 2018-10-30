@@ -38,10 +38,10 @@ class HostResource extends BaseResource
      {
          parent::__construct();
          $this->siteName = new \phpws2\Variable\TextOnly(null, 'siteName');
-         $this->siteName->setLimit(255);
+         $this->siteName->setLimit(100);
          //$this->url = new \phpws2\Variable\Url(null, 'url');
          $this->url = new \phpws2\Variable\StringVar(null, 'url');
-         $this->url->setLimit(255);
+         $this->url->setLimit(200);
          $this->authkey = new \phpws2\Variable\HashVar(null, 'authkey');
          $this->authkey->setLimit(40);
      }
