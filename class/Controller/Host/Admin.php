@@ -27,53 +27,35 @@ use stories\Controller\RoleController;
 class Admin extends User
 {
 
-    public function listHtmlCommand(Request $request)
-    {
-        $vars['siteName'] = \Layout::getPageTitle(true);
-        $vars['url'] = \Canopy\Server::getSiteUrl();
-        return $this->view->scriptView('ShareHost', true, $vars);
-    }
-
-    public function listJsonCommand(Request $request)
-    {
-        $shareFactory = new ShareFactory;
-        $data = [];
-        $data['currentGuests'] = $this->guestFactory->getCurrentGuests();
-        $data['guestRequests'] = $this->guestFactory->getGuestRequests();
-        $data['hosts'] = $this->hostFactory->getHosts();
-        $data['inaccessible'] = $shareFactory->getInaccessible();
-        return $data;
-    }
-
     public function postCommand(Request $request)
     {
-        $this->hostFactory->create($request);
+        $this->factory->create($request);
         return ['success' => true];
     }
 
     public function existsJsonCommand(Request $request)
     {
-        return ['duplicate' => (bool) $this->hostFactory->getByUrl($request->pullGetString('url'))];
+        return ['duplicate' => (bool) $this->factory->getByUrl($request->pullGetString('url'))];
     }
 
     public function putCommand(Request $request)
     {
-        $host = $this->hostFactory->load($this->id);
+        $host = $this->factory->load($this->id);
         $host->authkey = $request->pullPutString('authkey');
-        $this->hostFactory->save($host);
+        $this->factory->save($host);
         return ['success' => true];
-    }
-
-    public function sharePutCommand(Request $request)
-    {
-        $json = $this->hostFactory->share($this->id, $request);
-        return $json;
     }
 
     public function deleteCommand(Request $request)
     {
-        $this->hostFactory->delete($this->id);
-        $json = ['success'=> true];
+        $this->factory->delete($this->id);
+        $json = ['success' => true];
+        return $json;
+    }
+
+    public function submitPutCommand(Request $request)
+    {
+        $json = $this->factory->submit($this->id, $request);
         return $json;
     }
 
