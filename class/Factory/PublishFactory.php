@@ -15,12 +15,13 @@ namespace stories\Factory;
 use phpws2\Database;
 use stories\Factory\EntryFactory;
 use stories\Factory\ShareFactory;
+use stories\Factory\FeatureFactory;
 
 class PublishFactory
 {
 
     public $more_rows;
-    
+
     public function publishEntry(int $entryId, int $publishDate)
     {
         $db = Database::getDB();
@@ -39,12 +40,24 @@ class PublishFactory
         $db->insert();
     }
 
-    public function unpublishEntry(int $entryId)
+    public function delete(int $publishId)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
-        $tbl->addFieldConditional('entryId', $entryId);
-        $db->delete();
+        $tbl->addFieldConditional('id', $publishId);
+        return $db->delete();
+    }
+    
+    public function unpublishEntry(int $entryId)
+    {
+        $publishId = $this->getPublishIdByEntryId($entryId);
+        $this->delete($publishId);
+        
+        $featureFactory = new FeatureFactory;
+        $featureFactory->deleteByPublishId();
+        
+        $this->unpublishHosts($entryId);
+        $this->deleteTrackHosts($entryId);
     }
 
     public function unpublishShare(int $shareId)
@@ -53,6 +66,44 @@ class PublishFactory
         $tbl = $db->addTable('storiespublish');
         $tbl->addFieldConditional('shareId', $shareId);
         $db->delete();
+    }
+    
+    private function getPublishIdByEntryId(int $entryId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiespublish');
+        $tbl->addField('id');
+        $tbl->addFieldConditional('entryId', $entryId);
+        return $db->selectColumn();
+    }
+
+    private function unpublishHosts(int $entryId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiestrack');
+        $tbl->addFieldConditional('entryId', $entryId);
+        $result = $db->select();
+        if (empty($result)) {
+            return;
+        }
+
+        $shareFactory = new ShareFactory;
+        foreach ($results as $row) {
+            $shareFactory->sendRemove($entryId, $row['hostId']);
+        }
+    }
+
+    /**
+     * Deletes all tracking of entries sent to hosts.
+     * @param int $entryId
+     * @return int
+     */
+    private function deleteTrackHosts(int $entryId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiestrack');
+        $tbl->addFieldConditional('entryId', $entryId);
+        return $db->delete();
     }
 
     public function listing(array $options = null)
@@ -64,11 +115,11 @@ class PublishFactory
         } else {
             $options = $defaultOptions;
         }
-        
+
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addOrderBy('publishDate', 'desc');
-        
+
         /**
          * To get an accurate test to see if there are more entries for 
          * a Next page button, we ask for one more row than the current limit
@@ -85,9 +136,9 @@ class PublishFactory
                 }
             }
         }
-        
+
         $result = $db->select();
-        
+
         $totalRows = count($result);
         if ($totalRows > $options['limit']) {
             // if there are more rows than the options[limit], we set more_rows
@@ -101,7 +152,7 @@ class PublishFactory
         }
         return $result;
     }
-    
+
     private function defaultListOptions()
     {
         return array(
@@ -110,7 +161,33 @@ class PublishFactory
             'page' => 1
         );
     }
-    
+
+    /**
+     * List of publishable stories with just id and title
+     */
+    public function featureList()
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiespublish');
+        $tbl->addOrderBy('publishDate', 'desc');
+        $result = $db->select();
+        if (empty($result)) {
+            return null;
+        }
+        foreach ($result as $row) {
+            if ($row['entryId'] > 0) {
+                $entry = $entryFactory->load($row['entryId']);
+                $options[] = ['id' => $entry->id, 'title' => $entry->title];
+            } elseif ($row['shareId'] > 0) {
+                $share = $shareFactory->pullShareData($row['shareId']);
+                $options[] = ['id' => $share->id, 'title' => $share->title];
+            } else {
+                throw new \Exception('Bad publish row');
+            }
+        }
+        return $options;
+    }
+
     public function deleteByShareId($shareId)
     {
         $db = Database::getDB();
