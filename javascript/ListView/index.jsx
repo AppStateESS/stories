@@ -30,7 +30,7 @@ class ListView extends Component {
     return (<div>
       <select value={this.state.listView} onChange={this.update} className="form-control">
         <option value="0">Show summarized</option>
-        <option value="1">Show all content</option>
+        <option value="1">Show full content</option>
       </select>
     </div>)
   }
