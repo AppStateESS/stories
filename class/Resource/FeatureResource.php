@@ -33,30 +33,63 @@ namespace stories\Resource;
  */
 class FeatureResource extends BaseResource
 {
+
+    /**
+     * @var \phpws2\Variable\TextOnly
+     */
     protected $title;
+
+    /**
+     * @var \phpws2\Variable\BooleanVar
+     */
     protected $active;
+
+    /**
+     * @var \phpws2\Variable\ArrayVar
+     */
     protected $entries;
+
+    /**
+     * @var \phpws2\Variable\Attribute
+     */
     protected $format;
+
+    /**
+     * @var \phpws2\Variable\SmallInteger
+     */
     protected $columns;
+
+    /**
+     * @var \phpws2\Variable\SmallInteger
+     */
     protected $sorting;
+
+    /**
+     * @var \phpws2\Variable\ArrayVar
+     */
     protected $stories;
-    
+
+    /**
+     * @var string
+     */
     protected $table = 'storiesfeature';
-    
+
     public function __construct()
     {
         parent::__construct();
         $this->title = new \phpws2\Variable\TextOnly(null, 'title');
-        $this->title->setLimit(255);
+        $this->title->setLimit(100);
         $this->title->allowNull(true);
         $this->format = new \phpws2\Variable\Attribute('landscape', 'format');
         $this->format->setLimit(20);
         $this->active = new \phpws2\Variable\BooleanVar(true, 'active');
         $this->columns = new \phpws2\Variable\SmallInteger(2, 'columns');
         $this->sorting = new \phpws2\Variable\SmallInteger(0, 'sorting');
+        
         $this->stories = new \phpws2\Variable\ArrayVar(null, 'stories');
         $this->entries = new \phpws2\Variable\ArrayVar(null, 'entries');
         $this->entries->setIsTableColumn(false);
         $this->stories->setIsTableColumn(false);
     }
+
 }
