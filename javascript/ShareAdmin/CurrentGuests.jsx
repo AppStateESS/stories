@@ -16,6 +16,7 @@ const CurrentGuests = ({listing, denyGuest}) => {
         <tbody>
           <tr>
             <th>Action</th>
+            <th>Shares</th>
             <th>Site</th>
             <th>Contact</th>
             <th>Accepted</th>

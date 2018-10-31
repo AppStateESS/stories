@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 
-const CurrentGuestRow = ({siteName, url, authkey, email, acceptDate, deny}) => {
+const CurrentGuestRow = ({id, siteName, url, authkey, email, acceptDate, deny, storyCount}) => {
   const acceptFormatted = moment.unix(acceptDate).format("MMM D YYYY, h:mm a")
   return (<tr>
     <td>
@@ -11,6 +11,7 @@ const CurrentGuestRow = ({siteName, url, authkey, email, acceptDate, deny}) => {
         <i className="fas fa-times fa-fw"></i>
       </button>
     </td>
+    <td><a href={`./stories/Share/guestListing/?guestId=${id}`}>{storyCount}</a></td>
     <td><a href={url}>{siteName}</a></td>
     <td><a href={`mailto:${email}`}>{email}</a></td>
     <td>{acceptFormatted}</td>
@@ -18,7 +19,9 @@ const CurrentGuestRow = ({siteName, url, authkey, email, acceptDate, deny}) => {
 }
 
 CurrentGuestRow.propTypes = {
+  id: PropTypes.string,
   siteName: PropTypes.string,
+  storyCount: PropTypes.string,
   url: PropTypes.string,
   authkey: PropTypes.string,
   email: PropTypes.string,
