@@ -66,10 +66,8 @@ class ShareFactory extends BaseFactory
         return $listing;
     }
 
-
-    public function pullShareData($shareId)
+    private function jsonShareData(Resource $share)
     {
-        $share = $this->load($shareId);
         $guestFactory = new GuestFactory;
         $guest = $guestFactory->load($share->guestId);
 
@@ -92,11 +90,20 @@ class ShareFactory extends BaseFactory
         if (isset($jsonObject->error)) {
             return $jsonObject;
         }
+        $jsonObject->approved = $share->approved;
+        $jsonObject->entryId = $jsonObject->id;
+        $jsonObject->id = $share->id;
         $jsonObject->url = $share->url . '/' . $jsonObject->urlTitle;
         $jsonObject->siteName = $guest->siteName;
         $jsonObject->siteUrl = $guest->url;
         $jsonObject->thumbnail = $jsonObject->siteUrl . $jsonObject->thumbnail;
         return $jsonObject;
+    }
+
+    public function pullShareData($shareId)
+    {
+        $share = $this->load($shareId);
+        return $this->jsonShareData($share);
     }
 
     public function approve(int $shareId)
@@ -163,48 +170,58 @@ class ShareFactory extends BaseFactory
         return $db->select();
     }
 
+    /**
+     * Delete a share on the host
+     * @param int $id
+     */
     public function delete(int $id)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesshare');
         $tbl->addFieldConditional('id', $id);
         $db->delete();
-
-        $publishFactory = new PublishFactory;
-        $publishFactory->deleteByShareId($id);
     }
 
-    public function sendRemove($entryId, $hostId)
+    public function removeFromHost($entryId, $hostId)
     {
         $hostFactory = new HostFactory;
         $host = $hostFactory->load($hostId);
-        $url = $host->url . 'stories/Share/remove?json=1';
 
-        $data['authkey'] = $host->authkey;
-        $data['entryId'] = $entryId;
-
-        $options = array(CURLOPT_URL => $url, CURLOPT_CUSTOMREQUEST => 'PUT', CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => true, CURLOPT_POSTFIELDS => $data);
+        $url = <<<EOF
+{$host->url}stories/Share/removeGuestShare/?authkey={$host->authkey}&entryId={$entryId}&json=1
+EOF;
 
         $ch = curl_init();
-        curl_setopt_array($ch, $options);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if (!$result = curl_exec($ch)) {
             throw new \Exception('Cannot to connect to host');
         }
         curl_close($ch);
     }
 
-    public function removeShare(Request $request)
+    /**
+     * Receive a share id and inform the guest that shared the entry it
+     * is no longer in use.
+     * @param int $shareId
+     * @return type
+     */
+    public function removeFromGuest(int $shareId)
     {
-        $authkey = $request->pullPutString('authkey');
-        $entryId = $request->pullPutInteger('entryId');
+        $share = $this->load($shareId);
         $guestFactory = new GuestFactory;
-        $guest = $guestFactory->getByAuthkey($authkey);
-        if (!$guest) {
-            return ['error' => 'Authorization not recognized.'];
+        $guest = $guestFactory->load($share->guestId);
+
+        $url = <<<EOF
+{$guest->url}stories/Share/removeHostShare/?authkey={$guest->authkey}&entryId={$share->entryId}&json=1
+EOF;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        if (!$result = curl_exec($ch)) {
+            throw new \Exception('Cannot to connect to host');
         }
-        $shareFactory = new ShareFactory;
-        $shareId = $shareFactory->getShareId($guest->id, $entryId);
-        $this->delete($shareId);
+        curl_close($ch);
     }
 
     public function getShareId(int $guestId, int $entryId)
@@ -214,12 +231,39 @@ class ShareFactory extends BaseFactory
         $tbl->addField('id');
         $tbl->addFieldConditional('guestId', $guestId);
         $tbl->addFieldConditional('entryId', $entryId);
-        $row = $db->selectOne();
+        $row = $db->selectOneRow();
         if (empty($row)) {
             return null;
         } else {
             return $row['id'];
         }
+    }
+
+    public function guestShareCount(int $guestId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesshare');
+        $tbl->addFieldConditional('guestId', $guestId);
+        $exp = new \phpws2\Database\Expression('count(' . $tbl->getField('id') . ')');
+        $tbl->addField($exp);
+        return $db->selectColumn();
+    }
+
+    public function getSharesByGuestId(int $guestId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesshare');
+        $tbl->addOrderBy('publishDate', 'desc');
+        $tbl->addFieldConditional('guestId', $guestId);
+        $shares = $db->select();
+        if (empty($shares)) {
+            return;
+        }
+        foreach ($shares as $row) {
+            $shareObject = $this->build($row);
+            $json[] = $this->jsonShareData($shareObject);
+        }
+        return $json;
     }
 
 }
