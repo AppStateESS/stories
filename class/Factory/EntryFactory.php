@@ -606,9 +606,6 @@ class EntryFactory extends BaseFactory
         $entry = $this->load($id);
         $entry->deleted = true;
 
-        // Feature will bug out if the entry is deleted
-        $featureFactory = new FeatureFactory;
-        $featureFactory->removeEntryFromAll($id);
         self::saveResource($entry);
         $publishFactory->unpublishEntry($entry->id);
     }
