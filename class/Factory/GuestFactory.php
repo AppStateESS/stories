@@ -46,7 +46,16 @@ class GuestFactory extends BaseFactory
         $tbl = $db->addTable('storiesguest');
         $tbl->addFieldConditional('status', 1);
         $tbl->addOrderBy('siteName');
-        return $db->select();
+        $rows = $db->select();
+        if (empty($rows)) {
+            return [];
+        }
+        $shareFactory = new ShareFactory;
+        foreach ($rows as $row) {
+            $row['storyCount'] = $shareFactory->guestShareCount($row['id']);
+            $newRows[] = $row;
+        }
+        return $newRows;
     }
 
     public function getGuestRequests()
