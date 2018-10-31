@@ -132,7 +132,9 @@ export default class EntryList extends Component {
           this.setState({shareStatus: <div className="alert alert-danger">Request failed.</div>})
         }
       },
-      error: () => {}
+      error: () => {
+        this.setState({shareStatus: <div className="alert alert-danger">Request failed.</div>})
+      }
     })
   }
 
