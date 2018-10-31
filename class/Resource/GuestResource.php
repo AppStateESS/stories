@@ -14,18 +14,19 @@ namespace stories\Resource;
 
 class GuestResource extends BaseResource
 {
+
     /**
      *
      * @var phpws2\Variable\TextOnly
      */
     protected $siteName;
-    
+
     /**
      * Destination of shared stories
      * @var phpws2\Variable\Url
      */
     protected $url;
-    
+
     /**
      * 0 - no action
      * 1 - accepted
@@ -33,21 +34,17 @@ class GuestResource extends BaseResource
      * @var \phpws2\Variable\IntegerVar
      */
     protected $status;
-    
+
     /**
      * Key used to communicate with destination
      * @var \phpws2\Variable\Alphanumeric
      */
     protected $authkey;
-    
     protected $email;
-    
     protected $submitDate;
-    
     protected $acceptDate;
-    
     protected $table = 'storiesguest';
-    
+
     public function __construct()
     {
         parent::__construct();
@@ -64,4 +61,13 @@ class GuestResource extends BaseResource
         $this->submitDate = new \phpws2\Variable\DateTime(0, 'submitDate');
         $this->acceptDate = new \phpws2\Variable\DateTime(0, 'acceptDate');
     }
+
+    public function setUrl($url)
+    {
+        if (!preg_match('@/$@', $url)) {
+            $url = $url . '/';
+        }
+        $this->url->set($url);
+    }
+
 }
