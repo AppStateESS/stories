@@ -14,6 +14,9 @@ namespace stories\Controller\Share;
 
 use stories\Controller\RoleController;
 use stories\Factory\ShareFactory;
+use stories\Factory\GuestFactory;
+use stories\Factory\HostFactory;
+use stories\Factory\PublishFactory;
 use Canopy\Request;
 
 class User extends RoleController
@@ -39,6 +42,36 @@ class User extends RoleController
     {
         $json = $this->factory->shareRequest($request);
         return $json;
+    }
+
+    /**
+     * Removes a host's share by request of a guest.
+     * Get the share id by getting the guest by the authkey, then delete the share.
+     * After the share is deleted, unpublish it.
+     * 
+     * @param Request $request
+     */
+    public function removeGuestShareJsonCommand(Request $request)
+    {
+        $entryId = $request->pullGetInteger('entryId');
+        $authkey = $request->pullGetString('authkey');
+        $guestFactory = new GuestFactory;
+        $guest = $guestFactory->getByAuthkey($authkey);
+        $shareId = $this->factory->getShareId($guest->id, $entryId);
+        $this->factory->delete($shareId);
+        $publishFactory = new PublishFactory;
+        $publishFactory->unpublishShare($shareId);
+        return ['success'=>true];
+    }
+
+    public function removeHostShareJsonCommand(Request $request)
+    {
+        $entryId = $request->pullGetInteger('entryId');
+        $authkey = $request->pullGetString('authkey');
+        $hostFactory = new HostFactory;
+        $host = $hostFactory->getByAuthkey($authkey);
+        $hostFactory->removeTrack($entryId, $host->id);
+        return ['success'=>true];
     }
 
 }
