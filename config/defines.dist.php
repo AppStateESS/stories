@@ -20,8 +20,8 @@ define('STORIES_SUMMARY_TAGS', 'b,strong,em,i,a,style,ul,ol,li,p,br');
 
 define('STORIES_DAY_THRESHOLD', 3);
 
-define('STORIES_THUMB_TARGET_WIDTH', 800);
-define('STORIES_THUMB_TARGET_HEIGHT', 800);
+define('STORIES_THUMB_TARGET_WIDTH', 600);
+define('STORIES_THUMB_TARGET_HEIGHT', 600);
 
 // Puts a hard limit on the EntryFactory::pullList method
 define('STORIES_HARD_LIMIT', 100);
