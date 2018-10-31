@@ -48,13 +48,17 @@ class PublishFactory
         return $db->delete();
     }
     
+    /**
+     * Unpublish local entries and inform any hosts to unpublish
+     * @param int $entryId
+     */
     public function unpublishEntry(int $entryId)
     {
         $publishId = $this->getPublishIdByEntryId($entryId);
         $this->delete($publishId);
         
         $featureFactory = new FeatureFactory;
-        $featureFactory->deleteByPublishId();
+        $featureFactory->deleteByPublishId($publishId);
         
         $this->unpublishHosts($entryId);
         $this->deleteTrackHosts($entryId);
@@ -88,8 +92,8 @@ class PublishFactory
         }
 
         $shareFactory = new ShareFactory;
-        foreach ($results as $row) {
-            $shareFactory->sendRemove($entryId, $row['hostId']);
+        foreach ($result as $row) {
+            $shareFactory->removeFromHost($entryId, $row['hostId']);
         }
     }
 
@@ -186,14 +190,6 @@ class PublishFactory
             }
         }
         return $options;
-    }
-
-    public function deleteByShareId($shareId)
-    {
-        $db = Database::getDB();
-        $tbl = $db->addTable('storiespublish');
-        $tbl->addFieldConditional('shareId', $shareId);
-        $db->delete();
     }
 
 }
