@@ -45,5 +45,12 @@ class HostResource extends BaseResource
          $this->authkey = new \phpws2\Variable\HashVar(null, 'authkey');
          $this->authkey->setLimit(40);
      }
+     
+     public function setUrl($url) {
+         if (!preg_match('@/$@', $url)) {
+             $url = $url . '/';
+         }
+         $this->url->set($url);
+     }
              
 }
