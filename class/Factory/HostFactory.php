@@ -99,7 +99,7 @@ class HostFactory extends BaseFactory
             return array('error' => 'Authkey not set for ' . $host->siteName);
         }
 
-        $url = "{$host->url}/stories/Share/submit/?json=1&authkey={$host->authkey}&entryId=$entryId";
+        $url = "{$host->url}stories/Share/submit/?json=1&authkey={$host->authkey}&entryId=$entryId";
         $options = array(CURLOPT_URL => $url, CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => true);
         $ch = curl_init();
         curl_setopt_array($ch, $options);
@@ -120,6 +120,28 @@ class HostFactory extends BaseFactory
         $tbl->addValue('entryId', $entryId);
         $tbl->addValue('hostId', $hostId);
         $db->insert();
+    }
+    
+    public function removeTrack(int $entryId, int $hostId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiestrack');
+        $tbl->addFieldConditional('entryId', $entryId);
+        $tbl->addFieldConditional('hostId', $hostId);
+        $db->delete();
+    }
+    
+    public function getByAuthkey(string $authkey)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storieshost');
+        $tbl->addFieldConditional('authkey', $authkey);
+        $host = $db->selectOneRow();
+        if (empty($host)) {
+            throw new \Exception('Invalid host');
+        }
+        $hostObj = $this->build($host);
+        return $hostObj;
     }
 
 }
