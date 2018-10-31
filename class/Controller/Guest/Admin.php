@@ -14,7 +14,6 @@ namespace stories\Controller\Guest;
 
 use Canopy\Request;
 use stories\Factory\GuestFactory as Factory;
-use stories\View\GuestView as View;
 use stories\Controller\RoleController;
 
 class Admin extends User
