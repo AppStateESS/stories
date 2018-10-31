@@ -157,7 +157,8 @@ abstract class RoleController
         }
 
         if (!method_exists($this, $restCommand)) {
-            throw new BadCommand($restCommand);
+            $errorMessage = get_class($this) . ':' . $restCommand;
+            throw new BadCommand($errorMessage);
         }
 
         $content = $this->$restCommand($request);
