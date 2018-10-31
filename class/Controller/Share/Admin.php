@@ -21,7 +21,11 @@ use stories\Controller\RoleController;
 
 class Admin extends User
 {
-
+    /**
+     * @var /stories\Factory\ShareFactory
+     */
+    protected $factory;
+    
     protected function loadFactory()
     {
         $this->factory = new Factory;
@@ -49,15 +53,29 @@ class Admin extends User
         return ['listing' => $this->factory->listing(0)];
     }
 
+    /**
+     * Delete the share off the host.
+     * $this->id is the share id.
+     * @param Request $request
+     */
     public function deleteCommand(Request $request)
     {
+        $publishFactory = new \stories\Factory\PublishFactory;
+        $publishFactory->unpublishShare($this->id);
+        $this->factory->removeFromGuest($this->id);
         $this->factory->delete($this->id);
+        return ['success' => true];
     }
 
-    public function removePutCommand(Request $request)
+    /**
+     * Sends a request to a host to remove a share.
+     * @param Request $request
+     * @return array
+     */
+    public function removeHostPutCommand(Request $request)
     {
-        $json = $this->factory->removeShare($request);
-        return $json;
+        $this->factory->removeFromHost($request);
+        return ['success'=>true];
     }
 
     public function listHtmlCommand(Request $request)
@@ -78,5 +96,18 @@ class Admin extends User
         $data['inaccessible'] = $this->factory->getInaccessible();
         return $data;
     }
-
+    
+    public function guestListingHtmlCommand(Request $request)
+    {
+        return $this->view->scriptView('GuestListing', true, ['guestId'=>$request->pullGetInteger('guestId')]);
+    }
+    
+    public function guestListingJsonCommand(Request $request)
+    {
+        $guestId = $request->pullGetInteger('guestId');
+        $guestFactory = new GuestFactory;
+        $guest = $guestFactory->load($guestId);
+        return ['listing'=>$this->factory->getSharesByGuestId($guestId), 'guest'=>$guest->getStringVars()];
+    }
+    
 }
