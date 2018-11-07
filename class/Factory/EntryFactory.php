@@ -603,6 +603,8 @@ class EntryFactory extends BaseFactory
     public function delete($id)
     {
         $publishFactory = new PublishFactory;
+        $featureStoryFactory = new FeatureStoryFactory;
+        
         $entry = $this->load($id);
         $entry->deleted = true;
 
@@ -653,28 +655,6 @@ EOF;
                 '', $content);
     }
 
-    /**
-     * Removed the data-embed-code div medium editor adds.
-     * @param string $content
-     * @deprecated
-     * @return string
-     */
-    private function cleanEmbed($content)
-    {
-        return preg_replace('/<div data-embed-code="[^"]+">/s',
-                '<div class="medium-insert-active">', $content);
-    }
-
-    /**
-     * Facebook does zeroes out the container_width
-     * @deprecated
-     * @param string $content
-     */
-    private function cleanFacebook($content)
-    {
-        return preg_replace('/container_width=0/s', 'container_width=500px',
-                $content);
-    }
 
     /**
      * The Flickr oEmbed calls a script when pulled down. This script instantly
@@ -703,16 +683,6 @@ EOF;
         return $final;
     }
 
-    /**
-     * @deprecated
-     * @param type $content
-     * @return type
-     */
-    private function cleanTwitter($content)
-    {
-        return preg_replace('/<script.*platform\.twitter\.com[^>]+><\/script>/',
-                '', $content);
-    }
 
     private function removeExtraParagraphs($content)
     {
