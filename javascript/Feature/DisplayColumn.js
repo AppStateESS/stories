@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import Select from 'react-select'
 import MoveButton from './MoveButton'
 import 'react-select/dist/react-select.min.css'
-import {maxZoom, minZoom,} from './config'
+import {maxZoom, minZoom} from './config'
 
 /* global $ */
 
@@ -13,7 +13,7 @@ class DisplayColumn extends React.Component {
     super(props)
     this.state = {
       showButtons: false,
-      dragging: false,
+      dragging: false
     }
     this.moveButtons = this.moveButtons.bind(this)
     this.zoomOut = this.zoomOut.bind(this)
@@ -23,7 +23,8 @@ class DisplayColumn extends React.Component {
   componentDidMount() {
     $('#feature-note').popover({
       html: true,
-      content: '<span>To be featured, a story must be <strong>published</strong> with a title and image</span>',
+      content: '<span>To be featured, a story must be <strong>published</strong> with a title ' +
+          'and image</span>',
       trigger: 'hover'
     })
   }
@@ -33,37 +34,37 @@ class DisplayColumn extends React.Component {
   }
 
   zoomOut() {
-    const zoom = parseInt(this.props.entry.zoom) - 5
+    const zoom = parseInt(this.props.story.zoom) - 5
     this.props.setZoom(zoom)
   }
 
   zoomIn() {
-    const zoom = parseInt(this.props.entry.zoom) + 5
+    const zoom = parseInt(this.props.story.zoom) + 5
     this.props.setZoom(zoom)
   }
 
   moveButtons() {
-    const {
-      moveThumb,
-      stopMove,
-      holdThumb,
-      resetThumb,
-      entry,
-    } = this.props
+    const {moveThumb, stopMove, holdThumb, resetThumb, story} = this.props
 
-    if (this.state.showButtons === false || entry.entryId == 0) {
+    if (this.state.showButtons === false || story.id == 0) {
       return null
     }
-    const zoom = entry.zoom
-    const cX = entry.x
-    const cY = entry.y
-    return (
-      <div className="thumbnail-buttons">
+    const zoom = story.zoom
+    const cX = story.x
+    const cY = story.y
+    let uploadButton
+    if (story.share === '0') {
+      uploadButton = (
         <button
           className="btn btn-primary btn-sm upload-button"
           onClick={this.props.thumbnailForm}>
           <i className="fa fa-upload"></i>
         </button>
+      )
+    }
+    return (
+      <div className="thumbnail-buttons">
+        {uploadButton}
         <div className="move-buttons">
           <table>
             <tbody>
@@ -119,24 +120,43 @@ class DisplayColumn extends React.Component {
     const {
       format,
       bsClass,
-      entry,
-      stories,
+      story,
+      publishedTitles,
       applyStory,
       clearStory,
+      savePosition,
       previousEmpty,
+      updated
     } = this.props
     const _class = 'story-feature ' + format
-    const position = `${entry.x}% ${entry.y}%`
-    const zoom = entry.zoom
+    const position = `${story.x}% ${story.y}%`
+    const zoom = story.zoom
     const thumbnailStyle = {
-      backgroundImage: `url('${entry.story.thumbnail}')`,
+      backgroundImage: `url('${story.thumbnail}')`,
       backgroundSize: zoom + '%',
       backgroundPosition: position
     }
 
     let clearButton
-    if (entry.entryId > 0) {
-      clearButton = <button className="btn btn-primary btn-sm" onClick={clearStory}>Clear</button>
+    let saveButton
+    if (story.id > 0) {
+      clearButton = <button
+        title="Remove story from feature list"
+        className="btn btn-danger btn-sm"
+        onClick={clearStory}>
+        <i className="fas fa-times"></i>
+      </button>
+
+      if (updated) {
+        saveButton = (
+          <button
+            title="Save updates"
+            className="btn btn-success btn-sm mr-1"
+            onClick={savePosition}>
+            <i className="fas fa-save"></i>
+          </button>
+        )
+      }
     }
 
     const selectCss = {
@@ -144,8 +164,8 @@ class DisplayColumn extends React.Component {
     }
 
     let storyList = <em>No published stories available</em>
-    if (stories !== undefined) {
-      let storyOptions = stories.map(function (value) {
+    if (publishedTitles !== undefined) {
+      let storyOptions = publishedTitles.map(function (value) {
         return {value: value.id, label: value.title}
       })
       if (previousEmpty) {
@@ -153,26 +173,26 @@ class DisplayColumn extends React.Component {
       } else {
         storyList = (
           <div className="mb-1">
-            <div className="float-left mr-2" style={selectCss}>
-              <Select options={storyOptions} value={0} onChange={applyStory}/>
-            </div>{clearButton}
-            <div
-              className="badge badge-info pointer"
-              style={{
-                clear: 'both'
-              }}
-              id="feature-note"
-              data-toggle="popover"
-              data-container="body">Story not showing up?</div>
+            <div className="clearfix">
+              <div className="float-left mr-2" style={selectCss}>
+                <Select options={storyOptions} value={0} onChange={applyStory}/>
+              </div>
+              <div
+                className="badge badge-info pointer"
+                id="feature-note"
+                data-toggle="popover"
+                data-container="body">?</div>
+            </div>
+            <div className="mt-2">{saveButton}{clearButton}</div>
           </div>
         )
       }
     }
     let authorPic
-    if (entry.story.authorPic != undefined && entry.story.authorPic.length > 0) {
+    if (story.authorPic != undefined && story.authorPic.length > 0) {
       authorPic = (
         <div className="circle-frame">
-          <img src={entry.story.authorPic}/>
+          <img src={story.authorPic}/>
         </div>
       )
     }
@@ -187,16 +207,16 @@ class DisplayColumn extends React.Component {
           <div className="story-content">
             <div className="story-title">
               <a title="Read this story">
-                <h4>{entry.story.title}</h4>
+                <h4>{story.title}</h4>
               </a>
             </div>
-            <div className="story-summary">{entry.story.strippedSummary}</div>
+            <div className="story-summary">{story.summary}</div>
           </div>
           <div className="publish-info">
             {authorPic}
             <div className="posted">
-              <div className="author-name">{entry.story.authorName}</div>
-              <div className="publish-date">{entry.story.publishDateRelative}
+              <div className="author-name">{story.authorName}</div>
+              <div className="publish-date">{story.publishDateRelative}
               </div>
             </div>
           </div>
@@ -210,7 +230,7 @@ class DisplayColumn extends React.Component {
 DisplayColumn.propTypes = {
   bsClass: PropTypes.string,
   format: PropTypes.string,
-  entry: PropTypes.object,
+  story: PropTypes.object,
   stories: PropTypes.array,
   applyStory: PropTypes.func,
   clearStory: PropTypes.func,
@@ -220,6 +240,7 @@ DisplayColumn.propTypes = {
   setZoom: PropTypes.func,
   holdThumb: PropTypes.func,
   thumbnailForm: PropTypes.func,
+  updated: PropTypes.bool,
   previousEmpty: PropTypes.bool
 }
 

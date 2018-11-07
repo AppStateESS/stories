@@ -2,89 +2,86 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import DisplayColumn from './DisplayColumn'
+import SampleStory from './SampleStory'
 
-const FeatureDisplay = (props) => {
-  const {
-    feature,
-    applyStory,
-    stories,
-    clearStory,
-    moveThumb,
-    resetThumb,
-    setZoom,
-    holdThumb,
-    stopMove,
-  } = props
-  const columns = parseInt(feature.columns)
-  let bsClass
+const FeatureDisplay = ({
+  featureStories,
+  publishedTitles,
+  srcHttp,
+  format,
+  moveThumb,
+  holdThumb,
+  setZoom,
+  stopMove,
+  savePosition,
+  applyStory,
+  clearStory,
+  updated,
+  thumbnailForm
+}) => {
+  let bsClass = 'col-12'
 
-  switch (columns) {
-    case 2:
+  switch (featureStories.length) {
+    case 0:
+      bsClass = 'col-12'
+      break
+
+    case 1:
       bsClass = 'col-sm-6'
       break
-    case 3:
+
+    case 2:
       bsClass = 'col-sm-4'
       break
-    case 4:
-      bsClass = 'col-sm-6 col-md-3'
+
+    default:
+      bsClass = 'col-sm-3'
       break
   }
 
-  let columnContent = []
-  let previousEmpty = false
-  let currentEntry = {}
+  let formDisplay = <DisplayColumn
+    bsClass={bsClass}
+    story={SampleStory(srcHttp)}
+    applyStory={applyStory.bind(null, -1)}
+    publishedTitles={publishedTitles}
+    format={format}/>
 
-  let tempStoryList = []
-  for (let x = 0; x < stories.length; x++) {
-    tempStoryList[x] = stories[x]
-  }
-
-  for (let i = 0; i < columns; i++) {
-    currentEntry = feature.entries[i]
-    for (let j = 0; j < tempStoryList.length; j++) {
-      if(tempStoryList[j].id == currentEntry.entryId) {
-        tempStoryList.splice(j,1)
-      }
-    }
-    columnContent.push(
+  let storyList = featureStories.map((value, key) => {
+    return (
       <DisplayColumn
-        key={i}
+        key={key}
         bsClass={bsClass}
-        previousEmpty={previousEmpty}
-        format={feature.format}
-        entry={currentEntry}
-        stories={tempStoryList}
-        applyStory={applyStory.bind(null, i)}
-        clearStory={clearStory.bind(null, i)}
-        stopMove={stopMove.bind(null, i)}
-        thumbnailForm={props.thumbnailForm.bind(null, i)}
-        moveThumb={moveThumb.bind(null, i)}
-        resetThumb={resetThumb.bind(null, i)}
-        setZoom={setZoom.bind(null, i)}
-        holdThumb={holdThumb.bind(null, i)}/>
+        story={value}
+        publishedTitles={publishedTitles}
+        thumbnailForm={thumbnailForm.bind(null, key)}
+        applyStory={applyStory.bind(null, key)}
+        clearStory={clearStory.bind(null, key)}
+        savePosition={savePosition.bind(null, key)}
+        stopMove={stopMove.bind(null, key)}
+        moveThumb={moveThumb.bind(null, key)}
+        holdThumb={holdThumb.bind(null, key)}
+        setZoom={setZoom.bind(null, key)}
+        updated={updated.indexOf(key) !== -1}
+        format={format}/>
     )
-    if (currentEntry.entryId == 0) {
-      previousEmpty = true
-    }
-  }
-  return (<div className="feature-row row">
-    {columnContent}
-  </div>)
+  })
+  return (<div className="row">{storyList}{formDisplay}</div>)
 }
 
 FeatureDisplay.propTypes = {
-  feature: PropTypes.object,
-  stories: PropTypes.array,
+  featureStories: PropTypes.array,
+  publishedTitles: PropTypes.array,
+  srcHttp: PropTypes.string,
+  format: PropTypes.string,
+  moveThumb: PropTypes.func,
+  stopMove: PropTypes.func,
+  holdThumb: PropTypes.func,
   applyStory: PropTypes.func,
   clearStory: PropTypes.func,
-  holdThumb: PropTypes.func,
-  moveThumb: PropTypes.func,
-  resetThumb: PropTypes.func,
   setZoom: PropTypes.func,
+  savePosition: PropTypes.func,
   thumbnailForm: PropTypes.func,
-  stopMove: PropTypes.func
+  updated: PropTypes.array,
 }
-
-FeatureDisplay.defaultTypes = {}
 
 export default FeatureDisplay
