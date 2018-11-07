@@ -27,7 +27,9 @@
 namespace stories\Factory;
 
 use stories\Resource\FeatureResource as Resource;
+use stories\Resource\FeatureStoryResource;
 use stories\Factory\EntryFactory;
+use stories\Factory\PublishFactory;
 use stories\View\EntryView;
 use phpws2\Database;
 use phpws2\Settings;
@@ -57,69 +59,20 @@ class FeatureFactory extends BaseFactory
         return $feature->id;
     }
 
-    private function defaultHiddenEntryVars()
+    public function listing(bool $activeOnly = true)
     {
-        return array(
-            'content', 'tags', 'deleted', 'expirationDate', 'leadImage', 'summary');
-    }
-
-    public function listing($options = null)
-    {
-        $defaultOptions = array(
-            'hiddenVars' => $this->defaultHiddenEntryVars(),
-            'activeOnly' => true
-        );
-
-        if (is_array($options)) {
-            $options = array_merge($defaultOptions, $options);
-        } else {
-            $options = $defaultOptions;
-        }
-
         $db = Database::getDB();
         $tbl = $db->addTable('storiesfeature');
-        if ($options['activeOnly']) {
+        if ($activeOnly) {
             $tbl->addFieldConditional('active', 1);
         }
         $tbl->addOrderBy('sorting');
-        $result = $db->select('\stories\Resource\FeatureResource');
+        $result = $db->select();
         if (empty($result)) {
             return null;
         }
 
-        array_walk($result, array($this, 'addEntries'), $options['hiddenVars']);
         return $result;
-    }
-
-    /**
-     * 
-     * @param array $feature
-     * @param type $key Not used
-     * @param type $hiddenVars
-     */
-    private function addEntries(&$feature, $key, $hiddenVars)
-    {
-        $entryFactory = new EntryFactory;
-        $db = Database::getDB();
-        $tbl = $db->addTable('storiesentrytofeature');
-        $tbl->addFieldConditional('featureId', $feature['id']);
-        $tbl->addOrderBy('sorting');
-        $entries = $db->select();
-        if (!empty($entries)) {
-            foreach ($entries as $k => $entry) {
-                $entryObj = $entryFactory->load($entry['entryId']);
-                if (!$entryObj->published) {
-                    continue;
-                }
-                $vars = $entryObj->getStringVars(true, $hiddenVars);
-                $trimCharacters = $this->trimCharactersCount($feature['format'],
-                        $feature['columns'], $entryObj->title);
-                $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
-                        $trimCharacters);
-                $entries[$k]['story'] = $vars;
-            }
-        }
-        $feature['entries'] = $entries;
     }
 
     private function trimCharactersCount($format, $columns, $title)
@@ -135,7 +88,7 @@ class FeatureFactory extends BaseFactory
                 $columnAllowed = 140;
                 break;
 
-            case 4:
+            default:
                 $columnAllowed = 0;
                 break;
         }
@@ -195,26 +148,6 @@ class FeatureFactory extends BaseFactory
         return substr($content, 0, $lastSpace) . '...';
     }
 
-    public function loadEntries(Resource $feature)
-    {
-        $entries = $feature->entries;
-        if (empty($entries)) {
-            return;
-        }
-        $entryFactory = new EntryFactory;
-        foreach ($feature->entries as $k => $e) {
-            $entryObj = $entryFactory->load($e['entryId']);
-            $vars = $entryObj->getStringVars(true,
-                    $this->defaultHiddenEntryVars());
-            $trimCharacters = $this->trimCharactersCount($feature->format,
-                    $feature->columns, $entryObj->title);
-            $vars['trim'] = $trimCharacters;
-            $vars['strippedSummary'] = $this->trimSummary($vars['strippedSummary'],
-                    $trimCharacters);
-            $entries[$k]['story'] = $vars;
-        }
-        $feature->entries = $entries;
-    }
 
     public function delete($featureId)
     {
@@ -222,61 +155,29 @@ class FeatureFactory extends BaseFactory
         $tbl = $db->addTable('storiesfeature');
         $tbl->addFieldConditional('id', $featureId);
         $db->delete();
-        $this->deleteEntryList($featureId);
+        $this->deleteStoryList($featureId);
     }
 
-    public function deleteEntryList($featureId)
+    public function deleteStoryList($featureId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesentrytofeature');
+        $tbl = $db->addTable('storiesfeaturestory');
         $tbl->addFieldConditional('featureId', $featureId);
         $db->delete();
     }
 
-    public function update(Resource $feature, Request $request)
+    public function put(Resource $feature, Request $request)
     {
         $feature->loadPutByType($request, array('id'));
-        $entries = $feature->entries;
-
-        // new code
-        $db = Database::getDB();
-        $tbl = $db->addTable('storiesentrytofeature');
-        $tbl->addFieldConditional('featureId', $feature->id);
-        $db->delete();
-        $db->clearConditional();
-
-        $count = 1;
-        foreach ($entries as $key => $entry) {
-            if ($entry['entryId'] == 0) {
-                unset($entries[$key]);
-            } else {
-                $tbl->addValue('entryId', (int)$entry['entryId']);
-                $tbl->addValue('featureId', (int)$feature->id);
-                $tbl->addValue('x', (int)$entry['x']);
-                $tbl->addValue('y', (int)$entry['y']);
-                $tbl->addValue('zoom', (int)$entry['zoom']);
-                $tbl->addValue('sorting', (int)$count);
-                $db->insert();
-                $count++;
-            }
-        }
-
-        $feature->entries = $entries;
         self::saveResource($feature);
-        return $feature;
     }
 
-    /**
-     * Looks for an entry in all the current features. If found it is removed
-     * and the feature is resorted.
-     * @param type $entryId
-     * @return type
-     */
-    public function removeEntryFromAll($entryId)
+    
+    public function deleteByPublishId(int $publishId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesentrytofeature');
-        $tbl->addFieldConditional('entryId', $entryId);
+        $tbl = $db->addTable('storiesfeaturestory');
+        $tbl->addFieldConditional('publishId', $publishId);
         $tbl->addField('featureId');
         while ($featureId = $db->selectColumn()) {
             $allFeatures[] = $featureId;
@@ -289,11 +190,11 @@ class FeatureFactory extends BaseFactory
             $this->reorder($id);
         }
     }
-    
+
     public function reorder($featureId)
     {
         $db = Database::getDB();
-        $tbl = $db->addTable('storiesentrytofeature');
+        $tbl = $db->addTable('storiesfeaturestory');
         $tbl->addFieldConditional('featureId', $featureId);
         $tbl->addOrderBy('sorting');
         $features = $db->select();
@@ -305,7 +206,7 @@ class FeatureFactory extends BaseFactory
         foreach ($features as $row) {
             $db->clearConditional();
             $tbl->addValue('sorting', $count);
-            $tbl->addFieldConditional('entryId', $row['entryId']);
+            $tbl->addFieldConditional('publishId', $row['publishId']);
             $tbl->addFieldConditional('featureId', $row['featureId']);
             $db->update();
             $count++;
