@@ -136,6 +136,9 @@ class EntryResource extends BaseResource
      * @var phpws2\Variable\SmallInteger
      */
     protected $listView;
+    protected $url;
+    
+    protected $strippedSummary;
 
     /**
      * @var string
@@ -181,8 +184,10 @@ class EntryResource extends BaseResource
         $this->tags->setIsTableColumn(false);
         $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle', 100);
         $this->listView = new \phpws2\Variable\SmallInteger(0, 'listView');
+        $this->url = new \phpws2\Variable\Url;
+        $this->strippedSummary = new \phpws2\Variable\TextOnly;
 
-        $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags'));
+        $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags', 'url', 'strippedSummary'));
     }
 
     public function setTitle($title)
@@ -232,7 +237,7 @@ class EntryResource extends BaseResource
     {
         $this->createDate->stamp();
     }
-    
+
     public function publishStamp()
     {
         $this->publishDate->stamp();
@@ -254,6 +259,18 @@ class EntryResource extends BaseResource
         $title = preg_replace('/\s/', '-',
                 strtolower(str_replace(' - ', '-', trim($title))));
         return substr(preg_replace('/[^\w\-]/', '', $title), 0, 240);
+    }
+
+    public function getUrl(bool $short = true, $relative = true)
+    {
+        $prefix = $relative ? './stories/' : PHPWS_SOURCE_HTTP . 'stories/';
+        return $short ?
+                $prefix . $this->urlTitle->get() :
+                $prefix . 'Entry/' . $this->getId() . '/' . $this->urlTitle->get();
+    }
+    
+    public function getStrippedSummary() {
+        return strip_tags($this->summary->get());
     }
 
 }
