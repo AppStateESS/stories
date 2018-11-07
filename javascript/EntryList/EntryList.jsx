@@ -4,7 +4,7 @@ import Waiting from '../AddOn/Waiting'
 import EntryRow from './EntryRow'
 import PublishOverlay from '../AddOn/PublishOverlay'
 import TagOverlay from '../AddOn/TagOverlay'
-import ThumbnailOverlay from './ThumbnailOverlay'
+import ThumbnailOverlay from '../AddOn/ThumbnailOverlay'
 import moment from 'moment'
 import Navbar from '../AddOn/Navbar'
 import SearchBar from '../AddOn/SearchBar'
@@ -62,6 +62,28 @@ export default class EntryList extends Component {
     this.setPublishDate = this.setPublishDate.bind(this)
     this.savePublishDate = this.savePublishDate.bind(this)
     this.showPublishOverlay = this.showPublishOverlay.bind(this)
+    this.saveThumbnail = this.saveThumbnail.bind(this)
+  }
+
+  saveThumbnail(file, entry) {
+    let formData = new FormData()
+    formData.append('image', file)
+    formData.append('entryId', entry.id)
+    $.ajax({
+      url: './stories/EntryPhoto/update',
+      data: formData,
+      type: 'post',
+      cache: false,
+      dataType: 'json',
+      processData: false,
+      contentType: false,
+      success: function (data) {
+        entry.thumbnail = data.thumbnail
+        this.updateEntry(entry)
+        this.closeOverlay()
+      }.bind(this),
+      error: function () {}
+    })
   }
 
   currentEntry() {
@@ -107,18 +129,18 @@ export default class EntryList extends Component {
     }
     const entry = this.currentEntry()
 
-    const icon = <span><i className="fas fa-sync fa-spin"></i></span>
+    const icon = <span>
+      <i className="fas fa-sync fa-spin"></i>
+    </span>
 
-    const saving = (
-      <div>
-        {icon}&nbsp;Sending...
-      </div>
-    )
+    const saving = (<div>
+      {icon}&nbsp;Sending...
+    </div>)
     this.setState({shareStatus: saving})
     $.ajax({
       url: `stories/Host/${this.state.hostId}/submit`,
       data: {
-        entryId: entry.id,
+        entryId: entry.id
       },
       dataType: 'json',
       type: 'put',
@@ -127,13 +149,19 @@ export default class EntryList extends Component {
           const errorMessage = (<div className="alert alert-danger">{data.error}</div>)
           this.setState({shareStatus: errorMessage})
         } else if (data.success) {
-          this.setState({shareStatus: <div className="alert alert-success">Request received.</div>})
+          this.setState({
+            shareStatus: <div className="alert alert-success">Request received.</div>
+          })
         } else {
-          this.setState({shareStatus: <div className="alert alert-danger">Request failed.</div>})
+          this.setState({
+            shareStatus: <div className="alert alert-danger">Request failed.</div>
+          })
         }
       },
       error: () => {
-        this.setState({shareStatus: <div className="alert alert-danger">Request failed.</div>})
+        this.setState({
+          shareStatus: <div className="alert alert-danger">Request failed.</div>
+        })
       }
     })
   }
@@ -285,9 +313,14 @@ export default class EntryList extends Component {
   }
 
   closeOverlay() {
-    this.setState(
-      {publishOverlay: false, tagOverlay: false, thumbnailOverlay: false, currentKey: null, hostId: '0', shareStatus: null}
-    )
+    this.setState({
+      publishOverlay: false,
+      tagOverlay: false,
+      thumbnailOverlay: false,
+      currentKey: null,
+      hostId: '0',
+      shareStatus: null
+    })
     this.unlockBody()
   }
 
@@ -404,6 +437,7 @@ export default class EntryList extends Component {
 
     return (
       <div className="stories-listing">
+        <h3>Stories List</h3>
         <PublishOverlay
           show={this.state.publishOverlay}
           shareList={this.props.shareList}
@@ -429,6 +463,7 @@ export default class EntryList extends Component {
         <ThumbnailOverlay
           thumbnailOverlay={this.state.thumbnailOverlay}
           updateEntry={this.updateEntry}
+          saveThumbnail={this.saveThumbnail}
           entry={currentEntry}
           close={this.closeOverlay}/>
         <Navbar leftSide={leftSide} rightSide={rightSide} header={header}/>
