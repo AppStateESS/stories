@@ -17,6 +17,7 @@ use stories\Factory\ShareFactory;
 use stories\Factory\GuestFactory;
 use stories\Factory\HostFactory;
 use stories\Factory\PublishFactory;
+use stories\Factory\FeatureStoryFactory;
 use Canopy\Request;
 
 class User extends RoleController
@@ -55,11 +56,25 @@ class User extends RoleController
     {
         $entryId = $request->pullGetInteger('entryId');
         $authkey = $request->pullGetString('authkey');
+        // Pull guest by authkey to make sure it is legitimate
         $guestFactory = new GuestFactory;
         $guest = $guestFactory->getByAuthkey($authkey);
+        
+        // Get the share id by the guest and entry id, then delete it
         $shareId = $this->factory->getShareId($guest->id, $entryId);
+        if (!$shareId) {
+            throw new \Exception("No share id from guest:{$guest->id}, entry:$entryId");
+        }
         $this->factory->delete($shareId);
+        
         $publishFactory = new PublishFactory;
+        $publishObj = $publishFactory->loadByShareId($shareId);
+        
+        // delete feature stories by publish id
+        $featureStoryFactory = new FeatureStoryFactory;
+        $featureStoryFactory->deleteByPublishId($publishObj->id);
+        
+        // unpublish the share
         $publishFactory->unpublishShare($shareId);
         return ['success'=>true];
     }
