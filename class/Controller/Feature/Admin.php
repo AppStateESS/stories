@@ -57,13 +57,8 @@ class Admin extends RoleController
 
     protected function listJsonCommand(Request $request)
     {
-        $featureList = $this->factory->listing(array('activeOnly' => false));
-        $publishFactory = new PublishFactory;
-        
-        // select list to fill in empty feature columns
-        $stories = $publishFactory->featureList();
-
-        return array('featureList' => $featureList, 'stories' => $stories);
+        $featureList = $this->factory->listing(false);
+        return array('featureList' => $featureList);
     }
 
     protected function postCommand(Request $request)
@@ -79,9 +74,8 @@ class Admin extends RoleController
     protected function putCommand(Request $request)
     {
         $feature = $this->factory->load($this->id);
-        $this->factory->update($feature, $request);
-        $this->factory->loadEntries($feature);
-        return array('featureId' => $this->id, 'entries' => $feature->entries);
+        $this->factory->put($feature, $request);
+        return array('featureId' => $this->id);
     }
 
 }
