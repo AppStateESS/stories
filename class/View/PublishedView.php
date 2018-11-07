@@ -14,6 +14,7 @@ namespace stories\View;
 
 use stories\Factory\EntryFactory;
 use stories\Factory\PublishFactory;
+use stories\Factory\TagFactory;
 use stories\View\ShareView;
 use stories\View\EntryView;
 use phpws2\Template;
@@ -30,25 +31,22 @@ class PublishedView extends View
     public function listing(Request $request)
     {
         $this->includeCss();
-        $this->scriptView('Caption', false);
+        //$this->scriptView('Caption', false);
         $this->scriptView('Tooltip', false);
         $listOptions = $this->pullListOptions($request);
 
         $tag = $listOptions['tag'] ?? null;
-        //format  - 0 is summary, 1 full
         if ($tag) {
-            $data['title'] = "Stories for tag <strong>$tag</strong>";
-            // tag searches show stories in summary mode
-            $format = 0;
+            $tplVars['title'] = "Stories for tag <strong>$tag</strong>";
         } else {
-            $data['title'] = null;
+            $tplVars['title'] = null;
         }
 
         $content = [];
         $shareView = new ShareView;
         $entryView = new EntryView;
         \Layout::addJSHeader($entryView->mediumCSSOverride());
-        $items = $this->factory->listing();
+        $items = $this->factory->listing($listOptions);
         if (empty($items)) {
             return null;
         }
@@ -61,23 +59,46 @@ class PublishedView extends View
                 throw \Exception('Problem with published items');
             }
         }
-        $vars['stories'] = implode("\n", $content);
-        
-        $vars['prevpage'] = null;
-        $vars['nextpage'] = null;
+        $tplVars['stories'] = implode("\n", $content);
+
+        $tplVars['prevpage'] = null;
+        $tplVars['nextpage'] = null;
         if ($listOptions['page'] > 1) {
-            $data['prevpage'] = $listOptions['page'] - 1;
+            $tplVars['prevpage'] = $listOptions['page'] - 1;
         } else {
-            $data['prevpage'] = null;
+            $tplVars['prevpage'] = null;
         }
         if ($this->factory->more_rows) {
-            $data['nextpage'] = $listOptions['page'] + 1;
+            $tplVars['nextpage'] = $listOptions['page'] + 1;
         } else {
-            $data['nextpage'] = null;
+            $tplVars['nextpage'] = null;
         }
-        
-        $template = new Template($vars);
+
+        if (empty($listOptions['tag'])) {
+            $tplVars['url'] = 'Entry';
+        } else {
+            $tplVars['url'] = 'Tag/' . $listOptions['tag'];
+        }
+
+        $template = new Template($tplVars);
         $template->setModuleTemplate('stories', 'FrontPage.html');
+        return $template->get();
+    }
+
+    public function publishBlock($data, $currentTag = null)
+    {
+        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
+        if (!empty($data['tags'])) {
+            $tagFactory = new TagFactory;
+            $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
+                    $data['id'], $currentTag);
+        } else {
+            $data['tagList'] = null;
+        }
+        $data['showAuthor'] = $showAuthor;
+        $data['publishDateRelative'] = ucfirst($data['publishDateRelative']);
+        $template = new \phpws2\Template($data);
+        $template->setModuleTemplate('stories', 'Publish.html');
         return $template->get();
     }
 
