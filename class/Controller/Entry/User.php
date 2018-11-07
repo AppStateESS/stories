@@ -24,6 +24,7 @@ namespace stories\Controller\Entry;
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
 use stories\View\EntryView as View;
+use stories\View\publishedView;
 use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
@@ -57,7 +58,8 @@ class User extends RoleController
 
     protected function listHtmlCommand(Request $request)
     {
-        return $this->view->listing($request);
+        $publishedView = new \stories\View\PublishedView;
+        return $publishedView->listing($request);
     }
 
     protected function viewJsonCommand(Request $request)
