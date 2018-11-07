@@ -43,9 +43,11 @@ class EntryView extends View
      */
     private function addAccessories($list, $tag = null)
     {
+        $publishedView = new PublishedView;
         foreach ($list as $key => $value) {
             $newlist[$key] = $value;
-            $newlist[$key]['publishInfo'] = $this->publishBlock($value, $tag);
+            $newlist[$key]['publishInfo'] = $publishedView->publishBlock($value,
+                    $tag);
             $newlist[$key]['shareButtons'] = $this->shareButtons($value);
         }
         return $newlist;
@@ -169,7 +171,7 @@ class EntryView extends View
         $data['style'] = '';
         $data['isAdmin'] = $this->isAdmin;
         $data['showAuthor'] = $settings['showAuthor'];
-        $this->scriptView('Caption', false);
+        //$this->scriptView('Caption', false);
         $this->scriptView('Tooltip', false);
 
         if ($listOptions['page'] > 1) {
@@ -238,24 +240,6 @@ EOF;
         return $fixCaption;
     }
 
-    public function publishBlock($data, $tag = null)
-    {
-        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
-        $tagFactory = new TagFactory;
-        if (!empty($data['tags'])) {
-            $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
-                    $data['id'], $tag);
-        } else {
-            $data['tagList'] = null;
-        }
-        $data['showAuthor'] = $showAuthor;
-        $data['publishDateRelative'] = ucfirst($data['publishDateRelative']);
-
-        $template = new \phpws2\Template($data);
-        $template->setModuleTemplate('stories', 'Publish.html');
-        return $template->get();
-    }
-
     private function relativeImages($content)
     {
         return preg_replace('@src="https?://[\w:/]+(images/stories/\d+/[^"]+)"@',
@@ -273,6 +257,8 @@ EOF;
     {
         static $twitterIncluded = false;
 
+        $publishedView = new PublishedView;
+
         \Layout::addJSHeader($this->mediumCSSOverride());
         $entry = $this->factory->load($id);
         $data = $this->factory->data($entry, !$this->isAdmin);
@@ -287,8 +273,7 @@ EOF;
                 $twitterIncluded = true;
             }
 
-            $data['content'] = preg_replace('/<p class="">::summary(<br\s?\/?>)<\/p>/',
-                    '', $data['content']);
+            $data['content'] = $this->removeSummaryTag($data['content']);
             $templateFile = 'Entry/FullListView.html';
         } else {
             $templateFile = 'Entry/SummaryListView.html';
@@ -296,7 +281,7 @@ EOF;
         // Removed the summary break tag
         $address = \Canopy\Server::getSiteUrl();
         $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
-        $data['publishInfo'] = $this->publishBlock($data);
+        $data['publishInfo'] = $publishedView->publishBlock($data);
         $data['shareButtons'] = $this->shareButtons($data);
         $data['isAdmin'] = $this->isAdmin;
 
@@ -306,8 +291,16 @@ EOF;
         return $template->get();
     }
 
+    private function removeSummaryTag($content)
+    {
+        $content = preg_replace('/<p( class="")?>::summary(<br\s?\/?>)?<\/p>/',
+                '', $content);
+        return $content;
+    }
+
     public function view($id)
     {
+        $publishedView = new PublishedView;
         if (\phpws2\Settings::get('stories', 'hideDefault')) {
             \Layout::hideDefault(true);
         }
@@ -322,12 +315,11 @@ EOF;
             if (stristr($entry->content, 'twitter')) {
                 $this->loadTwitterScript(true);
             }
-            // Removed the summary break tag
-            $data['content'] = str_replace('<p class="">::summary</p>', '',
-                    $data['content']);
+            $data['content'] = $this->removeSummaryTag($data['content']);
+
             $address = \Canopy\Server::getSiteUrl();
             $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
-            $data['publishInfo'] = $this->publishBlock($data);
+            $data['publishInfo'] = $publishedView->publishBlock($data);
             $data['shareButtons'] = $this->shareButtons($data);
             $data['cssOverride'] = '';
             $data['isAdmin'] = $this->isAdmin;
@@ -337,8 +329,8 @@ EOF;
             } else {
                 $data['commentCode'] = null;
             }
-
-            $this->scriptView('Caption', false);
+            // @deprecated easier to center via css
+            //$this->scriptView('Caption', false);
             $this->scriptView('Tooltip', false);
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
