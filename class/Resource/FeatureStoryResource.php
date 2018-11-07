@@ -41,7 +41,7 @@ class FeatureStoryResource extends BaseResource
     protected $eventDate;
 
     /**
-     * @var \phpws2\Variable\Url
+     * @var \phpws2\Variable\StringVar
      */
     protected $url;
 
@@ -69,10 +69,27 @@ class FeatureStoryResource extends BaseResource
      * @var \phpws2\Variable\SmallInteger
      */
     protected $sorting;
+
+    /**
+     * @var phpws2\Variable\StringVar
+     */
+    protected $authorPic;
+
+    /**
+     * @var phpws2\Variable\StringVar
+     */
+    protected $authorName;
+
+    /**
+     * @var phpws2\Variable\DateTime
+     */
+    protected $publishDate;
     
     /**
-     * @var string
+     * @var phpws2\Variable\BooleanVar
      */
+    protected $share;
+    
     protected $table = 'storiesfeaturestory';
 
     public function __construct()
@@ -81,13 +98,22 @@ class FeatureStoryResource extends BaseResource
         $this->title = new \phpws2\Variable\TextOnly(null, 'title', 100);
         $this->summary = new \phpws2\Variable\TextOnly(null, 'summary', 300);
         $this->thumbnail = new \phpws2\Variable\TextOnly(null, 'thumbnail', 100);
-        $this->url = new \phpws2\Variable\Url(null, 'url', 200);
+        $this->url = new \phpws2\Variable\StringVar(null, 'url', 200);
+        $this->authorPic = new \phpws2\Variable\StringVar(null, 'authorPic', 100);
+        $this->authorPic->allowNull(true);
+        $this->authorName = new \phpws2\Variable\StringVar(null, 'authorName',
+                100);
+        $this->authorName->allowNull(true);
         $this->eventDate = new \phpws2\Variable\DateTime(0, 'eventDate');
+        $this->eventDate->setFormat(null);
         $this->featureId = new \phpws2\Variable\IntegerVar(0, 'featureId');
         $this->publishId = new \phpws2\Variable\IntegerVar(0, 'publishId');
+        $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
+        $this->publishDate->setFormat(null);
+        $this->share = new \phpws2\Variable\BooleanVar(0, 'share');
         $this->x = new \phpws2\Variable\SmallInteger(0, 'x');
         $this->y = new \phpws2\Variable\SmallInteger(0, 'y');
-        $this->zoom = new \phpws2\Variable\SmallInteger(0, 'zoom');
+        $this->zoom = new \phpws2\Variable\SmallInteger(100, 'zoom');
         $this->sorting = new \phpws2\Variable\SmallInteger(0, 'sorting');
     }
 
