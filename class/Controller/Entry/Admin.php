@@ -61,7 +61,10 @@ class Admin extends User
 
     protected function putCommand(Request $request)
     {
-        return array('entryId' => $this->factory->put($this->id, $request));
+        $json = array('entryId' => $this->factory->put($this->id, $request));
+        $featureStoryFactory = new \stories\Factory\FeatureStoryFactory;
+        $featureStoryFactory->refreshEntry($this->id);
+        return $json;
     }
 
     protected function patchCommand(Request $request)
