@@ -96,14 +96,17 @@ class ShareFactory extends BaseFactory
         $jsonObject->url = $share->url . '/' . $jsonObject->urlTitle;
         $jsonObject->siteName = $guest->siteName;
         $jsonObject->siteUrl = $guest->url;
-        $jsonObject->thumbnail = $jsonObject->siteUrl . $jsonObject->thumbnail;
+        if (!preg_match('/^http/', $jsonObject->thumbnail)) {
+            $jsonObject->thumbnail = $jsonObject->siteUrl . $jsonObject->thumbnail;
+        }
         return $jsonObject;
     }
 
     public function pullShareData($shareId)
     {
         $share = $this->load($shareId);
-        return $this->jsonShareData($share);
+        $shareData = $this->jsonShareData($share);
+        return $shareData;
     }
 
     public function approve(int $shareId)
@@ -182,7 +185,14 @@ class ShareFactory extends BaseFactory
         $db->delete();
     }
 
-    public function removeFromHost($entryId, $hostId)
+    /**
+     * Pull the host by hostId and inform them that an entry was unpublished
+     * or deleted.
+     * @param int $entryId
+     * @param int $hostId
+     * @throws \Exception
+     */
+    public function removeFromHost(int $entryId, int $hostId)
     {
         $hostFactory = new HostFactory;
         $host = $hostFactory->load($hostId);
