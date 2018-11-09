@@ -33,35 +33,57 @@ class FeatureStoryView extends View
         $this->factory = new Factory;
     }
 
-    public function listing($featureId, $format)
+    public function listing(int $featureId, string $format)
     {
         $listing = $this->factory->listing($featureId);
-        $columnCount = count($listing);
+        $totalColumns = count($listing);
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
-        foreach ($listing as $story) {
-            $columns[] = $this->view($story, $format, $columnCount);
+        foreach ($listing as $key => $story) {
+            $columns[] = $this->view($story, $format, $totalColumns, $key + 1);
         }
         return $columns;
     }
 
-    public function view(Resource $story, string $format, int $columns = 1)
+    private function getColumnClass(int $totalColumns, int $currentCount)
+    {
+        switch ($totalColumns) {
+            case 1:
+                return 'col-12';
+            case 2:
+                return 'col-sm-6';
+            case 3:
+                return 'col-sm-4';
+            case 4:
+            case 8:
+                return 'col-md-3 col-sm-6';
+            case 5:
+                if ($currentCount > 3) {
+                    return 'col-sm-6';
+                } else {
+                    return 'col-sm-4';
+                }
+            case 6:
+                return 'col-sm-4';
+            case 7:
+                if ($currentCount == 4) {
+                    return 'col-md-3 col-sm-6';
+                } elseif ($currentCount >= 4) {
+                    return 'col-md-4 col-sm-6';
+                } else {
+                    return 'col-sm-4 col-md-3';
+                }
+            default:
+                return 'col-sm-3';
+        }
+    }
+
+    public function view(Resource $story, string $format, int $totalColumns,
+            int $currentCount)
     {
         $publishedView = new PublishedView;
         $tag = null;
         $vars = $story->getStringVars();
-        switch ($columns) {
-            case 1:
-                $vars['bsClass'] = 'col-12';
-                break;
-            case 2:
-                $vars['bsClass'] = 'col-12 col-sm-6';
-                break;
-            case 3:
-                $vars['bsClass'] = 'col-12 col-sm-4';
-                break;
-            default:
-                $vars['bsClass'] = 'col-12 col-sm-3';
-        }
+        $vars['bsClass'] = $this->getColumnClass($totalColumns, $currentCount);
         $vars['publishDateRelative'] = $story->relativeTime($story->publishDate);
         $vars['format'] = "story-feature $format";
         $vars['published'] = 1;
