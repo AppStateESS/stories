@@ -100,8 +100,6 @@ class AuthorFactory extends BaseFactory
     public function listing(Request $request)
     {
         $offset = (int) $request->pullGetString('offset', true);
-        $offsetSize = 10 * $offset;
-
         $search = $request->pullGetString('search', true);
 
         $db = Database::getDB();
@@ -196,7 +194,7 @@ class AuthorFactory extends BaseFactory
         $groupsTable->addField('user_id');
         $conditional = $db->createConditional($permissionTable->getField('group_id'),
                 $groupsTable->getField('id'));
-        $join1 = $db->joinResources($groupsTable, $permissionTable,
+        $db->joinResources($groupsTable, $permissionTable,
                 $conditional, 'left');
         $result = $db->select();
 
