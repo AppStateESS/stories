@@ -29,9 +29,6 @@ namespace stories\Factory;
 use phpws2\Database;
 use Canopy\Request;
 use phpws2\Settings;
-use stories\Factory\EntryPhotoFactory;
-use stories\Resource\EntryResource;
-use stories\Resource\ThumbnailResource;
 
 require_once PHPWS_SOURCE_DIR . 'mod/stories/class/UploadHandler.php';
 
