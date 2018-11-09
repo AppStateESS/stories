@@ -23,10 +23,7 @@ namespace stories\Controller\Feature;
 
 use Canopy\Request;
 use stories\Factory\FeatureFactory as Factory;
-use stories\Factory\PublishFactory;
 use stories\View\FeatureView as View;
-use stories\Factory\EntryFactory;
-use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
 class Admin extends RoleController
@@ -47,7 +44,7 @@ class Admin extends RoleController
         $this->view = new View;
     }
 
-    protected function listHtmlCommand(Request $request)
+    protected function listHtmlCommand()
     {
         \Menu::disableMenu();
         $this->view->addStoryCss();
@@ -55,7 +52,7 @@ class Admin extends RoleController
                         array('srcHttp' => PHPWS_SOURCE_HTTP));
     }
 
-    protected function listJsonCommand(Request $request)
+    protected function listJsonCommand()
     {
         $featureList = $this->factory->listing(false);
         return array('featureList' => $featureList);
