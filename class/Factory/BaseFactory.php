@@ -13,9 +13,6 @@
 namespace stories\Factory;
 
 use stories\Exception\ResourceNotFound;
-use phpws2\Settings;
-use phpws2\Database;
-use Canopy\Request;
 
 /**
  *
