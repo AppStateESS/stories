@@ -584,7 +584,7 @@ class EntryFactory extends BaseFactory
     public function shareData(Resource $entry)
     {
         return $entry->getStringVars(true,
-                        ['authorEmail', 'authorId', 'authorName', 'authorPic', 'content', 'deleted', 'expirationDate', 'leadImage', 'updateDate', 'createDateRelative', 'createDate', 'published']);
+                        ['authorEmail', 'authorId', 'content', 'deleted', 'expirationDate', 'leadImage', 'updateDate', 'createDateRelative', 'createDate', 'published']);
     }
 
     public function data(Resource $entry, $publishOnly = true)
