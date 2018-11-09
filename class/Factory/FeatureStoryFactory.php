@@ -15,7 +15,6 @@ use stories\Factory\EntryPhotoFactory;
 use stories\Factory\PublishFactory;
 use stories\Factory\AuthorFactory;
 use stories\Factory\EntryFactory;
-use stories\Resource\EntryResource;
 use phpws2\Database;
 use stories\Resource\FeatureStoryResource as Resource;
 use Canopy\Request;
@@ -64,7 +63,7 @@ class FeatureStoryFactory extends BaseFactory
         // $story will be share or entry
         $storyObj = $publishFactory->getSource($publishObj);
         $featureStory = $this->copyIntoFeatureStory($storyObj);
-        $featureStory->share = $publishObj->shareId > 0;
+        $featureStory->shareId = $publishObj->shareId;
         $featureStory->publishId = $publishObj->id;
         $featureStory->featureId = $featureId;
         $featureStory->sorting = $this->getLastSort($featureId) + 1;
