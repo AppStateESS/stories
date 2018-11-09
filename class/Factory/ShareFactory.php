@@ -81,6 +81,7 @@ class ShareFactory extends BaseFactory
         try {
             $json = file_get_contents($url);
         } catch (\Exception $e) {
+            \phpws2\Error::log($e);
             return $error;
         }
         $jsonObject = json_decode($json);
@@ -99,6 +100,7 @@ class ShareFactory extends BaseFactory
         if (!preg_match('/^http/', $jsonObject->thumbnail)) {
             $jsonObject->thumbnail = $jsonObject->siteUrl . $jsonObject->thumbnail;
         }
+        $jsonObject->authorPic = $guest->url . $jsonObject->authorPic;
         return $jsonObject;
     }
 
