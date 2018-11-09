@@ -27,14 +27,8 @@
 namespace stories\Factory;
 
 use stories\Resource\FeatureResource as Resource;
-use stories\Resource\FeatureStoryResource;
-use stories\Factory\EntryFactory;
-use stories\Factory\PublishFactory;
-use stories\View\EntryView;
 use phpws2\Database;
-use phpws2\Settings;
 use Canopy\Request;
-use phpws2\Template;
 
 /**
  * Description of FeatureFactory
@@ -51,9 +45,8 @@ class FeatureFactory extends BaseFactory
         return new Resource;
     }
 
-    public function post(Request $request)
+    public function post()
     {
-        $db = Database::getDB();
         $feature = $this->build();
         self::saveResource($feature);
         return $feature->id;
@@ -63,15 +56,18 @@ class FeatureFactory extends BaseFactory
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesfeature');
+        $tbl2 = $db->addTable('storiesfeaturestory');
+        $tbl2->addField(new Database\Expression('count(storiesfeaturestory.id)',
+                'storyCount'));
+        $db->joinResources($tbl, $tbl2,
+                new Database\Conditional($db, $tbl->getField('id'),
+                $tbl2->getField('featureId'), '='));
+        $db->setGroupBy($tbl->getField('id'));
         if ($activeOnly) {
             $tbl->addFieldConditional('active', 1);
         }
         $tbl->addOrderBy('sorting');
         $result = $db->select();
-        if (empty($result)) {
-            return null;
-        }
-
         return $result;
     }
 
@@ -117,7 +113,6 @@ class FeatureFactory extends BaseFactory
         }
         $tooLong = true;
         $count = 0;
-        $firstPop = false;
         while ($tooLong && $count < 100) {
             $sArray = preg_split('/([\?\.\!]\s?)/', $summary, null,
                     PREG_SPLIT_DELIM_CAPTURE);
@@ -148,8 +143,7 @@ class FeatureFactory extends BaseFactory
         return substr($content, 0, $lastSpace) . '...';
     }
 
-
-    public function delete($featureId)
+    public function delete(int $featureId)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesfeature');
@@ -172,7 +166,6 @@ class FeatureFactory extends BaseFactory
         self::saveResource($feature);
     }
 
-    
     public function deleteByPublishId(int $publishId)
     {
         $db = Database::getDB();
