@@ -86,9 +86,9 @@ class FeatureStoryResource extends BaseResource
     protected $publishDate;
     
     /**
-     * @var phpws2\Variable\BooleanVar
+     * @var phpws2\Variable\IntegerVar
      */
-    protected $share;
+    protected $shareId;
     
     protected $table = 'storiesfeaturestory';
 
@@ -110,7 +110,7 @@ class FeatureStoryResource extends BaseResource
         $this->publishId = new \phpws2\Variable\IntegerVar(0, 'publishId');
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
         $this->publishDate->setFormat(null);
-        $this->share = new \phpws2\Variable\BooleanVar(0, 'share');
+        $this->shareId = new \phpws2\Variable\IntegerVar(0, 'shareId');
         $this->x = new \phpws2\Variable\SmallInteger(0, 'x');
         $this->y = new \phpws2\Variable\SmallInteger(0, 'y');
         $this->zoom = new \phpws2\Variable\SmallInteger(100, 'zoom');
