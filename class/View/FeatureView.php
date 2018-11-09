@@ -62,14 +62,4 @@ class FeatureView extends View
         $this->addStoryCss();
         return '<div id="story-feature-list">' . implode('', $featureStack) . '</div>';
     }
-
-    private function featureColumn($entry, $format, $columns)
-    {
-        $vars = $entry['story'];
-        $entryView = new EntryView;
-        $vars['publishInfo'] = $entryView->publishBlock($vars);
-        $vars['thumbnailStyle'] = $this->thumbnailStyle($entry);
-        return $vars;
-    }
-
 }
