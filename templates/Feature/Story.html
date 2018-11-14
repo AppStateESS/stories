@@ -6,6 +6,9 @@
         <a href="<?=$url?>" title="Read this story">
           <h4><?=$title?></h4>
         </a>
+      <?php if ($shareId > 0):?>
+      <h5 class="share-site"><a class="text-muted" href="<?=$siteUrl?>"><?=$siteName?> <i class="fas fa-external-link-alt"></i></a></h5>
+      <?php endif;?>
       </div>
       <div class="story-summary">
         <?=$summary?>
