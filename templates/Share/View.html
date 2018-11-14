@@ -1,5 +1,4 @@
 <div class="story-list-entry summary-view clearfix">
-  <div class="share-site badge badge-primary"><span style="font-size: 16px"><a href="<?=$url?>">From our friends at <?=$siteName?></a></span></div>
   <a href="<?=$url?>" target="_blank"><h3><?=$title?></h3></a>
   <?php
   $orient = '';
@@ -16,6 +15,8 @@
   <div class="thumbnail<?=$orient?>"><a href="<?=$url?>"><img class="img-fluid mx-auto d-block" style="<?=$forceDimension?>" src="<?=$thumbnail?>" /></a></div>
   <?php endif;//thumbnail?>
   <div class="share-summary"><?=$summary?></div>
-  <p class="clearfix"><a href="<?=$url?>">Read more...</a></p>
-  <div class="publish-info"><div class="posted"><div class="publish-date"><?=$publishDateRelative?></div></div></div>
+  <p class="clearfix">
+    <a href="<?=$url?>">View story on <?=$siteName?> <i class="fas fa-external-link-alt"></i></a>
+  </p>
+  <?=$publishInfo?>
 </div>
