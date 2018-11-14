@@ -281,6 +281,7 @@ EOF;
         // Removed the summary break tag
         $address = \Canopy\Server::getSiteUrl();
         $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
+        $data['shareId'] = 0;
         $data['publishInfo'] = $publishedView->publishBlock($data);
         $data['shareButtons'] = $this->shareButtons($data);
         $data['isAdmin'] = $this->isAdmin;
