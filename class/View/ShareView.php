@@ -13,6 +13,7 @@
 namespace stories\View;
 
 use stories\Factory\ShareFactory as Factory;
+use stories\View\PublishedView;
 use phpws2\Template;
 
 class ShareView extends View
@@ -30,7 +31,12 @@ class ShareView extends View
             $this->factory->addInaccessible($id);
             return null;
         }
-        $template = new Template(get_object_vars($data));
+        $dataArray = get_object_vars($data);
+        $publishedView = new PublishedView;
+        $dataArray['published'] = 1;
+        $dataArray['shareId'] = $data->id;
+        $dataArray['publishInfo'] = $publishedView->publishBlock($dataArray);
+        $template = new Template($dataArray);
         $template->setModuleTemplate('stories', 'Share/View.html');
         return $template->get();
     }
