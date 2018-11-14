@@ -89,6 +89,14 @@ class FeatureStoryView extends View
         $vars['published'] = 1;
         $vars['thumbnailStyle'] = $this->thumbnailStyle($story);
         $vars['publishInfo'] = $publishedView->publishBlock($vars);
+        if (!empty($vars['shareId'])) {
+            $guestFactory = new \stories\Factory\GuestFactory;
+            $shareFactory = new \stories\Factory\ShareFactory;
+            $share = $shareFactory->load($vars['shareId']);
+            $guest = $guestFactory->load($share->guestId);
+            $vars['siteName'] = $guest->siteName;
+            $vars['siteUrl'] = $guest->url;
+        }
         $template = new Template($vars);
         $template->setModuleTemplate('stories', 'Feature/Story.html');
         return $template->get();
