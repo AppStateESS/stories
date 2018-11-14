@@ -19,34 +19,48 @@ const FeatureDisplay = ({
   updated,
   thumbnailForm
 }) => {
-  let bsClass = 'col-12'
+  let bsClass = 'col-sm-3'
+  let storyCount = featureStories.length
 
-  switch (featureStories.length) {
-    case 0:
-      bsClass = 'col-12'
-      break
+  let formDisplay
+  if (storyCount < 8) {
+    storyCount++
+  }
+  const getBsClass = (storyCount, currentCount) => {
+    switch (storyCount) {
+      case 1:
+        return 'col-12'
+      case 2:
+        return 'col-sm-6'
+      case 3:
+        return 'col-sm-4'
+      case 4:
+      case 8:
+        return 'col-md-3 col-sm-6'
+      case 5:
+        if (currentCount > 3) {
+          return 'col-sm-6'
+        } else {
+          return 'col-sm-4'
+        }
+      case 6:
+        return 'col-sm-4'
+      case 7:
+        if (currentCount == 4) {
+          return 'col-md-3 col-sm-6'
+        } else if (currentCount >= 4) {
+          return 'col-md-4 col-sm-6'
+        } else {
+          return 'col-sm-4 col-md-3'
+        }
+      default:
+        return 'col-sm-3'
+    }
 
-    case 1:
-      bsClass = 'col-sm-6'
-      break
-
-    case 2:
-      bsClass = 'col-sm-4'
-      break
-
-    default:
-      bsClass = 'col-sm-3'
-      break
   }
 
-  let formDisplay = <DisplayColumn
-    bsClass={bsClass}
-    story={SampleStory(srcHttp)}
-    applyStory={applyStory.bind(null, -1)}
-    publishedTitles={publishedTitles}
-    format={format}/>
-
   let storyList = featureStories.map((value, key) => {
+    const bsClass = getBsClass(storyCount, key + 1)
     return (
       <DisplayColumn
         key={key}
@@ -65,6 +79,15 @@ const FeatureDisplay = ({
         format={format}/>
     )
   })
+  if (storyCount < 8) {
+    const bsClass = getBsClass(storyCount, storyCount)
+    formDisplay = <DisplayColumn
+      bsClass={bsClass}
+      story={SampleStory(srcHttp)}
+      applyStory={applyStory.bind(null, -1)}
+      publishedTitles={publishedTitles}
+      format={format}/>
+  }
   return (<div className="row">{storyList}{formDisplay}</div>)
 }
 
@@ -81,7 +104,7 @@ FeatureDisplay.propTypes = {
   setZoom: PropTypes.func,
   savePosition: PropTypes.func,
   thumbnailForm: PropTypes.func,
-  updated: PropTypes.array,
+  updated: PropTypes.array
 }
 
 export default FeatureDisplay
