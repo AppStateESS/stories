@@ -198,6 +198,16 @@ $leftright-height: 300px;
       background-repeat: no-repeat;
       border: 1px solid transparent;
     }
+    
+    .story-title {
+      margin-bottom: 6px;
+      h4 {
+        margin-bottom : 0;
+      }
+      h5.share-site {
+        font-size : 14px;
+      }
+    }
 
     .publish-info {
       display: flex;
