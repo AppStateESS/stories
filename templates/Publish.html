@@ -4,7 +4,13 @@
   <?php endif;?>
   <div class="posted">
     <?php if ($showAuthor && !empty($authorName)):?>
-    <div class="author-name">By <a class="author-email" href="mailto:<?=$authorEmail?>"><?=$authorName?></a></div>
+    <div class="author-name">By 
+    <?php if (!empty($authorEmail)):?>
+    <a href="mailto:<?=$authorEmail?>"><?=$authorName?></a>
+    <?php else:?>
+    <?=$authorName?>
+    <?php endif;?>
+    </div>
     <?php endif;?>
     <?php if ($published):?>
     <div class="publish-date">

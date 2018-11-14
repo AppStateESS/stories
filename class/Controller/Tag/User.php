@@ -62,12 +62,12 @@ class User extends RoleController
     
     protected function listHtmlCommand(Request $request)
     {   
-        $entryView = new EntryView;
+        $publishedView = new \stories\View\PublishedView;
         $vars = $request->pullGetVars();
         $vars['tag'] = $this->id;
         $request->setGetVars($vars);
        
-        $content = $entryView->listing($request);
+        $content = $publishedView->listing($request);
         if (empty($content)) {
             return '<p>No stories found for this tag.</p>';
         }

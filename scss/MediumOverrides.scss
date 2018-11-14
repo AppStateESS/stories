@@ -4,18 +4,14 @@ div.entry-form .mediumInsert figure figcaption,
 div.entry-form .mediumInsert-embeds figure figcaption {
   color: #4e4e4e;
   font-size: 14px;
-  text-align: left;
+  text-align: center;
 }
 
-div.story-content figure figcaption,
-div.story-entry .medium-insert-embeds figure figcaption,
-div.story-entry .medium-insert-images figure figcaption,
-div.story-entry .mediumInsert figure figcaption,
-div.story-entry .mediumInsert-embeds figure figcaption {
-  color: #4e4e4e;
-  font-size: 14px;
-  text-align: left;
-}
+div.story-content figure figcaption, div.story-entry .medium-insert-embeds
+figure figcaption, div.story-entry .medium-insert-images figure figcaption,
+div.story-entry .mediumInsert figure figcaption, div.story-entry
+.mediumInsert-embeds figure figcaption { color: #4e4e4e; font-size: 14px;
+text-align: center; }
 
 div.medium-insert-images.medium-insert-images-right figure figcaption {
   margin-left: 0 !important;

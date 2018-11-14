@@ -81,7 +81,7 @@ class TagFactory extends BaseFactory
 
     /**
      * 
-     * @param string $tag
+     * @param string $tagTitle
      * @return integer Id of tag
      */
     public function saveTag($tagTitle)

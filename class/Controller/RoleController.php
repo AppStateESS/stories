@@ -31,9 +31,9 @@ abstract class RoleController
 
     public function __construct($role)
     {
+        $this->role = $role;
         $this->loadFactory();
         $this->loadView();
-        $this->role = $role;
     }
 
     /**
@@ -157,7 +157,8 @@ abstract class RoleController
         }
 
         if (!method_exists($this, $restCommand)) {
-            throw new BadCommand($restCommand);
+            $errorMessage = get_class($this) . ':' . $restCommand;
+            throw new BadCommand($errorMessage);
         }
 
         $content = $this->$restCommand($request);

@@ -38,16 +38,15 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
-    
+
     protected function loadView()
     {
         $this->view = new View;
     }
 
-    protected function listHtmlCommand(Request $request)
+    protected function adminHtmlCommand(Request $request)
     {
-        $entryView = new View;
-        return $entryView->listing($request);
+        \Current_User::requireLogin();
     }
 
 }

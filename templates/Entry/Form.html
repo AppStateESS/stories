@@ -3,26 +3,29 @@
       margin: 0 4em;
       padding: 4px 8px;
   }
-
-  .entry-title {
-      margin-bottom: 1em;
-  }
-
-  .entry-title input {
-      font-size: 30px;
-  }
-
-  .status-bar {
-      margin-bottom: 1em;
-  }
-
 </style>
-<div class="card">
-  <div class="d-flex justify-content-start align-items-center">
-    <div class="mr-4"><?=$publishBar?></div>
-    <div class="mr-4"><?=$imageOrientation?></div>
-    <div style="min-width: 200px" class="mr-4"><?=$authorBar?></div>
-    <div><?=$tagBar?></div>
+<div class="row border-bottom mb-3 pb-3">
+  <div class="col-sm-3"><?=$publishBar?></div>
+  <div class="col-sm-9 mb-3"><?=$tagBar?></div>
+  <div class="w-100"></div>
+  <div class="col-sm-7">
+    <div class="card bg-light">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-2 d-flex align-items-center">List view</div>
+          <div class="col-sm-5"><?=$listView?></div>
+          <div class="col-sm-5"><?=$imageOrientation?></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-5">
+    <div class="card bg-light">
+      <div class="row card-body">
+        <div class="col-sm-3 d-flex align-items-center">Author</div>
+        <div class="col-sm-9"><?=$authorBar?></div>
+      </div>
+    </div>
   </div>
 </div>
 <?=$navbar?>

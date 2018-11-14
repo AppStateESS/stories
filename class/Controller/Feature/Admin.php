@@ -24,8 +24,6 @@ namespace stories\Controller\Feature;
 use Canopy\Request;
 use stories\Factory\FeatureFactory as Factory;
 use stories\View\FeatureView as View;
-use stories\Factory\EntryFactory;
-use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
 class Admin extends RoleController
@@ -46,7 +44,7 @@ class Admin extends RoleController
         $this->view = new View;
     }
 
-    protected function listHtmlCommand(Request $request)
+    protected function listHtmlCommand()
     {
         \Menu::disableMenu();
         $this->view->addStoryCss();
@@ -54,23 +52,10 @@ class Admin extends RoleController
                         array('srcHttp' => PHPWS_SOURCE_HTTP));
     }
 
-    protected function listJsonCommand(Request $request)
+    protected function listJsonCommand()
     {
-        $featureList = $this->factory->listing(array('activeOnly' => false));
-        $entryFactory = new EntryFactory();
-        $options = array(
-            'vars' => array('id', 'title'),
-            'includeContent' => false,
-            'titleRequired' => true,
-            'limit' => 0,
-            'sortBy'=> 'publishDate',
-            'mustHaveThumbnail' => true,
-            'asResource' => false,
-            'showTagLinks' => false);
-        // select list to fill in empty feature columns
-        $stories = $entryFactory->pullList($options);
-
-        return array('featureList' => $featureList, 'stories' => $stories);
+        $featureList = $this->factory->listing(false);
+        return array('featureList' => $featureList);
     }
 
     protected function postCommand(Request $request)
@@ -86,9 +71,8 @@ class Admin extends RoleController
     protected function putCommand(Request $request)
     {
         $feature = $this->factory->load($this->id);
-        $this->factory->update($feature, $request);
-        $this->factory->loadEntries($feature);
-        return array('featureId' => $this->id, 'entries' => $feature->entries);
+        $this->factory->put($feature, $request);
+        return array('featureId' => $this->id);
     }
 
 }

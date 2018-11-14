@@ -56,6 +56,9 @@ class BaseResource extends \phpws2\Resource
 
     public function relativeTime($date)
     {
+        if (empty($date)) {
+            throw new \Exception('relativeTime will not function on an empty date');
+        }
         $timepassed = time() - mktime(0, 0, 0, strftime('%m', $date),
                         strftime('%d', $date), strftime('%Y', $date));
 

@@ -10,15 +10,13 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace stories\Factory;
-
-use phpws2\Database;
-use phpws2\Settings;
+namespace stories\Controller\FeatureStory;
+use stories\Factory\FeatureStory;
 use Canopy\Request;
 
-class EmbedFactory
+class Admin extends RoleController
 {
-
-
-
+    public function loadFactory() {
+        $this->factory = FeatureStoryFactory;
+    }
 }

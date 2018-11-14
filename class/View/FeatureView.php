@@ -15,6 +15,8 @@ namespace stories\View;
 use Canopy\Request;
 use stories\Resource\FeatureResource as Resource;
 use stories\Factory\FeatureFactory as Factory;
+use stories\View\FeatureStoryView;
+use phpws2\Template;
 use phpws2\Settings;
 
 //use stories\Factory\TagFactory;
@@ -25,7 +27,6 @@ class FeatureView extends View
 {
 
     /**
-     *
      * @var stories\Factory\FeatureFactory
      */
     protected $factory;
@@ -37,6 +38,7 @@ class FeatureView extends View
 
     public function show(Request $request)
     {
+        $featureStoryView = new FeatureStoryView;
         $features = $this->factory->listing();
         if (empty($features)) {
             return;
@@ -45,10 +47,14 @@ class FeatureView extends View
         $showAuthor = Settings::get('stories', 'showAuthor');
 
         foreach ($features as $f) {
-            if (empty($f['entries'])) {
+            $storyListing = $featureStoryView->listing($f['id'], $f['format']);
+            if (empty($storyListing)) {
                 continue;
             }
-            $featureStack[] = $this->featureRow($f, $showAuthor);
+            $f['stories'] = implode("\n", $storyListing);
+            $template = new Template($f);
+            $template->setModuleTemplate('stories', 'Feature/Feature.html');
+            $featureStack[] = $template->get();
         }
         if (empty($featureStack)) {
             return null;
@@ -56,51 +62,4 @@ class FeatureView extends View
         $this->addStoryCss();
         return '<div id="story-feature-list">' . implode('', $featureStack) . '</div>';
     }
-
-    private function featureRow($feature, $showAuthor)
-    {
-        foreach ($feature['entries'] as $entry) {
-            $vars['entries'][] = $this->featureColumn($entry,
-                    $feature['format'], $feature['columns']);
-        }
-        switch ($feature['columns']) {
-            case '2':
-                $bsClass = 'col-sm-6';
-                break;
-            case '3':
-                $bsClass = 'col-sm-4';
-                break;
-            case '4':
-                $bsClass = 'col-sm-6 col-md-3';
-                break;
-        }
-        $vars['bsClass'] = $bsClass;
-        $vars['format'] = 'story-feature ' . $feature['format'];
-        $vars['featureTitle'] = $feature['title'];
-        $vars['showAuthor'] = $showAuthor;
-        $template = new \phpws2\Template($vars);
-        $template->setModuleTemplate('stories', 'Feature.html');
-        return $template->get();
-    }
-
-    private function featureColumn($entry, $format, $columns)
-    {
-        $vars = $entry['story'];
-        $entryView = new EntryView;
-        $vars['publishInfo'] = $entryView->publishBlock($vars);
-        $vars['thumbnailStyle'] = $this->thumbnailStyle($entry);
-        return $vars;
-    }
-
-    private function thumbnailStyle($entry)
-    {
-        $thumbnail = $entry['story']['thumbnail'];
-        $x = $entry['x'];
-        $y = $entry['y'];
-        $zoom = $entry['zoom'];
-        return <<<EOF
-background-image : url('$thumbnail');background-position: {$x}% {$y}%;background-size: {$zoom}%;
-EOF;
-    }
-
 }

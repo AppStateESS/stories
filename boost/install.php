@@ -20,6 +20,7 @@
  */
 
 use phpws2\Database;
+use phpws2\Database\ForeignKey;
 
 function stories_install(&$content)
 {
@@ -29,36 +30,58 @@ function stories_install(&$content)
     try {
         $entry = new \stories\Resource\EntryResource;
         $entryTable = $entry->createTable($db);
-        $db->clearTables();
 
         $author = new \stories\Resource\AuthorResource;
         $authorTable = $author->createTable($db);
-        $usersTable = $db->buildTable('users');
-        $db->clearTables();
+
+        $guest = new \stories\Resource\GuestResource;
+        $guestTable = $guest->createTable($db);
+        $guestUnique = new \phpws2\Database\Unique($guestTable->getDataType('authkey'));
+        $guestUnique->add();
+
+        $share = new \stories\Resource\ShareResource;
+        $shareTable = $share->createTable($db);
+        $shareGuestId = $shareTable->getDataType('guestId');
+        $shareEntryId = $shareTable->getDataType('entryId');
+        $shareUnique = new \phpws2\Database\Unique([$shareGuestId, $shareEntryId]);
+        $shareUnique->add();
+        $shareForeign = new ForeignKey($shareGuestId,
+                $guestTable->getDataType('id'), ForeignKey::CASCADE);
+        $shareForeign->add();
+
+        $featureStory = new \stories\Resource\FeatureStoryResource;
+        $featureStory->createTable($db);
+
+        $trackTable = $db->buildTable('storiestrack');
+        $trackEntryId = $trackTable->addDataType('entryId', 'int');
+        $trackHostId = $trackTable->addDataType('hostId', 'int');
+        $trackTable->create();
+        $trackUnique = new \phpws2\Database\Unique([$trackEntryId, $trackHostId]);
+        $trackUnique->add();
+
+        $publishResource = new \stories\Resource\PublishResource;
+        $publishTable = $publishResource->createTable($db);
+        $publishUnique = new \phpws2\Database\Unique([$publishTable->getDataType('entryId'), $publishTable->getDataType('shareId')]);
+        $publishUnique->add();
 
         $feature = new \stories\Resource\FeatureResource;
         $featureTable = $feature->createTable($db);
-        $db->clearTables();
 
         $tag = new \stories\Resource\TagResource;
         $tagTable = $tag->createTable($db);
-        $db->clearTables();
 
         $tagToEntry = $db->buildTable('storiestagtoentry');
         $entryId = $tagToEntry->addDataType('entryId', 'int');
         $tagId = $tagToEntry->addDataType('tagId', 'int');
-        $unique = new \phpws2\Database\Unique(array($tagId, $entryId));
-        $tagToEntry->addUnique($unique);
+        $tagUnique = new \phpws2\Database\Unique(array($tagId, $entryId));
+        $tagToEntry->addUnique($tagUnique);
         $tagToEntry->create();
 
-        $entryToFeature = $db->buildTable('storiesentrytofeature');
-        $entryToFeature->addDataType('entryId', 'int');
-        $entryToFeature->addDataType('featureId', 'int');
-        $entryToFeature->addDataType('x', 'smallint');
-        $entryToFeature->addDataType('y', 'smallint');
-        $entryToFeature->addDataType('zoom', 'smallint');
-        $entryToFeature->addDataType('sorting', 'smallint');
-        $entryToFeature->create();
+        $host = new \stories\Resource\HostResource;
+        $hostTable = $host->createTable($db);
+        $url = $hostTable->getDataType('url');
+        $unique2 = new \phpws2\Database\Unique($url);
+        $unique2->add();
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
         $db->rollback();
@@ -68,14 +91,29 @@ function stories_install(&$content)
         if (isset($authorTable)) {
             $authorTable->drop(true);
         }
+        if (isset($shareTable)) {
+            $shareTable->drop(true);
+        }
+        if (isset($publishTable)) {
+            $publishTable->drop(true);
+        }
+        if (isset($guestTable)) {
+            $guestTable->drop(true);
+        }
         if (isset($featureTable)) {
             $featureTable->drop(true);
+        }
+        if (isset($tagTable)) {
+            $tagTable->drop(true);
         }
         if (isset($tagToEntry)) {
             $tagToEntry->drop(true);
         }
         if (isset($entryToFeature)) {
             $entryToFeature->drop(true);
+        }
+        if (isset($hostTable)) {
+            $hostTable->drop(true);
         }
         throw $e;
     }

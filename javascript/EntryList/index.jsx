@@ -3,4 +3,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import EntryList from './EntryList.jsx'
 
-ReactDOM.render(<EntryList/>, document.getElementById('EntryList'))
+/* global shareList */
+
+ReactDOM.render(<EntryList shareList={shareList}/>, document.getElementById('EntryList'))

@@ -1,8 +1,8 @@
 'use strict'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import BigCheckbox from 'canopy-react-bigcheckbox'
-import ButtonGroup from 'canopy-react-buttongroup'
+import BigCheckbox from '@essappstate/canopy-react-bigcheckbox'
+import ButtonGroup from '@essappstate/canopy-react-buttongroup'
 import Navbar from '../AddOn/Navbar'
 
 /* global $ */

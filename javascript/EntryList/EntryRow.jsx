@@ -14,13 +14,7 @@ const EntryRow = (props) => {
     )
   }
 
-  const {
-    entry,
-    deleteStory,
-    publishStory,
-    showTags,
-    sortByTag,
-  } = props
+  const {entry, deleteStory, publishStory, showTags, sortByTag} = props
 
   const {
     authorEmail,
@@ -93,10 +87,8 @@ const EntryRow = (props) => {
       <em>Untitled</em>
     </h3>)
   }
-
   let options
-  let rowClass = 'entry-row mb-1'
-  rowClass = 'entry-row mb-1 active'
+  let rowClass = 'entry-row mb-1 active'
   options = (
     <div className="row mt-2 options">
       <div className="col-sm-4">
@@ -154,7 +146,7 @@ EntryRow.propTypes = {
   sortByTag: PropTypes.func,
   thumbnailForm: PropTypes.func,
   setCurrentEntry: PropTypes.func,
-  showTags: PropTypes.func,
+  showTags: PropTypes.func
 }
 
 export default EntryRow
@@ -180,5 +172,5 @@ const TagList = ({tags, showTags, sortByTag}) => {
 TagList.propTypes = {
   tags: PropTypes.array,
   showTags: PropTypes.func,
-  sortByTag: PropTypes.func,
+  sortByTag: PropTypes.func
 }

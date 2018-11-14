@@ -24,6 +24,7 @@ namespace stories\Controller\Entry;
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
 use stories\Factory\StoryMenu;
+use stories\View\EntryView as View;
 
 class Admin extends User
 {
@@ -33,6 +34,11 @@ class Admin extends User
      * @var \stories\Factory\EntryFactory factory
      */
     protected $factory;
+
+    protected function loadView()
+    {
+        $this->view = new View(true);
+    }
 
     protected function createHtmlCommand(Request $request)
     {
@@ -45,8 +51,7 @@ class Admin extends User
         \Menu::disableMenu();
         $entry = $this->factory->load($this->id);
         StoryMenu::viewStoryLink($entry);
-        return $this->view->form($entry,
-                        $request->pullGetBoolean('new', true));
+        return $this->view->form($entry, $request->pullGetBoolean('new', true));
     }
 
     protected function postCommand(Request $request)
@@ -56,12 +61,10 @@ class Admin extends User
 
     protected function putCommand(Request $request)
     {
-        return array('entryId' => $this->factory->put($this->id, $request));
-    }
-    
-    protected function orientationPutCommand(Request $request)
-    {
-        return array('entryId'=> $this->factory->changeOrientation($this->id, $request->pullPutInteger('orientation')));
+        $json = array('entryId' => $this->factory->put($this->id, $request));
+        $featureStoryFactory = new \stories\Factory\FeatureStoryFactory;
+        $featureStoryFactory->refreshEntry($this->id);
+        return $json;
     }
 
     protected function patchCommand(Request $request)

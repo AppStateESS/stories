@@ -94,7 +94,7 @@ export default class TagBar extends Component {
     let tagListing
     if (this.state.entryTags[0] != undefined) {
       tagListing = this.state.entryTags.map(function (value, key) {
-        return (<button type="button" className="btn btn-outline-dark btn-sm" key={key}>{value.label}</button>)
+        return (<button type="button" className="btn btn-outline-dark mr-1" key={key}>{value.label}</button>)
       }.bind(this))
     }
     const tagOverlay = (
@@ -110,7 +110,7 @@ export default class TagBar extends Component {
     return (
       <div>
         {tagOverlay}
-        <button type="button" className="btn btn-primary btn-sm mr-1"
+        <button type="button" className="btn btn-primary mr-1"
           onClick={this.setOverlay.bind(this, true)}>
           <i className="fas fa-tags"></i>&nbsp;Tags</button>
         {tagListing}

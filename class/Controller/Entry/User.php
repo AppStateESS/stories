@@ -24,15 +24,18 @@ namespace stories\Controller\Entry;
 use Canopy\Request;
 use stories\Factory\EntryFactory as Factory;
 use stories\View\EntryView as View;
+use stories\View\publishedView;
 use stories\Factory\StoryMenu;
 use stories\Controller\RoleController;
 
 class User extends RoleController
 {
+
     /**
      * @var stories\Factory\EntryFactory Factory
      */
     protected $factory;
+
     /**
      * @var stories\View\EntryView View
      */
@@ -42,7 +45,7 @@ class User extends RoleController
     {
         $this->factory = new Factory;
     }
-    
+
     protected function loadView()
     {
         $this->view = new View;
@@ -50,12 +53,23 @@ class User extends RoleController
 
     protected function viewHtmlCommand(Request $request)
     {
-        \Layout::addJSHeader(StoryMenu::mediumCSSLink());
-        return $this->view->view($this->id, $this->role->isAdmin());
+        return $this->view->view($this->id);
     }
-    
+
     protected function listHtmlCommand(Request $request)
     {
-        return $this->view->listing($request);
+        $publishedView = new \stories\View\PublishedView;
+        return $publishedView->listing($request);
     }
+
+    protected function viewJsonCommand(Request $request)
+    {
+        try {
+            $entry = $this->factory->load($this->id);
+            return $this->factory->shareData($entry);
+        } catch (\Exception $e) {
+            return ['error' => 'Could not retrieve story.'];
+        }
+    }
+
 }

@@ -1,12 +1,10 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import Overlay from 'canopy-react-overlay'
+import Overlay from '@essappstate/canopy-react-overlay'
 import Dropzone from 'react-dropzone'
-import EmptyPhoto from '../AddOn/EmptyPhoto'
-import '../AddOn/imageOverlay.css'
-
-/* global $ */
+import EmptyPhoto from './EmptyPhoto'
+import './imageOverlay.css'
 
 class ThumbnailOverlay extends React.Component {
   constructor(props) {
@@ -32,25 +30,7 @@ class ThumbnailOverlay extends React.Component {
       return
     }
 
-    let formData = new FormData()
-    formData.append('image', this.file)
-    formData.append('entryId', this.props.entry.id)
-    $.ajax({
-      url: './stories/EntryPhoto/update',
-      data: formData,
-      type: 'post',
-      cache: false,
-      dataType: 'json',
-      processData: false,
-      contentType: false,
-      success: function (data) {
-        const entry = this.props.entry
-        entry.thumbnail = data.thumbnail
-        this.props.updateEntry(entry)
-        this.close()
-      }.bind(this),
-      error: function () {}.bind(this),
-    })
+    this.props.saveThumbnail(this.file, this.props.entry)
   }
 
   updateImage(e) {

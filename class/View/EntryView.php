@@ -18,16 +18,20 @@ use stories\Factory\EntryFactory as Factory;
 use phpws2\Settings;
 use stories\Factory\TagFactory;
 use stories\Factory\StoryMenu;
+use stories\Factory\HostFactory;
 use stories\Factory\SettingFactory;
+use stories\Exception\ResourceNotFound;
 
 class EntryView extends View
 {
 
     protected $factory;
+    protected $isAdmin;
 
-    public function __construct()
+    public function __construct(bool $isAdmin = false)
     {
         $this->factory = new Factory;
+        $this->isAdmin = $isAdmin;
     }
 
     /**
@@ -39,9 +43,11 @@ class EntryView extends View
      */
     private function addAccessories($list, $tag = null)
     {
+        $publishedView = new PublishedView;
         foreach ($list as $key => $value) {
             $newlist[$key] = $value;
-            $newlist[$key]['publishInfo'] = $this->publishBlock($value, $tag);
+            $newlist[$key]['publishInfo'] = $publishedView->publishBlock($value,
+                    $tag);
             $newlist[$key]['shareButtons'] = $this->shareButtons($value);
         }
         return $newlist;
@@ -71,12 +77,15 @@ class EntryView extends View
         $entryVars = $entry->getStringVars();
         $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
         $tags = $tagFactory->listTags(true);
-        $jsonVars = array('entry' => $entryVars, 'tags' => empty($tags) ? array() : $tags, 'status' => $status);
+        $hostFactory = new HostFactory;
+        $shareList = $hostFactory->getHostsSelect();
+        $jsonVars = array('entry' => $entryVars, 'tags' => empty($tags) ? array() : $tags, 'status' => $status, 'shareList' => $shareList);
         $vars['publishBar'] = $this->scriptView('Publish', true, $jsonVars);
         $vars['imageOrientation'] = $this->scriptView('ImageOrientation');
         $vars['tagBar'] = $this->scriptView('TagBar');
         $vars['authorBar'] = $this->scriptView('AuthorBar');
         $vars['navbar'] = $this->scriptView('Navbar');
+        $vars['listView'] = $this->scriptView('ListView');
 
         $vars['home'] = $sourceHttp;
         $this->loadTwitterScript(true);
@@ -124,13 +133,13 @@ class EntryView extends View
     }
 
     /**
-     * Called from Module.php not a controller
      * 
      * @param Request $request
      * @return string
      */
     public function listing(Request $request)
     {
+        $this->includeCss();
         $listOptions = $this->pullListOptions($request);
         $settingsFactory = new \stories\Factory\SettingsFactory;
         $settings = $settingsFactory->listing();
@@ -141,7 +150,6 @@ class EntryView extends View
             return null;
         }
 
-        $this->addStoryCss();
         $tag = $listOptions['tag'] ?? null;
 
         //format  - 0 is summary, 1 full
@@ -160,12 +168,10 @@ class EntryView extends View
         }
 
         $data['list'] = $this->addAccessories($list, $tag);
-        \Layout::addJSHeader(StoryMenu::mediumCSSLink());
-        \Layout::addJSHeader($this->mediumCSSOverride());
         $data['style'] = '';
-        $data['isAdmin'] = \Current_User::allow('stories');
+        $data['isAdmin'] = $this->isAdmin;
         $data['showAuthor'] = $settings['showAuthor'];
-        $this->scriptView('Caption', false);
+        //$this->scriptView('Caption', false);
         $this->scriptView('Tooltip', false);
 
         if ($listOptions['page'] > 1) {
@@ -214,45 +220,6 @@ EOF;
         }
     }
 
-    public function pullListOptions(Request $request)
-    {
-        $settingFactory = new \stories\Factory\SettingsFactory;
-        $settings = $settingFactory->listing();
-        // if offset not set, default 0
-        $page = (int) $request->pullGetInteger('page', true);
-        if ($page > 1) {
-            $offsetSize = $settings['listStoryAmount'] * ($page - 1);
-        } else {
-            $offset = $request->pullGetInteger('offset', true);
-            if ($offset > 0) {
-                $offsetSize = $settings['listStoryAmount'] * $offset;
-            } else {
-                $offsetSize = 0;
-            }
-            $page = 1;
-        }
-
-        $sortBy = $request->pullGetString('sortBy', true);
-        if (!in_array($sortBy, array('publishDate', 'title', 'updateDate'))) {
-            $sortBy = 'publishDate';
-        }
-
-        $search = $request->pullGetString('search', true);
-
-        $tag = str_replace('%20', ' ', $request->pullGetString('tag', true));
-
-        $options = array(
-            'search' => $search,
-            'sortBy' => $sortBy,
-            'offset' => $offsetSize,
-            'page' => $page,
-            'tag' => $tag
-        );
-        $options['showAuthor'] = $settings['showAuthor'];
-        $options['limit'] = $settings['listStoryAmount'];
-        return $options;
-    }
-
     /**
      * Adds the medium-insert overlay that allows videos to be edited.
      * @param type $content
@@ -273,24 +240,6 @@ EOF;
         return $fixCaption;
     }
 
-    public function publishBlock($data, $tag = null)
-    {
-        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
-        $tagFactory = new TagFactory;
-        if (!empty($data['tags'])) {
-            $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
-                    $data['id'], $tag);
-        } else {
-            $data['tagList'] = null;
-        }
-        $data['showAuthor'] = $showAuthor;
-        $data['publishDateRelative'] = ucfirst($data['publishDateRelative']);
-
-        $template = new \phpws2\Template($data);
-        $template->setModuleTemplate('stories', 'Publish.html');
-        return $template->get();
-    }
-
     private function relativeImages($content)
     {
         return preg_replace('@src="https?://[\w:/]+(images/stories/\d+/[^"]+)"@',
@@ -304,14 +253,62 @@ EOF;
         return $template->get();
     }
 
-    public function view($id, $isAdmin = false)
+    public function inListView($id)
     {
+        static $twitterIncluded = false;
+
+        $publishedView = new PublishedView;
+
+        \Layout::addJSHeader($this->mediumCSSOverride());
+        $entry = $this->factory->load($id);
+        $data = $this->factory->data($entry, !$this->isAdmin);
+        if (empty($data)) {
+            throw new ResourceNotFound;
+        }
+        $this->includeCards($entry);
+
+        if ($entry->listView == 1) {
+            if (!$twitterIncluded && stristr($entry->content, 'twitter')) {
+                $this->loadTwitterScript(true);
+                $twitterIncluded = true;
+            }
+
+            $data['content'] = $this->removeSummaryTag($data['content']);
+            $templateFile = 'Entry/FullListView.html';
+        } else {
+            $templateFile = 'Entry/SummaryListView.html';
+        }
+        // Removed the summary break tag
+        $address = \Canopy\Server::getSiteUrl();
+        $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
+        $data['shareId'] = 0;
+        $data['publishInfo'] = $publishedView->publishBlock($data);
+        $data['shareButtons'] = $this->shareButtons($data);
+        $data['isAdmin'] = $this->isAdmin;
+
+        $template = new \phpws2\Template($data);
+        $template->setModuleTemplate('stories', $templateFile);
+        $this->addStoryCss();
+        return $template->get();
+    }
+
+    private function removeSummaryTag($content)
+    {
+        $content = preg_replace('/<p( class="")?>::summary(<br\s?\/?>)?<\/p>/',
+                '', $content);
+        return $content;
+    }
+
+    public function view($id)
+    {
+        $publishedView = new PublishedView;
         if (\phpws2\Settings::get('stories', 'hideDefault')) {
             \Layout::hideDefault(true);
         }
         try {
+            $this->includeCss();
             $entry = $this->factory->load($id);
-            $data = $this->factory->data($entry, !$isAdmin);
+            $data = $this->factory->data($entry, !$this->isAdmin);
             if (empty($data)) {
                 throw new ResourceNotFound;
             }
@@ -319,29 +316,36 @@ EOF;
             if (stristr($entry->content, 'twitter')) {
                 $this->loadTwitterScript(true);
             }
+            $data['content'] = $this->removeSummaryTag($data['content']);
+
             $address = \Canopy\Server::getSiteUrl();
             $data['currentUrl'] = $address . 'stories/Entry/' . $entry->urlTitle;
-            $data['publishInfo'] = $this->publishBlock($data);
+            $data['publishInfo'] = $publishedView->publishBlock($data);
             $data['shareButtons'] = $this->shareButtons($data);
-            \Layout::addJSHeader($this->mediumCSSOverride());
             $data['cssOverride'] = '';
-            $data['isAdmin'] = $isAdmin;
+            $data['isAdmin'] = $this->isAdmin;
             if (\phpws2\Settings::get('stories', 'showComments')) {
                 $data['commentCode'] = \phpws2\Settings::get('stories',
                                 'commentCode');
             } else {
                 $data['commentCode'] = null;
             }
-
-            $this->scriptView('Caption', false);
+            // @deprecated easier to center via css
+            //$this->scriptView('Caption', false);
             $this->scriptView('Tooltip', false);
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
-            $this->addStoryCss();
             return $template->get();
         } catch (ResourceNotFound $e) {
             return $this->notFound();
         }
+    }
+
+    public function notFound()
+    {
+        $template = new \phpws2\Template();
+        $template->setModuleTemplate('stories', 'Entry/NotFound.html');
+        return $template->get();
     }
 
 }

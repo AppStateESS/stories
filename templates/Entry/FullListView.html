@@ -1,0 +1,15 @@
+<div class="story-list-entry clearfix full-view">
+  <div class="story-entry">
+    <div class="story-content"><?=$content?></div>
+  </div>
+  <?=$publishInfo?>
+  <?=$shareButtons?>
+  <span class="badge badge-info permanent-link mr-1">
+    <a href="<?=$currentUrl?>"><i class="fa fa-link"></i>&nbsp;Permanent link</a>
+  </span>
+  <?php if ($isAdmin):?>
+  <span class="badge badge-primary permanent-link">
+    <a href="./stories/Entry/<?=id?>/edit"><i class="fa fa-edit"></i>&nbsp;Edit</a>
+  </span>
+  <?php endif;?>
+</div>

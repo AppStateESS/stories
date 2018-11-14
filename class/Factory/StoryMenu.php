@@ -40,6 +40,12 @@ class StoryMenu
         $link = '<a href="./stories/Entry/create"><i class="fas fa-pencil-alt"></i> Add story</a>';
         \MiniAdmin::add('stories', $link);
     }
+    
+    public static function addShareLink()
+    {
+        $link = '<a href="./stories/Share"><i class="fas fa-share-alt"></i> Share</a>';
+        \MiniAdmin::add('stories', $link);
+    }
 
     public static function editStoryLink($entryId)
     {
@@ -51,7 +57,7 @@ class StoryMenu
     {
         
         $link = <<<EOF
-<a href="./stories/Entry/{$entry->id}/{$entry->urlTitle}"><i class="fa fa-book"></i> View story</a>
+<a href="./stories/Entry/{$entry->id}/{$entry->urlTitle}"><i class="fas fa-book"></i> View story</a>
 EOF;
         \MiniAdmin::add('stories', $link);
     }
@@ -70,18 +76,10 @@ EOF;
     
     public static function featureLink()
     {
-        $link = '<a href="./stories/Feature/"><i class="fa fa-exclamation-circle"></i> Features</a>';
+        $link = '<a href="./stories/Feature/"><i class="fa fa-th-large"></i> Features</a>';
         \MiniAdmin::add('stories', $link);
     }
 
-    public static function mediumCSSLink()
-    {
-        $homeHttp = PHPWS_SOURCE_HTTP;
-        return <<<EOF
-<link type="text/css" rel="stylesheet" href="{$homeHttp}mod/stories/css/medium-editor-insert-plugin.min.css" />
-EOF;
-    }
-    
     public static function adminDisplayLink()
     {
         $link = '<a href="./stories/Settings"><i class="fas fa-cog"></i> Settings</a>';

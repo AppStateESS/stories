@@ -1,7 +1,7 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import ButtonGroup from 'canopy-react-buttongroup'
+import ButtonGroup from '@essappstate/canopy-react-buttongroup'
 
 const FeatureList = (props) => {
   if (props.list === undefined || props.list === null) {
@@ -49,8 +49,8 @@ const FeatureList = (props) => {
             onClick={props.loadCurrentFeature.bind(null, key)}><i className="fa fa-edit"></i></button>
           <button className="btn btn-danger btn-sm" onClick={props.deleteFeature.bind(null, key)}><i className="far fa-trash-alt"></i></button>
         </td>
-        <td>{value.title}</td>
-        <td>{value.columns}</td>
+        <td>{value.title ? value.title : <em className="text-muted">Untitled</em>}</td>
+        <td>{value.storyCount}</td>
         <td><img style={iconStyle} src={formatIcon}/></td>
         <td><ButtonGroup
           buttons={buttons}
@@ -66,7 +66,7 @@ const FeatureList = (props) => {
           <tr>
             <th>&nbsp;</th>
             <th>Title</th>
-            <th>Column</th>
+            <th>Stories</th>
             <th>Format</th>
             <th>Active</th>
           </tr>

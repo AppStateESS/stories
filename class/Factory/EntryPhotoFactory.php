@@ -29,9 +29,6 @@ namespace stories\Factory;
 use phpws2\Database;
 use Canopy\Request;
 use phpws2\Settings;
-use stories\Factory\EntryPhotoFactory;
-use stories\Resource\EntryResource;
-use stories\Resource\ThumbnailResource;
 
 require_once PHPWS_SOURCE_DIR . 'mod/stories/class/UploadHandler.php';
 
@@ -62,9 +59,8 @@ class EntryPhotoFactory
         return $options;
     }
     
-    private function getThumbOptions(Request $request)
+    private function getThumbOptions($entryId)
     {
-        $entryId = $request->pullPostInteger('entryId');
         $imageDirectory = "images/stories/$entryId/thumbnail/";
         $imagePath = PHPWS_HOME_DIR . $imageDirectory;
         $imageUrl = './' . $imageDirectory;
@@ -88,12 +84,12 @@ class EntryPhotoFactory
         return $result;
     }
 
-    public function postThumbnail(Request $request)
+    public function postThumbnail($entryId, Request $request)
     {
         $entryFactory = new EntryFactory;
-        $entry = $entryFactory->load($request->pullPostInteger('entryId'));
+        $entry = $entryFactory->load($entryId);
         
-        $options = $this->getThumbOptions($request);
+        $options = $this->getThumbOptions($entryId);
         $options['param_name'] = 'image';
         $filename = $request->getUploadedFileArray('image');
         $upload_handler = new \UploadHandler($options, false);

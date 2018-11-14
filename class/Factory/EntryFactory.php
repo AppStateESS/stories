@@ -12,20 +12,26 @@
 
 namespace stories\Factory;
 
+use phpws2\Database;
+use phpws2\Settings;
+use Canopy\Request;
+use stories\Resource\AuthorResource;
 use stories\Resource\EntryResource as Resource;
 use stories\Resource\ThumbnailResource;
 use stories\Factory\AuthorFactory;
 use stories\Factory\TagFactory;
-use stories\Resource\AuthorResource;
+use stories\Factory\PublishFactory;
 use stories\Exception\MissingInput;
 use stories\Exception\ResourceNotFound;
-use phpws2\Database;
-use phpws2\Settings;
-use Canopy\Request;
 
 require_once PHPWS_SOURCE_DIR . 'mod/access/class/Shortcut.php';
+
 if (!defined('STORIES_HARD_LIMIT')) {
     define('STORIES_HARD_LIMIT', 100);
+}
+
+if (!defined('STORIES_SUMMARY_CHARACTER_LIMIT')) {
+    define('STORIES_SUMMARY_CHARACTER_LIMIT', 500);
 }
 
 class EntryFactory extends BaseFactory
@@ -70,7 +76,7 @@ class EntryFactory extends BaseFactory
 
     private function defaultListOptions()
     {
-        return array('publishedOnly' => false,
+        return array(
             'hideExpired' => true,
             'sortBy' => 'publishDate',
             'limit' => 10,
@@ -95,7 +101,8 @@ class EntryFactory extends BaseFactory
      * limit: [6] Total number of entries to pull
      * includeContent: [true] Include content in the pull 
      * publishedOnly: [true] Only show published entries
-     * offset: [0] Current number of offsets using limit 
+     * showAuthor: [false] Show the author information
+     * offset: [0] Current number of offsets using limit
      * tag: [null] Limit by tag association
      * vars: [null] If array, only pull these variables
      * mustHaveThumbnail: [false] Only pull entries that have an associate thumbnail
@@ -271,6 +278,8 @@ class EntryFactory extends BaseFactory
         $entry = $this->build();
         $entry->title = '';
         $entry->content = '';
+        $entry->createStamp();
+        $entry->publishStamp();
         $authorFactory = new AuthorFactory;
         $this->loadAuthor($entry, $authorFactory->getByCurrentUser(true));
         return self::saveResource($entry);
@@ -321,14 +330,6 @@ class EntryFactory extends BaseFactory
         if (empty($entry->title)) {
             $entry->published = false;
         }
-        return $this->save($entry);
-    }
-
-    public function changeOrientation(int $entryId, int $orientation)
-    {
-        $entry = $this->load($entryId);
-        $entry->stamp();
-        $entry->imageOrientation = $orientation;
         return $this->save($entry);
     }
 
@@ -481,17 +482,17 @@ class EntryFactory extends BaseFactory
             if ($h3->length > 0) {
                 $h3Node = $h3->item($titleCount);
                 if ($h3Node) {
-                    $title = substr(trim($h3Node->textContent), 0, 255);
+                    $title = substr(trim($h3Node->textContent), 0, 100);
                 }
             } elseif ($h4->length > 0) {
                 $h4Node = $h4->item($titleCount);
                 if ($h4Node) {
-                    $title = substr(trim($h4Node->textContent), 0, 255);
+                    $title = substr(trim($h4Node->textContent), 0, 100);
                 }
             } elseif ($p->length > 0) {
                 $pNode = $p->item($titleCount);
                 if ($pNode) {
-                    $title = substr(trim($pNode->textContent), 0, 255);
+                    $title = substr(trim($pNode->textContent), 0, 100);
                     $pStart = $titleCount + 1;
                 }
             }
@@ -509,20 +510,30 @@ class EntryFactory extends BaseFactory
         $summaryCount = $pStart;
         $summaryLimit = $p->length - $pStart;
 
+        $totalCharacters = 0;
         while (!$summaryFound && $summaryCount <= $summaryLimit) {
             if ($p->length > $summaryCount) {
                 $pNode = $p->item($summaryCount);
-                $pContent = trim($pNode->textContent);
-                if (!empty($pContent)) {
-                    $pContent = nl2br($pContent);
-                    $entry->summary = "<p>$pContent</p>";
+                if (preg_match('/^::summary/', $pNode->textContent)) {
                     $summaryFound = true;
+                    break;
+                }
+                $totalCharacters += strlen($pNode->textContent);
+                $pContent = $pNode->C14N();
+                if (!empty($pContent)) {
+                    $summary[] = $pContent;
+                }
+                if ($totalCharacters > STORIES_SUMMARY_CHARACTER_LIMIT) {
+                    $summaryFound = true;
+                    break;
                 }
             }
             $summaryCount++;
         }
-        if ($summaryFound == false) {
+        if (empty($summary)) {
             $entry->summary = '';
+        } else {
+            $entry->summary = implode('', $summary);
         }
     }
 
@@ -543,23 +554,37 @@ class EntryFactory extends BaseFactory
             $value = $request->pullPatchVar('value');
             $this->patchEntry($entry, $param, $value);
         }
-
+        $entry->stamp();
         self::saveResource($entry);
         return $entry->id;
     }
 
     private function patchEntry(Resource $entry, $param, $value)
     {
+        $publishFactory = new PublishFactory;
         switch ($param) {
             case 'published':
                 if ($value == '0') {
-                    $featureFactory = new FeatureFactory();
-                    $featureFactory->removeEntryFromAll($entry->id);
+                    $publishFactory->unpublishEntry($entry->id);
+                } else {
+                    $publishFactory->publishEntry($entry->id,
+                            $entry->publishDate);
                 }
 
             default:
                 $entry->$param = $value;
         }
+    }
+
+    /**
+     * An abridged array of information about an entry used for sharing.
+     * @param Resource $entry
+     * @return array
+     */
+    public function shareData(Resource $entry)
+    {
+        return $entry->getStringVars(true,
+                        ['authorEmail', 'authorId', 'content', 'deleted', 'expirationDate', 'leadImage', 'updateDate', 'createDateRelative', 'createDate', 'published']);
     }
 
     public function data(Resource $entry, $publishOnly = true)
@@ -577,13 +602,14 @@ class EntryFactory extends BaseFactory
      */
     public function delete($id)
     {
+        $publishFactory = new PublishFactory;
+        $featureStoryFactory = new FeatureStoryFactory;
+        
         $entry = $this->load($id);
         $entry->deleted = true;
 
-        // Feature will bug out if the entry is deleted
-        $featureFactory = new FeatureFactory;
-        $featureFactory->removeEntryFromAll($id);
         self::saveResource($entry);
+        $publishFactory->unpublishEntry($entry->id);
     }
 
     public function purge($id)
@@ -620,13 +646,6 @@ class EntryFactory extends BaseFactory
 EOF;
     }
 
-    public function notFound()
-    {
-        $template = new \phpws2\Template();
-        $template->setModuleTemplate('stories', 'Entry/NotFound.html');
-        return $template->get();
-    }
-
     /**
      * Removes the media overlay that prevents the video from working
      */
@@ -636,37 +655,16 @@ EOF;
                 '', $content);
     }
 
-    /**
-     * Removed the data-embed-code div medium editor adds.
-     * @param string $content
-     * @deprecated
-     * @return string
-     */
-    private function cleanEmbed($content)
-    {
-        return preg_replace('/<div data-embed-code="[^"]+">/s',
-                '<div class="medium-insert-active">', $content);
-    }
 
     /**
-     * Facebook does zeroes out the container_width
-     * @deprecated
-     * @param string $content
-     */
-    private function cleanFacebook($content)
-    {
-        return preg_replace('/container_width=0/s', 'container_width=500px',
-                $content);
-    }
-
-    /**
-     * The Flickr oEmbed calls a script when pulled down. This script creates
-     * an iframe and moved forward. The iframe is useless, the script and the
-     * anchor tag called prior are the important components.
+     * The Flickr oEmbed calls a script when pulled down. This script instantly
+     * creates an iframe to replace the anchor tag. The iframe is useless;
+     * the script and the anchor tag called prior are the important components.
      * 
      * The true code is stuck in the data-embed-code div. This script grabs the 
      * embed code and saves it as content
-     * before it is flushed. This only happens when Flickr is present.
+     * before it is flushed. This only happens when Flickr is present. All other
+     * oembed scripts behave.
      * @param string $content
      */
     private function cleanFlickr($content)
@@ -685,20 +683,10 @@ EOF;
         return $final;
     }
 
-    /**
-     * @deprecated
-     * @param type $content
-     * @return type
-     */
-    private function cleanTwitter($content)
-    {
-        return preg_replace('/<script.*platform\.twitter\.com[^>]+><\/script>/',
-                '', $content);
-    }
 
     private function removeExtraParagraphs($content)
     {
-        return preg_replace('/(<p class="">(<br>)?<\/p>)\n?|(<p class="medium-insert-active">(<br>)?<\/p>|<p>(<br>)?<\/p>)\n/',
+        return preg_replace('/(<p class="">(<br>)?<\/p>)\n?|(<p class="medium-insert-active">(<br>)?<\/p>|<p>(<br>)?<\/p>)\n?/',
                 '', $content);
     }
 
@@ -712,7 +700,6 @@ EOF;
         return str_replace(' contenteditable="true"', '', $content);
     }
 
-
     /**
      * Cleans up the content string that is imported from Medium Editor.
      * Medium editor content contains remnants of its controls.
@@ -723,6 +710,7 @@ EOF;
         // Removes medium buttons
         $content = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
                         '', $content));
+        $content = str_replace(' class=""', '', $content);
 
         $content = str_replace('Type caption for image (optional)', '', $content);
         $content = str_replace('Type caption (optional)', '', $content);

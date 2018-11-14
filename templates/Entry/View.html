@@ -1,17 +1,15 @@
-<?=$cssOverride?>
 <?php if (!$published):?>
 <div class="alert alert-warning">This story is currently unpublished. <a href="./stories/Entry/<?=$id?>/edit">Edit this story to publish it.</a></div>
 <?php endif;?>
-
 <div class="story-full-view">
   <div class="story-entry">
     <div class="story-content"><?=$content?></div>
   </div>
   <?=$publishInfo?>
   <?=$shareButtons?>
-  <?php if ($isAdmin):?>
   <hr class="clearfix"/>
   <div><?=$commentCode?></div>
+  <?php if ($isAdmin):?>
   <div>
     <a class="btn btn-primary" href="./stories/Entry/<?=$id?>/edit">Edit this story</a>
   </div>

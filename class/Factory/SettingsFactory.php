@@ -28,11 +28,8 @@
  */
 
 namespace stories\Factory;
-
-use stories\Resource\EntryResource as Resource;
 use phpws2\Database;
 use Canopy\Request;
-use phpws2\Template;
 
 /**
  * Description of SettingsFactory
