@@ -17,6 +17,7 @@ const SampleStoryObj = {
 const SampleStory = (srcHttp) => {
   const copy = Object.assign({}, SampleStoryObj)
   copy.thumbnail = srcHttp + SampleStoryObj.thumbnail
+  copy.authorPic = srcHttp + SampleStoryObj.authorPic
   return copy
 }
 
