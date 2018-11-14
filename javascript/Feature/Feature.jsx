@@ -42,6 +42,9 @@ export default class Feature extends Component {
       dataType: 'json',
       type: 'get',
       success: function (data) {
+        if (data.featureList.length === 0) {
+          data.featureList = null
+        }
         this.setState(
           {featureList: data.featureList, loading: false, currentFeature: null, currentFeatureKey: null}
         )
@@ -118,7 +121,14 @@ export default class Feature extends Component {
   }
 
   save() {
-    const {title, active, format, columns, sorting, id} = this.state.currentFeature
+    const {
+      title,
+      active,
+      format,
+      columns,
+      sorting,
+      id
+    } = this.state.currentFeature
     $.ajax({
       url: './stories/Feature/' + id,
       data: {
@@ -134,7 +144,7 @@ export default class Feature extends Component {
       error: function () {}
     })
   }
-  
+
   updateCurrentFeature(feature) {
     const {featureList} = this.state
     featureList[this.state.currentFeatureKey] = feature
@@ -142,9 +152,11 @@ export default class Feature extends Component {
   }
 
   updateActive(key, value) {
-    const feature = this.state.featureList[key]
-    feature.active = value
-    this.updateFeature(feature)
+    const currentFeature = this.state.featureList[key]
+    currentFeature.active = value
+    this.setState({
+      currentFeature
+    }, this.save)
   }
 
   message() {
