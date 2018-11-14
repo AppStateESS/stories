@@ -87,7 +87,7 @@ class PublishedView extends View
 
     public function publishBlock($data, $currentTag = null)
     {
-        $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
+        $data['showAuthor'] = \phpws2\Settings::get('stories', 'showAuthor');
         if (!empty($data['tags'])) {
             $tagFactory = new TagFactory;
             $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
@@ -95,7 +95,7 @@ class PublishedView extends View
         } else {
             $data['tagList'] = null;
         }
-        $data['showAuthor'] = $showAuthor;
+
         $data['publishDateRelative'] = ucfirst($data['publishDateRelative']);
         $template = new \phpws2\Template($data);
         $template->setModuleTemplate('stories', 'Publish.html');
