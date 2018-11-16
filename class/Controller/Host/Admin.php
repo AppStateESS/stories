@@ -48,6 +48,7 @@ class Admin extends User
 
     public function deleteCommand(Request $request)
     {
+        $this->factory->removeShareFromHost($this->id);
         $this->factory->delete($this->id);
         $json = ['success' => true];
         return $json;
