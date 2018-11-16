@@ -22,66 +22,28 @@
 use phpws2\Database;
 use phpws2\Database\ForeignKey;
 
+require_once PHPWS_SOURCE_DIR . 'mod/stories/boost/StoriesTables.php';
+
 function stories_install(&$content)
 {
     $db = Database::getDB();
     $db->begin();
 
     try {
-        $entry = new \stories\Resource\EntryResource;
-        $entryTable = $entry->createTable($db);
-
-        $author = new \stories\Resource\AuthorResource;
-        $authorTable = $author->createTable($db);
-
-        $guest = new \stories\Resource\GuestResource;
-        $guestTable = $guest->createTable($db);
-        $guestUnique = new \phpws2\Database\Unique($guestTable->getDataType('authkey'));
-        $guestUnique->add();
-
-        $share = new \stories\Resource\ShareResource;
-        $shareTable = $share->createTable($db);
-        $shareGuestId = $shareTable->getDataType('guestId');
-        $shareEntryId = $shareTable->getDataType('entryId');
-        $shareUnique = new \phpws2\Database\Unique([$shareGuestId, $shareEntryId]);
-        $shareUnique->add();
-        $shareForeign = new ForeignKey($shareGuestId,
-                $guestTable->getDataType('id'), ForeignKey::CASCADE);
-        $shareForeign->add();
-
-        $featureStory = new \stories\Resource\FeatureStoryResource;
-        $featureStory->createTable($db);
-
-        $trackTable = $db->buildTable('storiestrack');
-        $trackEntryId = $trackTable->addDataType('entryId', 'int');
-        $trackHostId = $trackTable->addDataType('hostId', 'int');
-        $trackTable->create();
-        $trackUnique = new \phpws2\Database\Unique([$trackEntryId, $trackHostId]);
-        $trackUnique->add();
-
-        $publishResource = new \stories\Resource\PublishResource;
-        $publishTable = $publishResource->createTable($db);
-        $publishUnique = new \phpws2\Database\Unique([$publishTable->getDataType('entryId'), $publishTable->getDataType('shareId')]);
-        $publishUnique->add();
-
-        $feature = new \stories\Resource\FeatureResource;
-        $featureTable = $feature->createTable($db);
-
-        $tag = new \stories\Resource\TagResource;
-        $tagTable = $tag->createTable($db);
-
-        $tagToEntry = $db->buildTable('storiestagtoentry');
-        $entryId = $tagToEntry->addDataType('entryId', 'int');
-        $tagId = $tagToEntry->addDataType('tagId', 'int');
-        $tagUnique = new \phpws2\Database\Unique(array($tagId, $entryId));
-        $tagToEntry->addUnique($tagUnique);
-        $tagToEntry->create();
-
-        $host = new \stories\Resource\HostResource;
-        $hostTable = $host->createTable($db);
-        $url = $hostTable->getDataType('url');
-        $unique2 = new \phpws2\Database\Unique($url);
-        $unique2->add();
+        $storiesTables = new StoriesTables;
+        
+        $entryTable = $storiesTables->createEntry();
+        $authorTable = $storiesTables->createAuthor();
+        $guestTable = $storiesTables->createGuest();
+        $hostTable = $storiesTables->createHost();
+        $shareTable = $storiesTables->createShare();
+        $trackTable = $storiesTables->createTrack();
+        $publishTable = $storiesTables->createPublish();
+        $featureTable = $storiesTables->createFeature();
+        $featureStoryTable = $storiesTables->createFeatureStory();
+        $tagTable = $storiesTables->createTag();
+        $tagToEntryTable = $storiesTables->createTagToEntry();
+        
     } catch (\Exception $e) {
         \phpws2\Error::log($e);
         $db->rollback();
@@ -91,14 +53,22 @@ function stories_install(&$content)
         if (isset($authorTable)) {
             $authorTable->drop(true);
         }
+        if (isset($guestTable)) {
+            $guestTable->drop(true);
+        }
+        if (isset($hostTable)) {
+            $hostTable->drop(true);
+        }
         if (isset($shareTable)) {
             $shareTable->drop(true);
         }
+
+        if (isset($trackTable)) {
+            $trackTable->drop(true);
+        }
+        
         if (isset($publishTable)) {
             $publishTable->drop(true);
-        }
-        if (isset($guestTable)) {
-            $guestTable->drop(true);
         }
         if (isset($featureTable)) {
             $featureTable->drop(true);
@@ -106,14 +76,8 @@ function stories_install(&$content)
         if (isset($tagTable)) {
             $tagTable->drop(true);
         }
-        if (isset($tagToEntry)) {
-            $tagToEntry->drop(true);
-        }
-        if (isset($entryToFeature)) {
-            $entryToFeature->drop(true);
-        }
-        if (isset($hostTable)) {
-            $hostTable->drop(true);
+        if (isset($tagToEntryTable)) {
+            $tagToEntryTable->drop(true);
         }
         throw $e;
     }
