@@ -234,39 +234,10 @@ class StoriesUpdate
 
     private function v1_5_0()
     {
-        $db = Database::getDB();
-
-        $tagToEntry = $db->getTable('storiestagtoentry');
-        $tagId = $tagToEntry->addDataType('tagId', 'int');
-        $entryId = $tagToEntry->addDataType('entryId', 'int');
-        $tagUnique = new \phpws2\Database\Unique(array($tagId, $entryId));
-        $tagUnique->add();
-
-        if (!$db->tableExists('storiesguest')) {
-            $guest = new \stories\Resource\GuestResource;
-            $guestTable = $guest->createTable($db);
-            $guestUnique = new \phpws2\Database\Unique('authkey');
-            $guestUnique->add();
-        }
-        if (!$db->tableExists('storieshost')) {
-            $host = new \stories\Resource\HostResource;
-            $hostTable = $host->createTable($db);
-        }
-        if (!$db->tableExists('storiesshare')) {
-            $share = new \stories\Resource\ShareResource;
-            $shareTable = $share->createTable($db);
-            $guestId = $shareTable->getDataType('guestId');
-            $entryId = $shareTable->getDataType('entryId');
-            $shareUnique = new \phpws2\Database\Unique([$guestId, $entryId]);
-            $shareUnique->add();
-        }
+        require_once PHPWS_SOURCE_DIR . 'mod/stories/boost/updates/v1_5_0.php';
         
-        $entryTable = $db->addTable('storiesentry');
-        $listView = new \phpws2\Database\Datatype\Smallint($entryTable, 'listView');
-        $listView->add();
-
-        $changes[] = 'Add ability to share stories with other sites.';
-
+        $update = new storiesUpdate_1_5_0;
+        $changes = $update->run();
         $this->addContent('1.5.0', $changes);
     }
 
