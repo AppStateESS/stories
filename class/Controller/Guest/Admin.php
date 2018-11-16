@@ -27,6 +27,8 @@ class Admin extends User
 
     public function deleteCommand(Request $request)
     {
+        $guest = $this->factory->load($this->id);
+        $this->factory->emailRemoval($guest);
         $this->factory->delete($this->id);
         return ['success' => true];
     }
