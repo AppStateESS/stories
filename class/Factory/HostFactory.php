@@ -90,9 +90,24 @@ class HostFactory extends BaseFactory
         return $db->delete();
     }
 
+    public function removeShareFromHost(int $hostId)
+    {
+        $host = $this->load($hostId);
+        if (empty($host->authkey)) {
+            return array('error' => 'Authkey not set for ' . $host->siteName);
+        }
+        $url = "{$host->url}stories/Share/unsubscribe/?json=1&authkey={$host->authkey}";
+        if (!$this->sendCurl($url)) {
+            throw new \Exception('Cannot to connect to host.');
+        }
+    }
+
     public function submit(int $hostId, Request $request)
     {
         $entryId = $request->pullPutString('entryId');
+        if ($this->getTrack($entryId, $hostId)) {
+            return array('error'=>'You have already submitted to this host.');
+        }
 
         $host = $this->load($hostId);
         if (empty($host->authkey)) {
@@ -100,17 +115,23 @@ class HostFactory extends BaseFactory
         }
 
         $url = "{$host->url}stories/Share/submit/?json=1&authkey={$host->authkey}&entryId=$entryId";
-        $options = array(CURLOPT_URL => $url, CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => true);
-        $ch = curl_init();
-        curl_setopt_array($ch, $options);
-        if (!$result = curl_exec($ch)) {
-            throw new \Exception('Cannot to connect to host');
+        $result = $this->sendCurl($url);
+        if (!$result) {
+            throw new \Exception('Cannot to connect to host.');
         }
-        curl_close($ch);
 
         $this->trackRequest($entryId, $hostId);
 
         return json_decode($result);
+    }
+    
+    private function getTrack(int $entryId, int $hostId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiestrack');
+        $tbl->addFieldConditional('entryId', $entryId);
+        $tbl->addFieldConditional('hostId', $hostId);
+        return $db->selectOneRow();
     }
 
     private function trackRequest(int $entryId, int $hostId)
@@ -121,7 +142,7 @@ class HostFactory extends BaseFactory
         $tbl->addValue('hostId', $hostId);
         $db->insert();
     }
-    
+
     public function removeTrack(int $entryId, int $hostId)
     {
         $db = Database::getDB();
@@ -130,7 +151,7 @@ class HostFactory extends BaseFactory
         $tbl->addFieldConditional('hostId', $hostId);
         $db->delete();
     }
-    
+
     public function getByAuthkey(string $authkey)
     {
         $db = Database::getDB();
