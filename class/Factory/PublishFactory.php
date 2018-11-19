@@ -36,7 +36,7 @@ class PublishFactory extends BaseFactory
     {
         $entryFactory = new EntryFactory;
         $shareFactory = new ShareFactory;
-        
+
         if ($publish->entryId > 0) {
             return $entryFactory->load($publish->entryId);
         } elseif ($publish->shareId > 0) {
@@ -84,10 +84,11 @@ class PublishFactory extends BaseFactory
     public function unpublishEntry(int $entryId)
     {
         $publishId = $this->getPublishIdByEntryId($entryId);
-        $this->delete($publishId);
+        
+        $featureStoryFactory = new FeatureStoryFactory;
+        $featureStoryFactory->deleteByPublishId($publishId);
 
-        $featureFactory = new FeatureFactory;
-        $featureFactory->deleteByPublishId($publishId);
+        $this->delete($publishId);
 
         $this->unpublishHosts($entryId);
         $this->deleteTrackHosts($entryId);
@@ -99,6 +100,9 @@ class PublishFactory extends BaseFactory
      */
     public function unpublishShare(int $shareId)
     {
+        $featureStoryFactory = new \stories\Factory\FeatureStoryFactory();
+        $featureStoryFactory->deleteByShareId($shareId);
+
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addFieldConditional('shareId', $shareId);
@@ -181,7 +185,7 @@ class PublishFactory extends BaseFactory
                 }
             }
         }
-        
+
         if ($options['tag']) {
             $tagIdTable = $db->addTable('storiestagtoentry', null, false);
             $tagTable = $db->addTable('storiestag', null, false);
@@ -232,14 +236,20 @@ class PublishFactory extends BaseFactory
         foreach ($result as $row) {
             $pObj = $this->build($row);
             $story = $this->getSource($pObj);
-            $options[] = ['id' => $pObj->id, 'title' => $story->title];
+            if ($pObj->shareId > 0) {
+                $title = "$story->title ($story->siteName)";
+            } else {
+                $title = $story->title;
+            }
+            
+            $options[] = ['id' => $pObj->id, 'title' => $title];
         }
         return $options;
     }
-    
+
     public function loadByShareId($shareId)
     {
-        $db= Database::getDB();
+        $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addFieldConditional('shareId', $shareId);
         $row = $db->selectOneRow();
