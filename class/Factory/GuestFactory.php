@@ -117,6 +117,29 @@ class GuestFactory extends BaseFactory
         $mailer->send($message);
     }
 
+    public function emailRemoval($guest)
+    {
+        $transport = \Swift_SendmailTransport::newInstance(STORIES_SENDMAIL);
+
+        $subject = 'Removed ' . $guest->siteName;
+        $from = 'noreply@' . \Canopy\Server::getSiteUrl(false, false, false);
+        $vars['siteName'] = $guest->siteName;
+        $vars['url'] = $guest->url;
+        $vars['hostName'] = \Layout::getPageTitle(true);
+        $vars['hostUrl'] = Server::getSiteUrl();
+        $template = new Template($vars);
+        $template->setModuleTemplate('stories', 'Email/Removal.html');
+        $content = $template->get();
+
+        $message = \Swift_Message::newInstance();
+        $message->setSubject($subject);
+        $message->setFrom($from);
+        $message->setTo($guest->email);
+        $message->setBody($content, 'text/html');
+        $mailer = new \Swift_Mailer($transport);
+        $mailer->send($message);
+    }
+
     private function emailDenial($guest)
     {
         $transport = \Swift_SendmailTransport::newInstance(STORIES_SENDMAIL);
@@ -152,8 +175,15 @@ class GuestFactory extends BaseFactory
         self::deleteResource($guest);
     }
 
-    public function delete($id)
+    /**
+     * Deletes a guest and all their shares.
+     * @param int $id
+     */
+    public function delete(int $id)
     {
+        $shareFactory = new ShareFactory;
+        $shareFactory->deleteByGuestId($id);
+
         $db = Database::getDB();
         $tbl = $db->addTable('storiesguest');
         $tbl->addFieldConditional('id', $id);
@@ -180,11 +210,20 @@ class GuestFactory extends BaseFactory
             Server::forward('./stories/Guest/requestAccepted');
         } catch (\Exception $ex) {
             if (\Current_User::isDeity()) {
-                exit($ex->getMessage());
+               exit($ex->getMessage());
             } else {
                 Server::forward('./stories/Guest/requestError');
             }
         }
+    }
+
+    public function unsubscribeByAuthkey($authkey)
+    {
+        $guest = $this->getByAuthkey($authkey);
+        if (empty($guest)) {
+            throw new \Exception('Could not find guest by authkey');
+        }
+        $this->delete($guest->id);
     }
 
 }
