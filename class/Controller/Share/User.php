@@ -59,24 +59,24 @@ class User extends RoleController
         // Pull guest by authkey to make sure it is legitimate
         $guestFactory = new GuestFactory;
         $guest = $guestFactory->getByAuthkey($authkey);
-        
+
         // Get the share id by the guest and entry id, then delete it
         $shareId = $this->factory->getShareId($guest->id, $entryId);
         if (!$shareId) {
             throw new \Exception("No share id from guest:{$guest->id}, entry:$entryId");
         }
         $this->factory->delete($shareId);
-        
+
         $publishFactory = new PublishFactory;
         $publishObj = $publishFactory->loadByShareId($shareId);
-        
+
         // delete feature stories by publish id
         $featureStoryFactory = new FeatureStoryFactory;
         $featureStoryFactory->deleteByPublishId($publishObj->id);
-        
+
         // unpublish the share
         $publishFactory->unpublishShare($shareId);
-        return ['success'=>true];
+        return ['success' => true];
     }
 
     public function removeHostShareJsonCommand(Request $request)
@@ -86,7 +86,19 @@ class User extends RoleController
         $hostFactory = new HostFactory;
         $host = $hostFactory->getByAuthkey($authkey);
         $hostFactory->removeTrack($entryId, $host->id);
-        return ['success'=>true];
+        return ['success' => true];
+    }
+
+    /**
+     * Unsubscribes (deletes) guest from host system
+     * @param Request $request
+     */
+    public function unsubscribeJsonCommand(Request $request)
+    {
+        $guestFactory = new GuestFactory;
+        $authKey = $request->pullGetString('authkey');
+        $guestFactory->unsubscribeByAuthkey($authKey);
+        return ['success' => true];
     }
 
 }
