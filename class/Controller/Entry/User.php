@@ -65,7 +65,7 @@ class User extends RoleController
     protected function viewJsonCommand(Request $request)
     {
         try {
-            $entry = $this->factory->load($this->id);
+            $entry = $this->factory->load($this->id, false, false);
             if ($entry->published) {
                 return $this->factory->shareData($entry);
             } else {
