@@ -15,10 +15,10 @@ const CurrentGuests = ({listing, denyGuest}) => {
       <table className="table table-striped">
         <tbody>
           <tr>
-            <th>Action</th>
-            <th>Shares</th>
+            <th></th>
             <th>Site</th>
             <th>Contact</th>
+            <th className="text-center">Shares</th>
             <th>Accepted</th>
           </tr>
           {rows}
