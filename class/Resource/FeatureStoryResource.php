@@ -116,5 +116,13 @@ class FeatureStoryResource extends BaseResource
         $this->zoom = new \phpws2\Variable\SmallInteger(100, 'zoom');
         $this->sorting = new \phpws2\Variable\SmallInteger(0, 'sorting');
     }
+    
+    public function setSummary(string $summary) {
+        $this->summary->set(substr(strip_tags($summary), 0, 300));
+    }
+    
+    public function setTitle(string $title) {
+        $this->title->set(substr($title, 0, 100));
+    }
 
 }
