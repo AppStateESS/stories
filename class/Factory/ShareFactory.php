@@ -16,6 +16,7 @@ use phpws2\Database;
 use stories\Factory\GuestFactory;
 use stories\Factory\HostFactory;
 use stories\Factory\PublishFactory;
+use stories\Factory\FeatureStoryFactory;
 use stories\Resource\ShareResource as Resource;
 use stories\Resource\GuestResource;
 use Canopy\Request;
@@ -100,7 +101,9 @@ class ShareFactory extends BaseFactory
         if (!preg_match('/^http/', $jsonObject->thumbnail)) {
             $jsonObject->thumbnail = $jsonObject->siteUrl . $jsonObject->thumbnail;
         }
-        $jsonObject->authorPic = $guest->url . $jsonObject->authorPic;
+        if (!empty($jsonObject->authorPic)) {
+            $jsonObject->authorPic = $guest->url . $jsonObject->authorPic;
+        }
         return $jsonObject;
     }
 
@@ -147,12 +150,19 @@ class ShareFactory extends BaseFactory
         return ['success' => true];
     }
 
-    public function deleteByGuestId(int $id)
+    /**
+     * Deletes all shares associated with a guest.
+     * @param int $guestId
+     * @return type
+     */
+    public function deleteByGuestId(int $guestId)
     {
-        $db = Database::getDB();
-        $tbl = $db->addTable('storiesshare');
-        $tbl->addFieldConditional('guestId', $id);
-        return $db->delete();
+        $shares = $this->getSharesByGuestId($guestId);
+        if (!empty($shares)) {
+            foreach ($shares as $s) {
+                $this->delete($s->id);
+            }
+        }
     }
 
     public function addInaccessible(int $id)
@@ -181,6 +191,9 @@ class ShareFactory extends BaseFactory
      */
     public function delete(int $id)
     {
+        $publishFactory = new PublishFactory;
+        $publishFactory->unpublishShare($id);
+
         $db = Database::getDB();
         $tbl = $db->addTable('storiesshare');
         $tbl->addFieldConditional('id', $id);
@@ -202,14 +215,9 @@ class ShareFactory extends BaseFactory
         $url = <<<EOF
 {$host->url}stories/Share/removeGuestShare/?authkey={$host->authkey}&entryId={$entryId}&json=1
 EOF;
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        if (!$result = curl_exec($ch)) {
+        if (!$this->sendCurl($url)) {
             throw new \Exception('Cannot to connect to host');
         }
-        curl_close($ch);
     }
 
     /**
@@ -227,13 +235,9 @@ EOF;
         $url = <<<EOF
 {$guest->url}stories/Share/removeHostShare/?authkey={$guest->authkey}&entryId={$share->entryId}&json=1
 EOF;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        if (!$result = curl_exec($ch)) {
-            throw new \Exception('Cannot to connect to host');
+        if (!$this->sendCurl($url)) {
+            throw new \Exception('Cannot to connect to guest');
         }
-        curl_close($ch);
     }
 
     public function getShareId(int $guestId, int $entryId)
