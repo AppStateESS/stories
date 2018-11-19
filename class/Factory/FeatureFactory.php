@@ -166,24 +166,6 @@ class FeatureFactory extends BaseFactory
         self::saveResource($feature);
     }
 
-    public function deleteByPublishId(int $publishId)
-    {
-        $db = Database::getDB();
-        $tbl = $db->addTable('storiesfeaturestory');
-        $tbl->addFieldConditional('publishId', $publishId);
-        $tbl->addField('featureId');
-        while ($featureId = $db->selectColumn()) {
-            $allFeatures[] = $featureId;
-        }
-        if (empty($allFeatures)) {
-            return;
-        }
-        $db->delete();
-        foreach ($allFeatures as $id) {
-            $this->reorder($id);
-        }
-    }
-
     public function reorder($featureId)
     {
         $db = Database::getDB();
