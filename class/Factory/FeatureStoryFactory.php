@@ -11,6 +11,7 @@
  */
 
 namespace stories\Factory;
+
 use stories\Factory\EntryPhotoFactory;
 use stories\Factory\PublishFactory;
 use stories\Factory\AuthorFactory;
@@ -94,7 +95,7 @@ class FeatureStoryFactory extends BaseFactory
         return $featureStory;
     }
 
-    public function listing(int $featureId, $asResource=true)
+    public function listing(int $featureId, $asResource = true)
     {
         if (!$featureId) {
             throw new \Exception('Zero feature id');
@@ -160,11 +161,12 @@ class FeatureStoryFactory extends BaseFactory
         if ($publish->entryId === 0) {
             throw new \Exception('Feature story thumbnail must be an entry.');
         }
-        $thumbnailUrl = $entryPhotoFactory->postThumbnail($publish->entryId, $request);
+        $thumbnailUrl = $entryPhotoFactory->postThumbnail($publish->entryId,
+                $request);
         $story->thumbnail = $thumbnailUrl;
         self::saveResource($story);
     }
-    
+
     /**
      * Pulls feature stories by the publish id and removes them.
      * 
@@ -190,6 +192,30 @@ class FeatureStoryFactory extends BaseFactory
         }
     }
     
+    /**
+     * Deletes feature stories according to share id.
+     * @param int $shareId
+     * @return type
+     * @throws \Exception
+     */
+    public function deleteByShareId(int $shareId)
+    {
+        if (!$shareId) {
+            throw new \Exception('Zero share id');
+        }
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesfeaturestory');
+        $tbl->addField('id');
+        $tbl->addFieldConditional('shareId', $shareId);
+        $rows = $db->select();
+        if (empty($rows)) {
+            return;
+        }
+        foreach ($rows as $row) {
+            $this->delete($row['id']);
+        }
+    }
+
     public function listByPublishId(int $publishId)
     {
         $db = Database::getDB();
@@ -197,12 +223,13 @@ class FeatureStoryFactory extends BaseFactory
         $tbl->addFieldConditional('publishId', $publishId);
         return $db->selectAsResources('\stories\Resource\FeatureStoryResource');
     }
-    
+
     /**
      * Updates any feature stories based on this entry.
      * @param integer $entryId
      */
-    public function refreshEntry(int $entryId) {
+    public function refreshEntry(int $entryId)
+    {
         $entryFactory = new EntryFactory;
         $publishFactory = new PublishFactory;
         $authorFactory = new AuthorFactory;
@@ -215,7 +242,7 @@ class FeatureStoryFactory extends BaseFactory
         foreach ($stories as $fs) {
             $authorFactory = new AuthorFactory;
             $author = $authorFactory->load($entry->authorId);
-                    
+
             $fs->title = $entry->title;
             $fs->summary = $entry->getStrippedSummary();
             $fs->thumbnail = $entry->thumbnail;
@@ -228,7 +255,6 @@ class FeatureStoryFactory extends BaseFactory
             $fs->authorName = $author->name;
             self::saveResource($fs);
         }
-        
     }
-           
+
 }
