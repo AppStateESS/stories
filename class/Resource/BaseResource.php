@@ -46,7 +46,7 @@ class BaseResource extends \phpws2\Resource
 
     public function __isset($name)
     {
-        return !($this->$name->isNull());
+        return isset($this->$name);
     }
 
     public function isEmpty($name)
