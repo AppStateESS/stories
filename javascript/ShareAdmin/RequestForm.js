@@ -8,13 +8,12 @@ import InputField from '@essappstate/canopy-react-inputfield'
 export default class RequestForm extends Component {
   constructor(props) {
     super(props)
-    // remove the defaults!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     this.state = {
       message: null,
-      hostName: 'Canopy Host',
-      hostUrl: 'http://localhost/canopy',
+      hostName: '',
+      hostUrl: '',
       guestRequestUrl: null,
-      guestEmail: 'matt@fakemail.com',
+      guestEmail: '',
       errorMessage: null
     }
     this.createHost = this.createHost.bind(this)
@@ -22,10 +21,10 @@ export default class RequestForm extends Component {
 
   makeRequest() {
     const call = this.isDuplicateSiteCall()
-    call.done((data)=> {
+    call.done((data) => {
       if (data.duplicate === true) {
         this.setState(
-          {message: 'This host site url is already in use.', hostUrl: '', guestRequestUrl: '',}
+          {message: 'This host site url is already in use.', hostUrl: '', guestRequestUrl: ''}
         )
       } else {
         if (this.isSameSite()) {
@@ -33,20 +32,16 @@ export default class RequestForm extends Component {
             {message: 'You are not allowed to host your own site.', hostUrl: '', guestRequestUrl: ''}
           )
         } else {
-          this.setState({
-            message: null,
-            guestRequestUrl: this.state.hostUrl + '/stories/Guest/request'
-          })
+          const strippedUrl = this.state.hostUrl.replace(/^(https?:)?\/\//, '').replace(/\/$/,'')
+          const guestRequestUrl = `http://${strippedUrl}/stories/Guest/request`
+          this.setState({message: null, guestRequestUrl})
         }
       }
     })
   }
-  
-  isDuplicateSiteCall()
-  {
-    return $.getJSON('./stories/Host/exists', {
-      url: this.state.hostUrl,
-    })
+
+  isDuplicateSiteCall() {
+    return $.getJSON('./stories/Host/exists', {url: this.state.hostUrl})
   }
 
   updateUrl(e) {
@@ -84,7 +79,9 @@ export default class RequestForm extends Component {
         $('#guest-request-form').submit()
       },
       error: () => {
-        this.setState({guestRequestUrl:'', message: 'An error occurred while saving the host.'})
+        this.setState(
+          {guestRequestUrl: '', message: 'An error occurred while saving the host.'}
+        )
         e.preventDefault()
       }
     })
