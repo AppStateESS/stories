@@ -66,7 +66,10 @@ export default class Publish extends Component {
           })
         }
       },
-      error: () => {}
+      error: () => {
+        const errorMessage = (<div className="alert alert-danger">Could not connect to host.</div>)
+        this.setState({shareStatus: errorMessage})
+      }
     })
   }
 
