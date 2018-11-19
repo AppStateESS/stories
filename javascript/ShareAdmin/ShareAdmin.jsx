@@ -29,7 +29,7 @@ export default class ShareAdmin extends Component {
     this.saveAuthKey = this.saveAuthKey.bind(this)
     this.deleteInaccessible = this.deleteInaccessible.bind(this)
   }
-
+  
   componentDidMount() {
     this.load()
   }
@@ -61,22 +61,25 @@ export default class ShareAdmin extends Component {
     )
     let inaccessible
     if (this.state.inaccessible.length > 0) {
-      inaccessible = (<div>
-        <h3>Inaccessible</h3>
-        <Inaccessible listing={this.state.inaccessible} deleteInaccessible={this.deleteInaccessible}/>
-        <hr />
-      </div>)
+      inaccessible = (
+        <div>
+          <h3>Inaccessible</h3>
+          <Inaccessible
+            listing={this.state.inaccessible}
+            deleteInaccessible={this.deleteInaccessible}/>
+          <hr/>
+        </div>
+      )
     }
-    
+
     const requestForm = <RequestForm {...this.props}/>
     return (
       <div>
         <Navbar header={'Stories Sharing'} leftSide={leftside}/>
         <Modal body={requestForm}/>
-        <Modal body={authKeyForm} modalId="authKeyForm" header={hostFormTitle}/>
-        {inaccessible}
+        <Modal body={authKeyForm} modalId="authKeyForm" header={hostFormTitle}/> {inaccessible}
         <h3>Recently shared</h3>
-        <SharedStories />
+        <SharedStories/>
         <hr/>
         <h3>Hosts</h3>
         <Hosts
@@ -113,32 +116,24 @@ export default class ShareAdmin extends Component {
   }
 
   deleteHost(key) {
-    $.ajax({
-      url: 'stories/Host/' + this.state.hosts[key].id,
-      dataType: 'json',
-      type: 'delete',
-      success: ()=>{
-        this.load()
-      },
-    })
+    if (confirm(
+      'Removing this host will remove all your shared stories. Are you sure you want ' +
+      'to do this?'
+    )) {
+      $.ajax({
+        url: 'stories/Host/' + this.state.hosts[key].id,
+        dataType: 'json',
+        type: 'delete',
+        success: () => {
+          this.load()
+        }
+      })
+    }
   }
-  
+
   deleteInaccessible(key) {
     $.ajax({
       url: `./stories/Share/${this.state.inaccessible[key].id}`,
-      dataType: 'json',
-      type: 'delete',
-      success: ()=>{
-        this.load()
-      },
-      error: ()=>{}
-    })
-  }
-  
-
-  deleteCurrentGuest(key) {
-    $.ajax({
-      url: `./stories/Guest/${this.state.currentGuests[key].id}`,
       dataType: 'json',
       type: 'delete',
       success: () => {
@@ -147,7 +142,21 @@ export default class ShareAdmin extends Component {
       error: () => {}
     })
   }
-  
+
+  deleteCurrentGuest(key) {
+    if (confirm('Deleting this guest will remove all their associated stories. Are you sure you want to do this?')) {
+      $.ajax({
+        url: `./stories/Guest/${this.state.currentGuests[key].id}`,
+        dataType: 'json',
+        type: 'delete',
+        success: () => {
+          this.load()
+        },
+        error: () => {}
+      })
+    }
+  }
+
   deleteRequestGuest(key) {
     $.ajax({
       url: `./stories/Guest/${this.state.guestRequests[key].id}/deny`,
@@ -169,6 +178,7 @@ export default class ShareAdmin extends Component {
         this.setState(
           {loading: false, guestRequests: data.guestRequests, currentGuests: data.currentGuests, hosts: data.hosts, inaccessible: data.inaccessible}
         )
+        $('button.authkey').popover({placement: 'top'})
       },
       error: () => {}
     })
