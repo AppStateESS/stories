@@ -49,7 +49,7 @@ class EntryFactory extends BaseFactory
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
-    public function load($id, $allowDeleted = false)
+    public function load(int $id, bool $allowDeleted = false, bool $allowedUnpublished = true)
     {
         $db = Database::getDB();
         $entryTbl = $db->addTable('storiesentry');
@@ -61,8 +61,12 @@ class EntryFactory extends BaseFactory
                 $db->createConditional($entryTbl->getField('authorId'),
                         $authorTbl->getField('id')), 'left');
         $entryTbl->addFieldConditional(('id'), $id);
+        if (!$allowedUnpublished) {
+            $entryTbl->addFieldConditional('published', 1);
+        }
         $entry = $this->build();
-        $db->selectInto($entry);
+        $vars = $db->selectOneRow();
+        $entry->setVars($vars);
 
         if (!$allowDeleted && $entry->deleted) {
             throw new ResourceNotFound;
