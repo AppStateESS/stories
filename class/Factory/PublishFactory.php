@@ -48,11 +48,17 @@ class PublishFactory extends BaseFactory
 
     public function publishEntry(int $entryId, int $publishDate)
     {
+        $publishId = $this->getPublishIdByEntryId($entryId);
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addValue('entryId', $entryId);
         $tbl->addValue('publishDate', $publishDate);
-        $db->insert();
+        if ($publishId) {
+            $tbl->addFieldConditional('entryId', $entryId);
+            $db->update();
+        } else {
+            $db->insert();
+        }
     }
 
     public function publishShare(int $shareId, int $publishDate)
@@ -236,6 +242,9 @@ class PublishFactory extends BaseFactory
         foreach ($result as $row) {
             $pObj = $this->build($row);
             $story = $this->getSource($pObj);
+            if (isset($story->error)) {
+                continue;
+            }
             if ($pObj->shareId > 0) {
                 $title = "$story->title ($story->siteName)";
             } else {
