@@ -66,7 +66,11 @@ class User extends RoleController
     {
         try {
             $entry = $this->factory->load($this->id);
-            return $this->factory->shareData($entry);
+            if ($entry->published) {
+                return $this->factory->shareData($entry);
+            } else {
+                return ['error' => 'Could not retrieve story.'];
+            }
         } catch (\Exception $e) {
             return ['error' => 'Could not retrieve story.'];
         }
