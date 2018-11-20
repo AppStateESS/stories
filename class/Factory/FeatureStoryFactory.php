@@ -104,10 +104,21 @@ class FeatureStoryFactory extends BaseFactory
         $tbl = $db->addTable('storiesfeaturestory');
         $tbl->addOrderBy('sorting');
         $tbl->addFieldConditional('featureId', $featureId);
+
+        $result = $db->selectAsResources('\stories\Resource\FeatureStoryResource');
+
+        if (empty($result)) {
+            return null;
+        }
         if ($asResource) {
-            return $db->selectAsResources('\stories\Resource\FeatureStoryResource');
+            return $result;
         } else {
-            return $db->select();
+            foreach ($result as $fsr) {
+                $row = $fsr->getStringVars();
+                $row['publishDateRelative'] = $fsr->relativeTime($fsr->publishDate);
+                $listing[] = $row;
+            }
+            return $listing;
         }
     }
 
@@ -191,7 +202,7 @@ class FeatureStoryFactory extends BaseFactory
             $this->delete($row['id']);
         }
     }
-    
+
     /**
      * Deletes feature stories according to share id.
      * @param int $shareId
