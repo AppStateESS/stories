@@ -2,7 +2,6 @@
 /* global $ */
 import React from 'react'
 import PropTypes from 'prop-types'
-import ButtonGroup from '@essappstate/canopy-react-buttongroup'
 import FeatureDisplay from './FeatureDisplay'
 import Message from '../AddOn/Message'
 import ThumbnailOverlay from '../AddOn/ThumbnailOverlay'
