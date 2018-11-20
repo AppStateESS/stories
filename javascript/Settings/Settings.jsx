@@ -20,6 +20,7 @@ export default class Settings extends Component {
       listStoryFormat: 0,
       purgeVerified: false,
       showComments: 0,
+      featureCutOff: '0',
       showAuthor: 0
     }
     this.setCommentCode = this.setCommentCode.bind(this)
@@ -27,6 +28,7 @@ export default class Settings extends Component {
     this.saveCommentCode = this.saveCommentCode.bind(this)
     this.purgeDeleted = this.purgeDeleted.bind(this)
     this.toggleVerified = this.toggleVerified.bind(this)
+    this.updateCutOff = this.updateCutOff.bind(this)
   }
 
   componentDidMount() {
@@ -53,7 +55,7 @@ export default class Settings extends Component {
       } else if (value == 0) {
         value = 2
       }
-    } 
+    }
     if (typeof(value) === 'boolean') {
       setting = value
         ? 1
@@ -63,7 +65,7 @@ export default class Settings extends Component {
     }
     $.post('./stories/Settings', {
       param: param,
-      value: setting,
+      value: setting
     }, null, 'json').done(function () {
       const stateSetting = {}
       stateSetting[param] = setting
@@ -89,34 +91,44 @@ export default class Settings extends Component {
     })
   }
 
+  updateCutOff(e) {
+    this.saveSetting('featureCutOff', e.target.value)
+  }
+
+  checkBox(value, match) {
+    const plural = value !== '1'
+      ? 's'
+      : ''
+    const checked = match === value
+    return (
+      <label><input
+        type="radio"
+        name="featureCutOff"
+        checked={checked}
+        value={value}
+        onChange={this.updateCutOff}/>
+        &nbsp;{value}&nbsp; month{plural}</label>
+    )
+  }
+
   render() {
     const amountButtons = [
       {
         value: 2,
-        label: 2,
+        label: 2
       }, {
         value: 4,
-        label: 4,
+        label: 4
       }, {
         value: 6,
-        label: 6,
+        label: 6
       }, {
         value: 8,
-        label: 8,
+        label: 8
       }, {
         value: 10,
-        label: 10,
-      },
-    ]
-
-    const advanceListType = [
-      {
-        value: '1',
-        label: 'Scroll'
-      }, {
-        value: '2',
-        label: 'Click',
-      },
+        label: 10
+      }
     ]
 
     const formatButton = [
@@ -126,7 +138,7 @@ export default class Settings extends Component {
       }, {
         value: 1,
         label: 'Full'
-      },
+      }
     ]
 
     let purge
@@ -187,7 +199,7 @@ export default class Settings extends Component {
                 label="Show author profile on story"/>
             </div>
           </div>
-          <div className="col-sm-6">
+          <div className="col-md-6">
             <div className="settings">
               <h3>Listing</h3>
               <h4 className="mt-2">Story display type</h4>
@@ -243,6 +255,37 @@ export default class Settings extends Component {
                 handle={this.saveSetting.bind(this, 'hideDefault')}
                 checked={this.state.hideDefault}
                 label="Hide side bar when viewing stories"/>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>Feature age cutoff</h3>
+              <p>Maximum age a story may be featured.</p>
+
+              <div className="d-flex justify-content-around">
+                <ul className="list-unstyled">
+                  <li>
+                    {this.checkBox('1', this.state.featureCutOff)}
+                  </li>
+                  <li>
+                    {this.checkBox('2', this.state.featureCutOff)}
+                  </li>
+                  <li>
+                    {this.checkBox('3', this.state.featureCutOff)}
+                  </li>
+                </ul>
+                <ul className="list-unstyled">
+                  <li>
+                    {this.checkBox('4', this.state.featureCutOff)}
+                  </li>
+                  <li>
+                    {this.checkBox('5', this.state.featureCutOff)}
+                  </li>
+                  <li>
+                    {this.checkBox('6', this.state.featureCutOff)}
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           <div className="col-md-6">
