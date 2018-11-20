@@ -62,6 +62,7 @@ class StoriesTables
         $shareEntryId = $shareTable->getDataType('entryId');
         $shareUnique = new \phpws2\Database\Unique([$shareGuestId, $shareEntryId]);
         $shareUnique->add();
+
         $shareForeign = new ForeignKey($shareGuestId,
                 $guestTable->getDataType('id'), ForeignKey::CASCADE);
         $shareForeign->add();
@@ -82,12 +83,14 @@ class StoriesTables
         $featureTable = $db->addTable('storiesfeature');
         $featureStory = new \stories\Resource\FeatureStoryResource;
         $featureStoryTable = $featureStory->createTable($db);
+
         $featureForeign = new ForeignKey($featureStoryTable->getDataType('featureId'),
                 $featureTable->getDataType('id'), ForeignKey::CASCADE);
         $featureForeign->add();
         $publishForeign = new ForeignKey($featureStoryTable->getDataType('publishId'),
                 $publishTable->getDataType('id'), ForeignKey::CASCADE);
         $publishForeign->add();
+
         return $featureStoryTable;
     }
 
@@ -101,6 +104,7 @@ class StoriesTables
         $trackTable->create();
         $trackUnique = new \phpws2\Database\Unique([$trackEntryId, $trackHostId]);
         $trackUnique->add();
+
         $trackForeign = new ForeignKey($trackTable->getDataType('hostId'),
                 $hostTable->getDataType('id'), ForeignKey::CASCADE);
         $trackForeign->add();
