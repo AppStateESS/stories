@@ -52,10 +52,12 @@ class Admin extends User
         if (class_exists('\Menu')) {
             \Menu::disableMenu();
         }
+        \Layout::hideDefault(true);
         $hostFactory = new HostFactory;
         $shareList = $hostFactory->getHostsSelect();
-        
-        return $this->view->scriptView('EntryList', true, ['shareList'=> $shareList]);
+
+        return $this->view->scriptView('EntryList', true,
+                        ['shareList' => $shareList]);
     }
 
     protected function adminJsonCommand(Request $request)
