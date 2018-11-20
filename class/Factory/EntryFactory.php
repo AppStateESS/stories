@@ -64,13 +64,16 @@ class EntryFactory extends BaseFactory
         if (!$allowedUnpublished) {
             $entryTbl->addFieldConditional('published', 1);
         }
+        if (!$allowDeleted) {
+            $entryTbl->addFieldConditional('deleted', 0);
+        }
         $entry = $this->build();
         $vars = $db->selectOneRow();
-        $entry->setVars($vars);
-
-        if (!$allowDeleted && $entry->deleted) {
+        if (empty($vars)) {
             throw new ResourceNotFound;
         }
+        $entry->setVars($vars);
+
         $tagFactory = new TagFactory;
         $entry->tags = $tagFactory->getTagsByEntryId($id);
 
