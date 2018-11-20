@@ -53,7 +53,7 @@ class DisplayColumn extends React.Component {
     const cX = story.x
     const cY = story.y
     let uploadButton
-    if (story.share === '0') {
+    if (story.shareId === '0') {
       uploadButton = (
         <button
           className="btn btn-primary btn-sm upload-button"
