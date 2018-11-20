@@ -19,7 +19,6 @@ const FeatureDisplay = ({
   updated,
   thumbnailForm
 }) => {
-  let bsClass = 'col-sm-3'
   let storyCount = featureStories.length
 
   let formDisplay
