@@ -23,7 +23,7 @@ class storiesUpdate_1_5_0
     public function __construct()
     {
         $this->loadAuthors();
-        $tableMaker = new StoriesTables;
+        $this->tableMaker = new StoriesTables;
     }
 
     private function loadAuthors()
@@ -44,11 +44,29 @@ class storiesUpdate_1_5_0
         $this->createTrackTable();
         $this->createPublishTable();
         $this->createFeatureStoryTable();
-        
+
         $this->publishCurrentEntries();
         $this->combineEntryToFeature();
 
+        $this->updateEntry();
+        $this->updateFeature();
         return $this->changes;
+    }
+    
+    private function updateEntry() {
+        $db = Database::getDB();
+        $entryTable = $db->addTable('storiesentry');
+        $listView = new \phpws2\Database\Datatype\Smallint($entryTable, 'listView');
+        $listView->add();
+        $this->changes[] = 'Added listView column to storiesentry.';
+    }
+    
+    private function updateFeature()
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesfeature');
+        $tbl->dropColumn('columns');
+        $this->changes[] = 'Dropped columns column from storiesfeature.';
     }
 
     private function createTrackTable()
@@ -81,6 +99,8 @@ class storiesUpdate_1_5_0
         if ($entryList === -1) {
             $db = Database::getDB();
             $tbl = $db->addTable('storiesentry');
+            $tbl->addFieldConditional('deleted', 0);
+            $tbl->addFieldConditional('published', 1);
             $entryList = $db->select();
         }
         return $entryList;
@@ -114,6 +134,11 @@ class storiesUpdate_1_5_0
 
     private function createFeatureStoryTable()
     {
+        // Feature was made with unsigned which was phased out.
+        $db = Database::getDB();
+        if (preg_match('/mysqli?/', $db->getDatabaseType())) {
+            $db->exec('alter table storiesfeature modify id int(11) auto_increment default null');
+        }
         $this->tableMaker->createFeatureStory();
         $this->changes[] = 'Created feature story table.';
     }
