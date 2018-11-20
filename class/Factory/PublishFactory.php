@@ -90,11 +90,12 @@ class PublishFactory extends BaseFactory
     public function unpublishEntry(int $entryId)
     {
         $publishId = $this->getPublishIdByEntryId($entryId);
-        
-        $featureStoryFactory = new FeatureStoryFactory;
-        $featureStoryFactory->deleteByPublishId($publishId);
 
-        $this->delete($publishId);
+        if ($publishId) {
+            $featureStoryFactory = new FeatureStoryFactory;
+            $featureStoryFactory->deleteByPublishId($publishId);
+            $this->delete($publishId);
+        }
 
         $this->unpublishHosts($entryId);
         $this->deleteTrackHosts($entryId);
@@ -227,17 +228,30 @@ class PublishFactory extends BaseFactory
         );
     }
 
+    private function getCutOffTime()
+    {
+        $featureCutOff = \phpws2\Settings::get('stories', 'featureCutOff');
+
+        // months * 30 days * seconds in a day
+        $cutOffSeconds = (int) $featureCutOff * 30 * 86400;
+
+        return time() - $cutOffSeconds;
+    }
+
     /**
      * List of publishable stories with just id and title
      */
     public function featureList()
     {
+        $featureCutOff = $this->getCutOffTime();
+
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
+        $tbl->addFieldConditional('publishDate', $featureCutOff, '>');
         $tbl->addOrderBy('publishDate', 'desc');
         $result = $db->select();
         if (empty($result)) {
-            return null;
+            return [];
         }
         foreach ($result as $row) {
             $pObj = $this->build($row);
@@ -245,12 +259,13 @@ class PublishFactory extends BaseFactory
             if (isset($story->error)) {
                 continue;
             }
+            $publishDate = strftime('%b %e', $story->publishDate);
             if ($pObj->shareId > 0) {
-                $title = "$story->title ($story->siteName)";
+                $title = "$story->siteName: $story->title - $publishDate";
             } else {
-                $title = $story->title;
+                $title = "$story->title - $publishDate";
             }
-            
+
             $options[] = ['id' => $pObj->id, 'title' => $title];
         }
         return $options;
