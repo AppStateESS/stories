@@ -66,6 +66,7 @@ class Admin extends RoleController
     public function postCommand(Request $request)
     {
         $this->factory->post($request);
+        return ['success'=>true];
     }
 
     public function purgePostCommand(Request $request)
