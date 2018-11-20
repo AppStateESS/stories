@@ -44,6 +44,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
             'listStoryFormat' => 0,
             'showComments' => 0,
             'showAuthor' => 0,
+            'featureCutOff' => 2,
             'twitterDefault' => '');
         return $settings;
     }
@@ -101,8 +102,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         }
         $featureView = new \stories\View\FeatureView;
         $settings = new \phpws2\Settings;
-        \Layout::add($featureView->show($request), 'stories', 'features',
-                true);
+        \Layout::add($featureView->show($request), 'stories', 'features', true);
 
         if ($settings->get('stories', 'listStories')) {
             $view = new \stories\View\PublishedView;
