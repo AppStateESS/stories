@@ -176,7 +176,7 @@ class storiesUpdate_1_5_0
         unset($row['imageOrientation']);
         $row['url'] = './stories/' . $row['urlTitle'];
         unset($row['urlTitle']);
-        $row['summary'] = strip_tags($row['summary']);
+        $row['summary'] = substr(strip_tags($row['summary']), 0, 299);
         $row['eventDate'] = 0;
         $row['shareId'] = 0;
         $row['id'] = 0;
