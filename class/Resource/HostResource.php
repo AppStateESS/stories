@@ -50,7 +50,7 @@ class HostResource extends BaseResource
          if (!preg_match('@/$@', $url)) {
              $url = $url . '/';
          }
-         if (!preg_match('@^http:@', $url)) {
+         if (!preg_match('@^https?:@', $url)) {
              if (!preg_match('@^//@', $url)) {
                  $url = 'http://' . $url;
              } else {
