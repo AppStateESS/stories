@@ -67,18 +67,17 @@ class GuestFactory extends BaseFactory
         return $db->select();
     }
 
-    public function newGuestRequest(Request $request)
+    public function newGuestRequest(string $siteName, string $url, string $email)
     {
         $guest = $this->build();
-        $guest->siteName = $request->pullPostString('siteName');
-        $url = $request->pullPostString('url');
+        $guest->siteName = $siteName;
         if (!preg_match('@^(https?:)?//@', $url)) {
             $url = 'http://' . $url;
         } elseif (!preg_match('@^https?:@', $url)) {
             $url = 'http:' . $url;
         }
         $guest->url = $url;
-        $guest->email = $request->pullPostString('email');
+        $guest->email = $email;
         $guest->submitDate = time();
         $this->createAuthkey($guest);
         return self::saveResource($guest);
@@ -203,10 +202,10 @@ class GuestFactory extends BaseFactory
         }
     }
 
-    public function requestShare(Request $request)
+    public function requestShare(string $siteName, string $url, string $email)
     {
         try {
-            $this->newGuestRequest($request);
+            $this->newGuestRequest($siteName, $url, $email);
             Server::forward('./stories/Guest/requestAccepted');
         } catch (\Exception $ex) {
             if (\Current_User::isDeity()) {
