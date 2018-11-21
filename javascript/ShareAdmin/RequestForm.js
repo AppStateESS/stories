@@ -101,7 +101,7 @@ export default class RequestForm extends Component {
           <p>If you receive an error, your site address or email were formatted incorrectly.</p>
           <form
             id="guest-request-form"
-            method="post"
+            method="get"
             onSubmit={this.createHost}
             action={this.state.guestRequestUrl}>
             <input type="hidden" name="siteName" value={this.props.siteName}/>
