@@ -3,7 +3,7 @@ language: php
 php:
 - 7
 install:
-- nvm install 6
+- nvm install 10
 - npm install
 script:
 - ".travis-build/phplint ."
