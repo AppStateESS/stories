@@ -30,9 +30,12 @@ class User extends RoleController
         $this->view = new View;
     }
     
-    public function requestPostCommand(Request $request)
+    public function requestHtmlCommand(Request $request)
     {
-        return $this->factory->requestShare($request);
+        $siteName = $request->pullGetString('siteName');
+        $url = $request->pullGetString('url');
+        $email = $request->pullGetString('email');
+        return $this->factory->requestShare($siteName, $url, $email);
     }
     
     public function requestErrorHtmlCommand(Request $request)
