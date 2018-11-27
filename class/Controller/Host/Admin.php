@@ -46,9 +46,22 @@ class Admin extends User
         return ['success' => true];
     }
 
+    /**
+     * Delete host, but notify host first. If host connection fails, continue
+     * with deletion.
+     * 
+     * @param Request $request
+     * @return boolean
+     * @throws \Exception
+     */
     public function deleteCommand(Request $request)
     {
-        $this->factory->removeShareFromHost($this->id);
+        try {
+            $this->factory->removeShareFromHost($this->id);
+        } catch (\Exception $e) {
+            $this->factory->delete($this->id);
+            throw $e;
+        }
         $this->factory->delete($this->id);
         $json = ['success' => true];
         return $json;
