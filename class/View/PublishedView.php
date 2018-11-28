@@ -33,6 +33,7 @@ class PublishedView extends View
         $this->includeCss();
         //$this->scriptView('Caption', false);
         $this->scriptView('Tooltip', false);
+
         $listOptions = $this->pullListOptions($request);
 
         $tag = $listOptions['tag'] ?? null;
@@ -79,6 +80,7 @@ class PublishedView extends View
         } else {
             $tplVars['url'] = 'Tag/' . $listOptions['tag'];
         }
+        $tplVars['imageZoom'] = $this->imageZoom();
 
         $template = new Template($tplVars);
         $template->setModuleTemplate('stories', 'FrontPage.html');
