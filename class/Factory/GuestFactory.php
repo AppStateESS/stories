@@ -71,15 +71,11 @@ class GuestFactory extends BaseFactory
     {
         $guest = $this->build();
         $guest->siteName = $siteName;
-        if (!preg_match('@^(https?:)?//@', $url)) {
-            $url = 'http://' . $url;
-        } elseif (!preg_match('@^https?:@', $url)) {
-            $url = 'http:' . $url;
-        }
+        $url = $this->formatUrl($url);
         $guest->url = $url;
         $guest->email = $email;
         $guest->submitDate = time();
-        $this->createAuthkey($guest);
+        $guest->stampAuthkey();
         return self::saveResource($guest);
     }
 
@@ -88,7 +84,6 @@ class GuestFactory extends BaseFactory
         $guest = $this->load($id);
         $guest->status = 1;
         $guest->acceptDate = time();
-        //$this->createAuthkey($guest);
         self::saveResource($guest);
         $this->emailAcceptance($guest);
     }
@@ -162,11 +157,6 @@ class GuestFactory extends BaseFactory
         $mailer->send($message);
     }
 
-    private function createAuthKey(Resource $guest)
-    {
-        $guest->authkey = sha1(microtime());
-    }
-
     public function denyRequest($id)
     {
         $guest = $this->load($id);
@@ -205,6 +195,9 @@ class GuestFactory extends BaseFactory
     public function requestShare(string $siteName, string $url, string $email)
     {
         try {
+            if (!$this->testUrl($url)) {
+                Server::forward('./stories/Guest/requestError');
+            }
             $this->newGuestRequest($siteName, $url, $email);
             Server::forward('./stories/Guest/requestAccepted');
         } catch (\Exception $ex) {
