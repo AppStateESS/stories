@@ -69,5 +69,10 @@ class GuestResource extends BaseResource
         }
         $this->url->set($url);
     }
+    
+    public function stampAuthkey()
+    {
+        $this->authkey->sha1Random();
+    }
 
 }
