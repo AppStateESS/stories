@@ -106,7 +106,7 @@ class HostFactory extends BaseFactory
     {
         $entryId = $request->pullPutString('entryId');
         if ($this->getTrack($entryId, $hostId)) {
-            return array('error'=>'You have already submitted to this host.');
+            return array('error' => 'You have already submitted to this host.');
         }
 
         $host = $this->load($hostId);
@@ -124,7 +124,7 @@ class HostFactory extends BaseFactory
 
         return json_decode($result);
     }
-    
+
     private function getTrack(int $entryId, int $hostId)
     {
         $db = Database::getDB();
