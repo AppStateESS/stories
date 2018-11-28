@@ -26,13 +26,20 @@ export default class RequestForm extends Component {
         this.setState(
           {message: 'This host site url is already in use.', hostUrl: '', guestRequestUrl: ''}
         )
+      } else if (!data.successfulContact) {
+        this.setState(
+          {message: 'Could not make contact with host site. Check the url.', hostUrl: '', guestRequestUrl: ''}
+        )
       } else {
         if (this.isSameSite()) {
           this.setState(
             {message: 'You are not allowed to host your own site.', hostUrl: '', guestRequestUrl: ''}
           )
         } else {
-          const strippedUrl = this.state.hostUrl.replace(/^(https?:)?\/\//, '').replace(/\/$/,'')
+          const strippedUrl = this.state.hostUrl.replace(/^(https?:)?\/\//, '').replace(
+            /\/$/,
+            ''
+          )
           const guestRequestUrl = `http://${strippedUrl}/stories/Guest/request`
           this.setState({message: null, guestRequestUrl})
         }
@@ -41,7 +48,7 @@ export default class RequestForm extends Component {
   }
 
   isDuplicateSiteCall() {
-    return $.getJSON('./stories/Host/exists', {url: this.state.hostUrl})
+    return $.getJSON('./stories/Host/test', {url: this.state.hostUrl})
   }
 
   updateUrl(e) {
