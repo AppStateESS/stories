@@ -132,71 +132,6 @@ class EntryView extends View
         \Layout::addJSHeader($this->includeTwitterCards($entry));
     }
 
-    /**
-     * 
-     * @param Request $request
-     * @return string
-     */
-    public function listing(Request $request)
-    {
-        $this->includeCss();
-        $listOptions = $this->pullListOptions($request);
-        $settingsFactory = new \stories\Factory\SettingsFactory;
-        $settings = $settingsFactory->listing();
-
-        $list = $this->factory->pullList($listOptions);
-
-        if (empty($list)) {
-            return null;
-        }
-
-        $tag = $listOptions['tag'] ?? null;
-
-        //format  - 0 is summary, 1 full
-        if ($tag) {
-            $data['title'] = "Stories for tag <strong>$tag</strong>";
-            // tag searches show stories in summary mode
-            $format = 0;
-        } else {
-            $data['title'] = null;
-            $format = $settings['listStoryFormat'];
-        }
-
-        // Twitter feeds don't show up in summary view
-        if ($format) {
-            $this->loadTwitterScript();
-        }
-
-        $data['list'] = $this->addAccessories($list, $tag);
-        $data['style'] = '';
-        $data['isAdmin'] = $this->isAdmin;
-        $data['showAuthor'] = $settings['showAuthor'];
-        //$this->scriptView('Caption', false);
-        $this->scriptView('Tooltip', false);
-
-        if ($listOptions['page'] > 1) {
-            $data['prevpage'] = $listOptions['page'] - 1;
-        } else {
-            $data['prevpage'] = null;
-        }
-        if ($this->factory->more_rows) {
-            $data['nextpage'] = $listOptions['page'] + 1;
-        } else {
-            $data['nextpage'] = null;
-        }
-
-        if (empty($listOptions['tag'])) {
-            $data['url'] = 'Listing';
-        } else {
-            $data['url'] = 'Tag/' . $listOptions['tag'];
-        }
-
-        $template = new \phpws2\Template($data);
-        $templateFile = $format ? 'FrontPageFull.html' : 'FrontPageSummary.html';
-        $template->setModuleTemplate('stories', $templateFile);
-
-        return $template->get();
-    }
 
     /**
      * Medium editor insert doesn't initialize the Twitter embed. Has to be done
@@ -333,6 +268,8 @@ EOF;
             // @deprecated easier to center via css
             //$this->scriptView('Caption', false);
             $this->scriptView('Tooltip', false);
+            $this->scriptView('ImageZoom', false);
+
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
             return $template->get();
