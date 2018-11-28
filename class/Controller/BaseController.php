@@ -68,8 +68,6 @@ class BaseController extends \phpws2\Http\Controller
 
     protected function loadRole()
     {
-        // Only students will be able to log in. Admins
-        // will meet first conditional.
         $user_id = \Current_User::getId();
         if (\Current_User::allow('stories')) {
             $this->role = new \stories\Role\Admin($user_id);
