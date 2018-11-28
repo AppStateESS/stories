@@ -13,6 +13,7 @@
 namespace stories\View;
 
 use Canopy\Request;
+use phpws2\Template;
 
 abstract class View
 {
@@ -33,8 +34,9 @@ abstract class View
         }
         return '<script type="text/javascript">' . implode('', $varList) . '</script>';
     }
-    
-    public function includeCss() {
+
+    public function includeCss()
+    {
         $this->addStoryCss();
         $this->mediumCssOverride();
         $this->mediumInsertCss();
@@ -49,8 +51,9 @@ abstract class View
     {
         \Layout::addToStyleList('mod/stories/css/MediumOverrides.css');
     }
-    
-    public function mediumInsertCss() {
+
+    public function mediumInsertCss()
+    {
         \Layout::addToStyleList('mod/stories/css/medium-editor-insert-plugin.min.css');
     }
 
@@ -156,6 +159,14 @@ EOF;
         $options['showAuthor'] = $settings['showAuthor'];
         $options['limit'] = $settings['listStoryAmount'];
         return $options;
+    }
+
+    protected function imageZoom()
+    {
+        $this->scriptView('ImageZoom', false);
+        $template = new Template();
+        $template->setModuleTemplate('stories', 'ImageZoom.html');
+        return $template->get();
     }
 
 }
