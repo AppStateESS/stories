@@ -26,16 +26,21 @@ use stories\Controller\RoleController;
 
 class Admin extends User
 {
-
+    /**
+     * @var \stories\Factory\HostFactory
+     */
+    protected $factory;
+    
     public function postCommand(Request $request)
     {
         $this->factory->create($request);
         return ['success' => true];
     }
 
-    public function existsJsonCommand(Request $request)
+    public function testJsonCommand(Request $request)
     {
-        return ['duplicate' => (bool) $this->factory->getByUrl($request->pullGetString('url'))];
+        return ['duplicate' => (bool) $this->factory->getByUrl($request->pullGetString('url')),
+            'successfulContact' => $this->factory->testContact($request->pullGetString('url'))];
     }
 
     public function putCommand(Request $request)
