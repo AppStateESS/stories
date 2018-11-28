@@ -100,5 +100,17 @@ class User extends RoleController
         $guestFactory->unsubscribeByAuthkey($authKey);
         return ['success' => true];
     }
+    
+    public function listHtmlCommand(Request $request) {
+        \Current_User::requireLogin();
+    }
+    
+    /**
+     * Allows guest and hosts to test for site to site communication.
+     * @return boolean
+     */
+    public function testHtmlCommand() {
+        return true;
+    }
 
 }
