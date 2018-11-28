@@ -646,13 +646,6 @@ class EntryFactory extends BaseFactory
         $db->delete();
     }
 
-    private function tooltipScript()
-    {
-        return <<<EOF
-<script src="mod/stories/javascript/Tooltip/index.js"></script>
-EOF;
-    }
-
     /**
      * Removes the media overlay that prevents the video from working
      */
