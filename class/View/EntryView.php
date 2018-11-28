@@ -268,7 +268,7 @@ EOF;
             // @deprecated easier to center via css
             //$this->scriptView('Caption', false);
             $this->scriptView('Tooltip', false);
-            $this->scriptView('ImageZoom', false);
+            $data['imageZoom'] = $this->imageZoom();
 
             $template = new \phpws2\Template($data);
             $template->setModuleTemplate('stories', 'Entry/View.html');
