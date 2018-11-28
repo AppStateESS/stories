@@ -18,5 +18,6 @@ exports.entry = {
   Sortable: exports.APP_DIR + '/Sortable/index.js',
   ShareAdmin: exports.APP_DIR + '/ShareAdmin/index.jsx',
   GuestListing: exports.APP_DIR + '/GuestListing/index.jsx',
+  ImageZoom: exports.APP_DIR + '/ImageZoom/index.js',
   ImageOrientation: exports.APP_DIR + '/ImageOrientation/index.jsx'
 }
