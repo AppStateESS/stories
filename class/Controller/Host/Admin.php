@@ -40,7 +40,7 @@ class Admin extends User
     public function testJsonCommand(Request $request)
     {
         return ['duplicate' => (bool) $this->factory->getByUrl($request->pullGetString('url')),
-            'successfulContact' => $this->factory->testContact($request->pullGetString('url'))];
+            'successfulContact' => $this->factory->testUrl($request->pullGetString('url'))];
     }
 
     public function putCommand(Request $request)
