@@ -25,14 +25,14 @@ function stories_uninstall(&$content)
     $db->buildTable('storiesauthor')->drop(true);
     $db->buildTable('storiesentry')->drop(true);
     $db->buildTable('storiestag')->drop(true);
+    $db->buildTable('storiesfeaturestory')->drop(true);
+    $db->buildTable('storiespublish')->drop(true);
     $db->buildTable('storiesfeature')->drop(true);
     $db->buildTable('storiestagtoentry')->drop(true);
+    $db->buildTable('storiestrack')->drop(true);
     $db->buildTable('storieshost')->drop(true);
     $db->buildTable('storiesshare')->drop(true);
     $db->buildTable('storiesguest')->drop(true);
-    $db->buildTable('storiespublish')->drop(true);
-    $db->buildTable('storiesfeaturestory')->drop(true);
-    $db->buildTable('storiestrack')->drop(true);
     // From previous version
     $db->buildTable('storiesentrytofeature')->drop(true);
     $shortcuts = $db->addTable('access_shortcuts');
