@@ -27,20 +27,6 @@ class BaseController extends \phpws2\Http\Controller
         $this->loadController($request, $this->role);
     }
 
-    public function htmlResponse($content)
-    {
-        $view = new \phpws2\View\HtmlView($content);
-        $response = new \Canopy\Response($view);
-        return $response;
-    }
-
-    public function jsonResponse($json)
-    {
-        $view = new \phpws2\View\JsonView($json);
-        $response = new \Canopy\Response($view);
-        return $response;
-    }
-
     private function loadController(Request $request)
     {
         $major_controller = filter_var($request->shiftCommand(),
