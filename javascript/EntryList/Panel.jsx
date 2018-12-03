@@ -1,6 +1,5 @@
 'use strict'
 import React, {Component} from 'react'
-import PropTypes from 'prop-types'
 
 export default class Panel extends Component {
   constructor(props) {
@@ -17,5 +16,3 @@ export default class Panel extends Component {
     )
   }
 }
-
-Panel.propTypes = {}
