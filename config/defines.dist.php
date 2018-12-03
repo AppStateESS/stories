@@ -29,3 +29,6 @@ define('STORIES_HARD_LIMIT', 100);
 define('STORIES_SUMMARY_CHARACTER_LIMIT', 300);
 
 define('STORIES_SENDMAIL', '/usr/sbin/sendmail -bs');
+
+// If true, curl calls will disregard SSL warnings
+define('STORIES_DISABLE_CURL_SSL', false);
