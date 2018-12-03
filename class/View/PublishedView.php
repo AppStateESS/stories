@@ -92,8 +92,13 @@ class PublishedView extends View
         $data['showAuthor'] = \phpws2\Settings::get('stories', 'showAuthor');
         if (!empty($data['tags'])) {
             $tagFactory = new TagFactory;
-            $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
-                    $data['id'], $currentTag);
+            if (isset($data['shareId']) && $data['shareId'] > 0 && isset($data['siteUrl'])) {
+                $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
+                        $data['id'], $currentTag, $data['siteUrl']);
+            } else {
+                $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
+                        $data['id'], $currentTag);
+            }
         } else {
             $data['tagList'] = null;
         }

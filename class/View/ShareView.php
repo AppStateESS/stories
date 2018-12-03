@@ -32,6 +32,11 @@ class ShareView extends View
             return null;
         }
         $dataArray = get_object_vars($data);
+        if (!empty($dataArray['tags'])) {
+            array_walk($dataArray['tags'], function(&$i){
+                $i = get_object_vars($i);
+            });
+        }
         $publishedView = new PublishedView;
         $dataArray['published'] = 1;
         $dataArray['shareId'] = $data->id;

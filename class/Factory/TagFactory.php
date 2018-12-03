@@ -194,14 +194,20 @@ class TagFactory extends BaseFactory
         return $result;
     }
 
-    public function getTagLinks($tags, $entryId, $currentTag=null)
+    public function getTagLinks($tags, $entryId, $currentTag = null,
+            string $siteUrl = null)
     {
         if (empty($tags)) {
             return null;
         }
+        if (!empty($siteUrl)) {
+            $urlPrefix = $siteUrl;
+        } else {
+            $urlPrefix = './';
+        }
         if (!empty($currentTag)) {
             $firstTag = $currentTag;
-            foreach ($tags as $k=>$v) {
+            foreach ($tags as $k => $v) {
                 if ($v['label'] == $currentTag) {
                     unset($tags[$k]);
                     break;
@@ -211,22 +217,22 @@ class TagFactory extends BaseFactory
             $firstTag = $tags[0]['label'];
             unset($tags[0]);
         }
-        
+
         if (count($tags) == 0) {
             return <<<EOF
-<span>Filed under: <a href="./stories/Tag/$firstTag">$firstTag</a></span>
+<span>Filed under: <a href="{$urlPrefix}stories/Tag/$firstTag">$firstTag</a></span>
 EOF;
         }
-        
+
         foreach ($tags as $tag) {
             $options[] = <<<EOF
-<li><a class="tag-link pointer" href="./stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
+<li><a class="tag-link pointer" href="{$urlPrefix}stories/Tag/{$tag['label']}">{$tag['label']}</a></li>
 EOF;
         }
-        
+
         $tagOptions = implode('', $options);
         $content = <<<EOF
-    <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="./stories/Tag/$firstTag">$firstTag <i class="fas fa-caret-down"></i></a></span>
+    <span class="tagged pointer" data-entry-id="$entryId">Filed under: <a href="{$urlPrefix}stories/Tag/$firstTag">$firstTag <i class="fas fa-caret-down"></i></a></span>
     <div class="d-none">
          <div id="entry-$entryId" class="tag-list">
                 <ul class="list-unstyled">
@@ -245,5 +251,5 @@ EOF;
         $tbl->addFieldConditional('entryId', $entryId);
         $db->delete();
     }
-    
+
 }
