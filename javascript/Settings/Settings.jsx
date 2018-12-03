@@ -202,7 +202,7 @@ export default class Settings extends Component {
           <div className="col-md-6">
             <div className="settings">
               <h3>Listing</h3>
-              <h4 className="mt-2">Story display type</h4>
+              <h4 className="mt-2">Default display type</h4>
               <ButtonGroup
                 buttons={formatButton}
                 activeColor="success"

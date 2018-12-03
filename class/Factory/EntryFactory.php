@@ -285,6 +285,7 @@ class EntryFactory extends BaseFactory
         $entry = $this->build();
         $entry->title = '';
         $entry->content = '';
+        $entry->listView = Settings::get('stories', 'listStoryFormat');
         $entry->createStamp();
         $entry->publishStamp();
         $authorFactory = new AuthorFactory;
