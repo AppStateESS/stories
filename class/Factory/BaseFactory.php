@@ -109,6 +109,9 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         $url = $this->formatUrl($url, true);
         $url = $url . 'stories/Share/test';
         $header = $this->sendCurl($url, true);
+        if (empty($header)) {
+            return false;
+        }
         return $this->successfulHeader($header);
     }
 
