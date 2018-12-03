@@ -14,6 +14,10 @@ namespace stories\Factory;
 
 use stories\Exception\ResourceNotFound;
 
+if (!defined('STORIES_DISABLE_CURL_SSL')) {
+    define('STORIES_DISABLE_CURL_SSL', false);
+}
+
 /**
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
@@ -21,6 +25,10 @@ use stories\Exception\ResourceNotFound;
 abstract class BaseFactory extends \phpws2\ResourceFactory
 {
 
+    /**
+     * Holds the header response from the curl call
+     * @var string
+     */
     protected $header;
 
     abstract public function build();
@@ -57,8 +65,13 @@ abstract class BaseFactory extends \phpws2\ResourceFactory
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         if ($headerOnly) {
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$this, 'curlHeader']);
+        }
+
+        if (STORIES_DISABLE_CURL_SSL) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         }
         $result = curl_exec($ch);
         curl_close($ch);
