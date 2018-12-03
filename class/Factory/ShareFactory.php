@@ -80,7 +80,7 @@ class ShareFactory extends BaseFactory
         $error->siteUrl = $guest->url;
         $url = $share->url . '/?json=1';
         try {
-            $json = file_get_contents($url);
+            $json = $this->sendCurl($url);
         } catch (\Exception $e) {
             \phpws2\Error::log($e);
             return $error;
