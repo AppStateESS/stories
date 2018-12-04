@@ -48,7 +48,9 @@ class Admin extends User
 
     protected function editHtmlCommand(Request $request)
     {
-        \Menu::disableMenu();
+        if (class_exists('\Menu')) {
+            \Menu::disableMenu();
+        }
         \Layout::hideDefault(true);
         $entry = $this->factory->load($this->id);
         StoryMenu::viewStoryLink($entry);
