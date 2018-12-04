@@ -52,15 +52,17 @@ class storiesUpdate_1_5_0
         $this->updateFeature();
         return $this->changes;
     }
-    
-    private function updateEntry() {
+
+    private function updateEntry()
+    {
         $db = Database::getDB();
         $entryTable = $db->addTable('storiesentry');
-        $listView = new \phpws2\Database\Datatype\Smallint($entryTable, 'listView');
+        $listView = new \phpws2\Database\Datatype\Smallint($entryTable,
+                'listView');
         $listView->add();
         $this->changes[] = 'Added listView column to storiesentry.';
     }
-    
+
     private function updateFeature()
     {
         $db = Database::getDB();
@@ -95,14 +97,11 @@ class storiesUpdate_1_5_0
 
     private function getCurrentEntries()
     {
-        static $entryList = -1;
-        if ($entryList === -1) {
-            $db = Database::getDB();
-            $tbl = $db->addTable('storiesentry');
-            $tbl->addFieldConditional('deleted', 0);
-            $tbl->addFieldConditional('published', 1);
-            $entryList = $db->select();
-        }
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesentry');
+        $tbl->addFieldConditional('deleted', 0);
+        $tbl->addFieldConditional('published', 1);
+        $entryList = $db->select();
         return $entryList;
     }
 
