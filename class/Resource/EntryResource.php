@@ -137,7 +137,6 @@ class EntryResource extends BaseResource
      */
     protected $listView;
     protected $url;
-    
     protected $strippedSummary;
 
     /**
@@ -194,6 +193,12 @@ class EntryResource extends BaseResource
     {
         $title = substr($title, 0, 99);
         $this->title->set($title);
+        $this->urlTitle->set($this->processTitle($title));
+    }
+
+    public function setUrlTitle($title)
+    {
+        $title = substr($title, 0, 99);
         $this->urlTitle->set($this->processTitle($title));
     }
 
@@ -269,8 +274,9 @@ class EntryResource extends BaseResource
                 $prefix . $this->urlTitle->get() :
                 $prefix . 'Entry/' . $this->getId() . '/' . $this->urlTitle->get();
     }
-    
-    public function getStrippedSummary() {
+
+    public function getStrippedSummary()
+    {
         return strip_tags($this->summary->get());
     }
 
