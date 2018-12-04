@@ -510,7 +510,7 @@ class EntryFactory extends BaseFactory
             }
             if (!empty($title)) {
                 $titleFound = true;
-                $entry->title = $title;
+                $entry->setTitle($title);
             }
             $titleCount++;
         }
