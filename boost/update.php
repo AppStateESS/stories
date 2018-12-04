@@ -250,6 +250,7 @@ class StoriesUpdate
         $changes[] = 'Fixed create date relative not working.';
         $changes[] = 'Fixed Feature stories.';
         $changes[] = 'Fixed share image css.';
+        $changes[] = 'Removed PHP 7.2 type hinting.';
         
         $this->addContent('1.5.1', $changes);
     }

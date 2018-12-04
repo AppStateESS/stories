@@ -75,7 +75,7 @@ class FeatureStoryFactory extends BaseFactory
      * Receives a share or entry object and creates a FeatureStory
      * @param object $storyObj
      */
-    private function copyIntoFeatureStory(object $storyObj,
+    private function copyIntoFeatureStory($storyObj,
             int $featureStoryId = 0)
     {
         if ($featureStoryId > 0) {
