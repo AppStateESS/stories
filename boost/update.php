@@ -84,6 +84,8 @@ class StoriesUpdate
                 $this->update('1.4.0');
             case $this->compare('1.5.0'):
                 $this->update('1.5.0');
+            case $this->compare('1.5.1'):
+                $this->update('1.5.1');
         }
         return $this->content;
     }
@@ -239,6 +241,14 @@ class StoriesUpdate
         $update = new storiesUpdate_1_5_0;
         $changes = $update->run();
         $this->addContent('1.5.0', $changes);
+    }
+
+    private function v1_5_1()
+    {
+        $changes[] = 'Character limiter added to urlTitle variable.';
+        $changes[] = 'Added id to non-friendly error message.';
+
+        $this->addContent('1.5.1', $changes);
     }
 
     private function addContent($version, array $changes)
