@@ -56,9 +56,6 @@ class FeatureFactory extends BaseFactory
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiesfeature');
-        if (!$db->tableExists('storiesfeaturestory')) {
-            exit('Please update stories to > 1.5.0');
-        }
         $tbl2 = $db->addTable('storiesfeaturestory');
         $tbl2->addField(new Database\Expression('count(storiesfeaturestory.id)',
                 'storyCount'));
