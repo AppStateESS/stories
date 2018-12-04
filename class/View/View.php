@@ -122,14 +122,18 @@ EOF;
         return PHPWS_SOURCE_HTTP . 'mod/stories/';
     }
 
-    public function pullListOptions(Request $request)
+    public function pullListOptions(Request $request, int $limit = null)
     {
         $settingFactory = new \stories\Factory\SettingsFactory;
         $settings = $settingFactory->listing();
         // if offset not set, default 0
         $page = (int) $request->pullGetInteger('page', true);
         if ($page > 1) {
-            $offsetSize = $settings['listStoryAmount'] * ($page - 1);
+            if ($limit !== null) {
+                $offsetSize = $limit * ($page - 1);
+            } else {
+                $offsetSize = $settings['listStoryAmount'] * ($page - 1);
+            }
         } else {
             $offset = $request->pullGetInteger('offset', true);
             if ($offset > 0) {
