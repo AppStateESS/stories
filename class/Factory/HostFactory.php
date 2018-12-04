@@ -39,16 +39,39 @@ class HostFactory extends BaseFactory
         return $db->select();
     }
 
-    public function getHostsSelect()
+    /**
+     * Returns an array of hosts that can used in a form for sending shares.
+     * @param int $entryId
+     * @return array
+     */
+    public function getHostsSelect(int $entryId = 0)
     {
+        $trackedHosts = $this->getTrackedByEntry($entryId);
         $result = $this->getHosts(true);
         if (empty($result)) {
             return [];
         }
         foreach ($result as $row) {
-            $hosts[] = ['value' => $row['id'], 'label' => $row['siteName']];
+            $hosts[] = [
+                'value' => $row['id'],
+                'label' => $row['siteName'],
+                'sent' => in_array($row['id'], $trackedHosts)
+            ];
         }
         return $hosts;
+    }
+
+    public function getTrackedByEntry($entryId)
+    {
+        $columns = [];
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiestrack');
+        $tbl->addField('hostId');
+        $tbl->addFieldConditional('entryId', $entryId);
+        while ($col = $db->selectColumn()) {
+            $columns[] = $col;
+        }
+        return $columns;
     }
 
     public function create(Request $request)
