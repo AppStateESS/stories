@@ -249,7 +249,8 @@ class StoriesUpdate
         $changes[] = 'Added id to non-friendly error message.';
         $changes[] = 'Fixed create date relative not working.';
         $changes[] = 'Fixed Feature stories.';
-
+        $changes[] = 'Fixed share image css.';
+        
         $this->addContent('1.5.1', $changes);
     }
     
