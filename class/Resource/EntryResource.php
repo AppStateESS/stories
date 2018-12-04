@@ -217,9 +217,10 @@ class EntryResource extends BaseResource
             unset($vars['summary']);
         }
 
-        if (is_array($hide) && !in_array('createDate', $hide)) {
+        if (empty($hide) || (is_array($hide) && !in_array('createDate', $hide))) {
             $vars['createDateRelative'] = $this->relativeTime($this->createDate->get());
         }
+        
         if ($this->publishDate->get()) {
             $vars['publishDateRelative'] = $this->relativeTime($this->publishDate->get());
         }
