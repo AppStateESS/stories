@@ -274,13 +274,16 @@ EOF;
             $template->setModuleTemplate('stories', 'Entry/View.html');
             return $template->get();
         } catch (ResourceNotFound $e) {
-            return $this->notFound();
+            return $this->notFound($e->getMessage());
         }
     }
 
-    public function notFound()
+    public function notFound(string $message = null)
     {
         $template = new \phpws2\Template();
+        if (!STORIES_FRIENDLY_ERROR && !empty($message)) {
+            $template->add('message', $message);
+        }
         $template->setModuleTemplate('stories', 'Entry/NotFound.html');
         return $template->get();
     }

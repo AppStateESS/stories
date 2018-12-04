@@ -70,7 +70,7 @@ class EntryFactory extends BaseFactory
         $entry = $this->build();
         $vars = $db->selectOneRow();
         if (empty($vars)) {
-            throw new ResourceNotFound;
+            throw new ResourceNotFound($id);
         }
         $entry->setVars($vars);
 
