@@ -247,9 +247,11 @@ class StoriesUpdate
     {
         $changes[] = 'Character limiter added to urlTitle variable.';
         $changes[] = 'Added id to non-friendly error message.';
+        $changes[] = 'Fixed create date relative not working.';
 
         $this->addContent('1.5.1', $changes);
     }
+    
 
     private function addContent($version, array $changes)
     {
