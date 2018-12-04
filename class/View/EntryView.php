@@ -78,7 +78,7 @@ class EntryView extends View
         $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
         $tags = $tagFactory->listTags(true);
         $hostFactory = new HostFactory;
-        $shareList = $hostFactory->getHostsSelect();
+        $shareList = $hostFactory->getHostsSelect($entry->id);
         $jsonVars = array('entry' => $entryVars, 'tags' => empty($tags) ? array() : $tags, 'status' => $status, 'shareList' => $shareList);
         $vars['publishBar'] = $this->scriptView('Publish', true, $jsonVars);
         $vars['imageOrientation'] = $this->scriptView('ImageOrientation');
