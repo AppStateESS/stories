@@ -213,9 +213,6 @@ class EntryFactory extends BaseFactory
                     $options['sortBy'] === 'title' ? 'asc' : 'desc');
         }
 
-        if ($options['offset'] < 1 && (int) $options['page'] > 1) {
-            $options['offset'] = ((int) $options['page'] - 1) * $options['limit'];
-        }
 
         /**
          * To get an accurate test to see if there are more entries for 
@@ -233,6 +230,10 @@ class EntryFactory extends BaseFactory
                 }
             }
         }
+        
+        if ($options['offset'] < 1 && (int) $options['page'] > 1) {
+            $options['offset'] = ((int) $options['page'] - 1) * $options['limit'];
+        }
 
 
         // limitedVars was not well thought out. used mostly for features
@@ -241,7 +242,10 @@ class EntryFactory extends BaseFactory
             return $db->select();
         }
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
-
+        $query = $db->selectQuery();
+        $limit = $options['limit'];
+        $offset = $options['offset'];
+        
         if (empty($objectList)) {
             return null;
         }

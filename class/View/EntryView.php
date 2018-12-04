@@ -55,7 +55,7 @@ class EntryView extends View
 
     public function adminListView(Request $request)
     {
-        $options = $this->pullListOptions($request);
+        $options = $this->pullListOptions($request, 10);
         $options['limit'] = 10;
         $options['hideExpired'] = false;
         $options['showAuthor'] = true;
