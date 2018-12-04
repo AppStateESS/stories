@@ -39,8 +39,8 @@ class Admin extends RoleController
     {
         $publishFactory = new PublishFactory;
         $publishedTitles = $publishFactory->featureList();
-
-        return ['featureStories' => $this->factory->listing($request->pullGetInteger('featureId'), false), 'publishedTitles' => $publishedTitles];
+        $featureStories = $this->factory->listing($request->pullGetInteger('featureId'), false);
+        return ['featureStories' => $featureStories ?? [], 'publishedTitles' => $publishedTitles];
     }
 
     protected function postCommand(Request $request)
@@ -53,25 +53,25 @@ class Admin extends RoleController
     protected function putCommand(Request $request)
     {
         $this->factory->put($this->id, $request->pullPutInteger('publishId'));
-        return ['success'=>true];
+        return ['success' => true];
     }
-    
+
     protected function deleteCommand(Request $request)
     {
         $this->factory->delete($this->id);
-        return ['success'=>true];
+        return ['success' => true];
     }
-    
+
     protected function patchCommand(Request $request)
     {
         $this->factory->patch($this->id, $request);
-        return ['success'=>true];
+        return ['success' => true];
     }
-    
+
     protected function updateThumbnailPostCommand(Request $request)
     {
         $this->factory->updateEntryThumbnail($request);
-        return ['success'=>true];
+        return ['success' => true];
     }
 
 }
