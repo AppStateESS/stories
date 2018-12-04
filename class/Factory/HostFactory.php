@@ -44,9 +44,8 @@ class HostFactory extends BaseFactory
      * @param int $entryId
      * @return array
      */
-    public function getHostsSelect(int $entryId = 0)
+    public function getHostsSelect()
     {
-        $trackedHosts = $this->getTrackedByEntry($entryId);
         $result = $this->getHosts(true);
         if (empty($result)) {
             return [];
@@ -54,8 +53,7 @@ class HostFactory extends BaseFactory
         foreach ($result as $row) {
             $hosts[] = [
                 'value' => $row['id'],
-                'label' => $row['siteName'],
-                'sent' => in_array($row['id'], $trackedHosts)
+                'label' => $row['siteName']
             ];
         }
         return $hosts;
