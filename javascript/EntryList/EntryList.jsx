@@ -35,7 +35,7 @@ export default class EntryList extends Component {
       hostId: '0'
     }
 
-    this.offset = 0
+    this.page = 1
     this.delay
     this.lastSearch
 
@@ -95,7 +95,7 @@ export default class EntryList extends Component {
   }
 
   showMore() {
-    this.offset = this.offset + 1
+    this.page = this.page + 1
     this.load()
   }
 
@@ -204,7 +204,7 @@ export default class EntryList extends Component {
   load() {
     let tags = []
     if (this.state.search !== this.lastSearch) {
-      this.offset = 0
+      this.page = 1
     }
     this.lastSearch = this.state.search
     const sendData = {
@@ -212,8 +212,8 @@ export default class EntryList extends Component {
       sortBy: this.state.sortBy,
       sortByTagId: this.state.sortByTagId
     }
-    if (this.offset > 0) {
-      sendData.offset = this.offset
+    if (this.page > 1) {
+      sendData.page = this.page
     }
     $.getJSON('./stories/Listing/admin', sendData).done(function (data) {
       if (data.tags != null) {
@@ -223,7 +223,7 @@ export default class EntryList extends Component {
         this.setState({listing: false, loading: false, tags: tags, moreRows: false})
       } else {
         let listing
-        if (this.offset > 0) {
+        if (this.page > 1) {
           listing = this.state.listing.concat(data.listing)
         } else {
           listing = data.listing
