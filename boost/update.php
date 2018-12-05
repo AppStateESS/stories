@@ -88,6 +88,8 @@ class StoriesUpdate
                 $this->update('1.5.1');
             case $this->compare('1.5.2'):
                 $this->update('1.5.2');
+            case $this->compare('1.5.3'):
+                $this->update('1.5.3');
         }
         return $this->content;
     }
@@ -263,6 +265,13 @@ class StoriesUpdate
         $changes[] = 'Fixed Twitter embed.';
         
         $this->addContent('1.5.2', $changes);
+    }
+    
+    private function v1_5_3()
+    {
+        $changes[] = 'Share pulls and displays leadImage instead of thumbnail.';
+        
+        $this->addContent('1.5.3', $changes);
     }
     
 

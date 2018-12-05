@@ -101,6 +101,9 @@ class ShareFactory extends BaseFactory
         if (!preg_match('/^http/', $jsonObject->thumbnail)) {
             $jsonObject->thumbnail = $jsonObject->siteUrl . $jsonObject->thumbnail;
         }
+        if (!preg_match('/^http/', $jsonObject->leadImage)) {
+            $jsonObject->leadImage = $jsonObject->siteUrl . $jsonObject->leadImage;
+        }
         if (!empty($jsonObject->authorPic)) {
             $jsonObject->authorPic = $guest->url . $jsonObject->authorPic;
         }

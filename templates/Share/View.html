@@ -3,7 +3,7 @@
   <?php
   $orient = '';
   $forceDimension = '';
-  if (!empty($thumbnail)) :
+  if (!empty($leadImage)) :
   if ($imageOrientation == 1) {
   $orient = ' float-left mr-2 mb-2';
   $forceDimension = 'max-width : 250px;max-height: 300px;';
@@ -12,8 +12,8 @@
   $forceDimension = 'max-width : 250px;max-height: 300px';
   }
   ?>
-  <div class="story-image<?=$orient?>"><a href="<?=$url?>"><img class="img-fluid mx-auto d-block" style="<?=$forceDimension?>" src="<?=$thumbnail?>" /></a></div>
-  <?php endif;//thumbnail?>
+  <div class="story-image<?=$orient?>"><a href="<?=$url?>"><img class="img-fluid mx-auto d-block" style="<?=$forceDimension?>" src="<?=$leadImage?>" /></a></div>
+  <?php endif;//leadImage?>
   <div class="share-summary"><?=$summary?></div>
   <p class="clearfix">
     <a href="<?=$url?>">View story on <?=$siteName?> <i class="fas fa-external-link-alt"></i></a>
