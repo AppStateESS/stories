@@ -93,6 +93,10 @@ $('.entry-form').mouseleave(debounce(function () {
   }
 }))
 
+window.onbeforeunload = () => {
+  saveContent()
+}
+
 // Without this, the throttle will run save twice.
 let delaySave = true
 
