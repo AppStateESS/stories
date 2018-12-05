@@ -270,3 +270,10 @@ $leftright-height: 300px;
 .medium-insert-images-grid img:hover {
   cursor : zoom-in;
 }
+
+div.medium-insert-embeds-wide {
+  twitter-widget {
+    margin-left : auto;
+    margin-right : auto;
+  }
+}
