@@ -86,6 +86,8 @@ class StoriesUpdate
                 $this->update('1.5.0');
             case $this->compare('1.5.1'):
                 $this->update('1.5.1');
+            case $this->compare('1.5.2'):
+                $this->update('1.5.2');
         }
         return $this->content;
     }
@@ -253,6 +255,14 @@ class StoriesUpdate
         $changes[] = 'Removed PHP 7.2 type hinting.';
         
         $this->addContent('1.5.1', $changes);
+    }
+    
+    private function v1_5_2()
+    {
+        $changes[] = 'Fixed embed bug.';
+        $changes[] = 'Fixed Twitter embed.';
+        
+        $this->addContent('1.5.2', $changes);
     }
     
 
