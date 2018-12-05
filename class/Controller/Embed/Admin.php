@@ -13,7 +13,6 @@
 namespace stories\Controller\Embed;
 
 use Canopy\Request;
-use stories\Factory\EmbedFactory as Factory;
 use stories\View\EmbedView as View;
 use stories\Controller\RoleController;
 

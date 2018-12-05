@@ -13,7 +13,6 @@
 namespace stories\View;
 
 use Canopy\Request;
-use stories\Factory\EmbedFactory as Factory;
 
 class EmbedView extends View
 {
@@ -22,7 +21,6 @@ class EmbedView extends View
 
     public function __construct()
     {
-        $this->factory = new Factory;
     }
 
     public function embed(Request $request)
