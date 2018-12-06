@@ -5,7 +5,11 @@ import ButtonGroup from '@essappstate/canopy-react-buttongroup'
 
 const FeatureList = (props) => {
   if (props.list === undefined || props.list === null) {
-    return <div>No features found. <a href="./stories/Feature#" onClick={props.add}>Add a feature set to get started.</a></div>
+    return (
+      <div>No features found.
+        <button className="btn btn-link" onClick={props.add}>Add a feature set to get started.</button>
+      </div>
+    )
   }
 
   const formatTopBottom = props.srcHttp + 'mod/stories/img/top-bottom.png'
@@ -20,12 +24,12 @@ const FeatureList = (props) => {
     {
       value: '1',
       label: 'Yes',
-      color : 'success'
+      color: 'success'
     }, {
       value: '0',
       label: 'No',
-      color : 'danger'
-    },
+      color: 'danger'
+    }
   ]
 
   let rows = props.list.map(function (value, key) {
@@ -46,10 +50,20 @@ const FeatureList = (props) => {
         <td>
           <button
             className="btn btn-primary btn-sm"
-            onClick={props.loadCurrentFeature.bind(null, key)}><i className="fa fa-edit"></i></button>
-          <button className="btn btn-danger btn-sm" onClick={props.deleteFeature.bind(null, key)}><i className="far fa-trash-alt"></i></button>
+            onClick={props.loadCurrentFeature.bind(null, key)}>
+            <i className="fa fa-edit"></i>
+          </button>
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={props.deleteFeature.bind(null, key)}>
+            <i className="far fa-trash-alt"></i>
+          </button>
         </td>
-        <td>{value.title ? value.title : <em className="text-muted">Untitled</em>}</td>
+        <td>{
+            value.title
+              ? value.title
+              : <em className="text-muted">Untitled</em>
+          }</td>
         <td>{value.storyCount}</td>
         <td><img style={iconStyle} src={formatIcon}/></td>
         <td><ButtonGroup
@@ -83,7 +97,7 @@ FeatureList.propTypes = {
   updateActive: PropTypes.func,
   deleteFeature: PropTypes.func,
   srcHttp: PropTypes.string,
-  add : PropTypes.func,
+  add: PropTypes.func
 }
 
 FeatureList.defaultTypes = {}
