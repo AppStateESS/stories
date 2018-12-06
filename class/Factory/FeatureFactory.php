@@ -61,14 +61,13 @@ class FeatureFactory extends BaseFactory
                 'storyCount'));
         $db->joinResources($tbl, $tbl2,
                 new Database\Conditional($db, $tbl->getField('id'),
-                $tbl2->getField('featureId'), '='));
+                $tbl2->getField('featureId'), '='), 'left');
         $db->setGroupBy($tbl->getField('id'));
         if ($activeOnly) {
             $tbl->addFieldConditional('active', 1);
         }
         $tbl->addOrderBy('sorting');
-        $result = $db->select();
-        return $result;
+        return $db->select();
     }
 
     private function trimCharactersCount($format, $columns, $title)
