@@ -36,6 +36,9 @@ class FeatureStoryView extends View
     public function listing(int $featureId, string $format)
     {
         $listing = $this->factory->listing($featureId);
+        if (empty($listing)) {
+            return null;
+        }
         $totalColumns = count($listing);
         $showAuthor = \phpws2\Settings::get('stories', 'showAuthor');
         foreach ($listing as $key => $story) {
