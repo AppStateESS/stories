@@ -90,6 +90,8 @@ class StoriesUpdate
                 $this->update('1.5.2');
             case $this->compare('1.5.3'):
                 $this->update('1.5.3');
+            case $this->compare('1.5.4'):
+                $this->update('1.5.4');
         }
         return $this->content;
     }
@@ -241,7 +243,7 @@ class StoriesUpdate
     private function v1_5_0()
     {
         require_once PHPWS_SOURCE_DIR . 'mod/stories/boost/updates/v1_5_0.php';
-        
+
         $update = new storiesUpdate_1_5_0;
         $changes = $update->run();
         $this->addContent('1.5.0', $changes);
@@ -255,25 +257,31 @@ class StoriesUpdate
         $changes[] = 'Fixed Feature stories.';
         $changes[] = 'Fixed share image css.';
         $changes[] = 'Removed PHP 7.2 type hinting.';
-        
+
         $this->addContent('1.5.1', $changes);
     }
-    
+
     private function v1_5_2()
     {
         $changes[] = 'Fixed embed bug.';
         $changes[] = 'Fixed Twitter embed.';
-        
+
         $this->addContent('1.5.2', $changes);
     }
-    
+
     private function v1_5_3()
     {
         $changes[] = 'Share pulls and displays leadImage instead of thumbnail.';
-        
         $this->addContent('1.5.3', $changes);
     }
-    
+
+    private function v1_5_4()
+    {
+        require_once PHPWS_SOURCE_DIR . 'mod/stories/boost/updates/v1_5_4.php';
+        $update = new storiesUpdate_1_5_4;
+        $changes = $update->run();
+        $this->addContent('1.5.4', $changes);
+    }
 
     private function addContent($version, array $changes)
     {
