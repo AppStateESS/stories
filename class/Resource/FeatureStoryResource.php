@@ -97,7 +97,7 @@ class FeatureStoryResource extends BaseResource
         parent::__construct();
         $this->title = new \phpws2\Variable\TextOnly(null, 'title', 100);
         $this->summary = new \phpws2\Variable\TextOnly(null, 'summary', 300);
-        $this->thumbnail = new \phpws2\Variable\TextOnly(null, 'thumbnail', 100);
+        $this->thumbnail = new \phpws2\Variable\TextOnly(null, 'thumbnail', 300);
         $this->url = new \phpws2\Variable\StringVar(null, 'url', 200);
         $this->authorPic = new \phpws2\Variable\StringVar(null, 'authorPic', 100);
         $this->authorPic->allowNull(true);
