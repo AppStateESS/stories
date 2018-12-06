@@ -250,13 +250,10 @@ class PublishFactory extends BaseFactory
         $tbl->addFieldConditional('publishDate', $featureCutOff, '>');
         $tbl->addOrderBy('publishDate', 'desc');
         $result = $db->select();
-        if (empty($result)) {
-            return [];
-        }
         foreach ($result as $row) {
             $pObj = $this->build($row);
             $story = $this->getSource($pObj);
-            if (isset($story->error)) {
+            if (isset($story->error) || empty($story->thumbnail) || empty($story->title)) {
                 continue;
             }
             $publishDate = strftime('%b %e', $story->publishDate);
