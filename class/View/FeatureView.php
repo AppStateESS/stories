@@ -39,7 +39,7 @@ class FeatureView extends View
     public function show(Request $request)
     {
         $featureStoryView = new FeatureStoryView;
-        $features = $this->factory->listing();
+        $features = $this->factory->listing(true);
         if (empty($features)) {
             return;
         }
