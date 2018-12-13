@@ -35,6 +35,7 @@ use stories\Factory\SettingsFactory as Factory;
 use stories\View\SettingsView as View;
 use stories\Controller\RoleController;
 use stories\Factory\StoryMenu;
+use stories\Factory\TagFactory;
 
 class Admin extends RoleController
 {
@@ -73,5 +74,14 @@ class Admin extends RoleController
     {
         return $this->factory->purgeDeleted();
     }
+    
+    public function tagListJsonCommand()
+    {
+        $tagFactory = new TagFactory;
+        $listTags = $tagFactory->listTags(true);
+        
+        return ['tagList'=>$listTags];
+    }
+        
 
 }
