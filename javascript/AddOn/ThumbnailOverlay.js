@@ -54,7 +54,7 @@ class ThumbnailOverlay extends React.Component {
         src={src}
         style={{
           maxWidth: '100%',
-          maxHeight: '100%',
+          maxHeight: '100%'
         }}/>
     }
 
