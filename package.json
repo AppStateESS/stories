@@ -1,6 +1,6 @@
 {
   "name": "stories",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "Canopy blog module",
   "repository": {
     "type": "git",
@@ -13,6 +13,9 @@
     "url": "https://github.com/AppStateESS/stories/issues"
   },
   "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-react": "^7.0.0",
     "@essappstate/canopy-react-bigcheckbox": "^0.2.0",
     "@essappstate/canopy-react-buttongroup": "^0.2.0",
     "@essappstate/canopy-react-inputfield": "^0.2.0",
@@ -22,11 +25,9 @@
     "assets-webpack-plugin": "^3.9.7",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.4",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
     "blueimp-canvas-to-blob": "^3.14.0",
     "blueimp-file-upload-node": "^2.1.0",
-    "blueimp-load-image": "^2.19.0",
+    "blueimp-load-image": "^2.20.1",
     "browser-sync": "^2.26.3",
     "browser-sync-webpack-plugin": "^2.2.2",
     "css-loader": "^2.0.0",
@@ -38,24 +39,26 @@
     "jquery-sortable": "^0.9.13",
     "jquery-ui": "^1.12.1",
     "medium-editor": "^5.23.3",
-    "moment": "^2.22.2",
+    "moment": "^2.23.0",
     "prop-types": "^15.6.2",
-    "react": "^16.5.2",
+    "react": "^16.6.3",
     "react-addons-css-transition-group": "^15.6.2",
-    "react-dom": "^16.5.2",
-    "react-dropzone": "^7.0.1",
-    "react-select": "^1.2.1",
+    "react-dom": "^16.6.3",
+    "react-dropzone": "~4.3.0",
+    "react-select": "^1.3.0",
     "react-tooltip": "^3.9.0",
     "strip-loader": "^0.1.2",
     "style-loader": "^0.23.1",
+    "terser": "^3.11.0",
+    "terser-webpack-plugin": "^1.1.0",
     "url-loader": "^1.1.2",
-    "webpack": "^4.22.0",
+    "webpack": "^4.27.1",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2"
   },
   "scripts": {
-    "dev": "webpack --mode development --config webpack.config.js --watch",
-    "build": "webpack --mode production --config webpack.config.js"
+    "dev": "webpack --mode development --watch",
+    "build": "rm -rf ./javascript/build && webpack --mode production"
   },
   "dependencies": {}
 }
