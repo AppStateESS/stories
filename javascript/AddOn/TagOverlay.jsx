@@ -15,8 +15,17 @@ const TagOverlay = ({
   show
 }) => {
   const closeButton = (
-    <button className="btn btn-outline-dark btn-block" onClick={saveTags}>Close</button>
+    <button className="btn btn-success btn-block" onClick={saveTags}>Save</button>
   )
+  
+  const closeButtonCSS = {
+    position : 'absolute',
+    width: '100%',
+    bottom : '0',
+    padding : '5px',
+    left: 0
+  }
+  
   return (
     <Overlay
       close={saveTags}
@@ -31,8 +40,8 @@ const TagOverlay = ({
           newOptionClick={newOptionClick}
           tagChange={tagChange}/>
       </div>
-      <div className="text-center">
-        <div>{closeButton}</div>
+      <div style={closeButtonCSS}>
+        {closeButton}
       </div>
     </Overlay>
   )
