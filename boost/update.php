@@ -92,6 +92,8 @@ class StoriesUpdate
                 $this->update('1.5.3');
             case $this->compare('1.5.4'):
                 $this->update('1.5.4');
+            case $this->compare('1.5.5'):
+                $this->update('1.5.5');
         }
         return $this->content;
     }
@@ -281,6 +283,13 @@ class StoriesUpdate
         $update = new storiesUpdate_1_5_4;
         $changes = $update->run();
         $this->addContent('1.5.4', $changes);
+    }
+
+    private function v1_5_5()
+    {
+        $changes[] = 'Fixed production build javascript.';
+        $changes[] = 'Added tag deletion.';
+        $this->addContent('1.5.5', $changes);
     }
 
     private function addContent($version, array $changes)
