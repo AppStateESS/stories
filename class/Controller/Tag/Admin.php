@@ -52,4 +52,10 @@ class Admin extends User
         return $this->factory->saveToEntry($request->pullPostInteger('entryId'), $request->pullPostArray('tags', true));
     }
     
+    protected function deleteCommand(Request $request)
+    {
+        $this->factory->delete($this->id);
+        return ['success'=> true];
+}
+    
 }
