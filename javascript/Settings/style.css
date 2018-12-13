@@ -23,9 +23,10 @@ div.settings h3 {
 }
 
 .tags table td.admin {
-  width : 120px;
+  width : 70px;
 }
 
-.tags table td.tag-name {
+.tags table td.tag-name,
+.tags table td.tag-count {
   font-size : 20px;
 }
