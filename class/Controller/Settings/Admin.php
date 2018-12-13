@@ -78,7 +78,7 @@ class Admin extends RoleController
     public function tagListJsonCommand()
     {
         $tagFactory = new TagFactory;
-        $listTags = $tagFactory->listTags(true);
+        $listTags = $tagFactory->listTags();
         
         return ['tagList'=>$listTags];
     }
