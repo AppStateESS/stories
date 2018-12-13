@@ -38,19 +38,18 @@ export default class Settings extends Component {
     this.loadTags()
   }
 
-  deleteTag(tagId) {
-    const ask = 'Deleting this tag will remove all it\'s associated stories.\rAre you sure you ' +
-        'want to do this?'
+  deleteTag(tag) {
+    const ask = `Deleting this tag will remove ${tag.count} associated stor${tag.count === '1' ? 'y' : 'ies'}.\rAre you sure you want to do this?`
     if (confirm(ask)) {
       $.ajax({
-        url: './stories/Tag/' + tagId,
+        url: './stories/Tag/' + tag.id,
         dataType: 'json',
         type: 'delete',
         success: () => {
           this.loadTags()
         },
         error: () => {
-          alert('There was an error when trying to delete tag ' + tagId)
+          alert('There was an error when trying to delete tag ' + tag.id)
         }
       })
     }
@@ -211,20 +210,25 @@ export default class Settings extends Component {
         return (
           <tr key={key}>
             <td className="admin">
-              <button className="btn btn-outline-primary mr-1">
-                <i className="fas fa-edit text-primary"></i>
-              </button>
               <button
                 className="btn btn-outline-danger"
-                onClick={this.deleteTag.bind(this, value.value)}>
+                onClick={this.deleteTag.bind(this, value)}>
                 <i className="fas fa-trash-alt text-danger"></i>
               </button>
             </td>
-            <td className="tag-name">{value.label}</td>
+            <td className="tag-name">{value.title}</td>
+            <td className="tag-count">{value.count}</td>
           </tr>
         )
       })
       tags = <table className="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Title</th>
+            <th>Tagged</th>
+          </tr>
+        </thead>
         <tbody>{rows}</tbody>
       </table>
     }
