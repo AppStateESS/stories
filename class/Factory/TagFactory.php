@@ -138,6 +138,7 @@ class TagFactory extends BaseFactory
         $db = Database::getDB();
         $tbl = $db->addTable('storiestag');
         $tbl->addFieldConditional('title', $title);
+        $tbl2 = $db->addTable('storiestagtoentry');
         $tagVars = $db->selectOneRow();
         if (empty($tagVars)) {
             return null;
@@ -173,6 +174,14 @@ class TagFactory extends BaseFactory
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiestag');
+        $tbl2 = $db->addTable('storiestagtoentry');
+
+        $tbl2->addField(new Database\Expression('count(storiestagtoentry.entryId)',
+                'count'));
+        $db->joinResources($tbl, $tbl2,
+                new Database\Conditional($db, $tbl->getField('id'),
+                $tbl2->getField('tagId'), '='), 'left');
+        $db->setGroupBy($tbl->getField('id'));
         $tbl->addOrderBy('title');
         $result = $db->select();
         if (empty($result)) {
