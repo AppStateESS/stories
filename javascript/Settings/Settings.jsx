@@ -21,7 +21,8 @@ export default class Settings extends Component {
       purgeVerified: false,
       showComments: 0,
       featureCutOff: '0',
-      showAuthor: 0
+      showAuthor: 0,
+      tagList: []
     }
     this.setCommentCode = this.setCommentCode.bind(this)
     this.setShowComments = this.setShowComments.bind(this)
@@ -29,10 +30,42 @@ export default class Settings extends Component {
     this.purgeDeleted = this.purgeDeleted.bind(this)
     this.toggleVerified = this.toggleVerified.bind(this)
     this.updateCutOff = this.updateCutOff.bind(this)
+    this.deleteTag = this.deleteTag.bind(this)
   }
 
   componentDidMount() {
     this.setState(this.props.settings)
+    this.loadTags()
+  }
+
+  deleteTag(tagId) {
+    const ask = 'Deleting this tag will remove all it\'s associated stories.\rAre you sure you ' +
+        'want to do this?'
+    if (confirm(ask)) {
+      $.ajax({
+        url: './stories/Tag/' + tagId,
+        dataType: 'json',
+        type: 'delete',
+        success: () => {
+          this.loadTags()
+        },
+        error: () => {
+          alert('There was an error when trying to delete tag ' + tagId)
+        }
+      })
+    }
+  }
+
+  loadTags() {
+    $.ajax({
+      url: 'stories/Settings/tagList',
+      dataType: 'json',
+      type: 'get',
+      success: (data) => {
+        this.setState({tagList: data.tagList})
+      },
+      error: () => {}
+    })
   }
 
   purgeDeleted() {
@@ -172,6 +205,30 @@ export default class Settings extends Component {
       purge = <p>No deleted stories require purging.</p>
     }
 
+    let tags = <p>No tags found.</p>
+    if (this.state.tagList.length > 0) {
+      const rows = this.state.tagList.map((value, key) => {
+        return (
+          <tr key={key}>
+            <td className="admin">
+              <button className="btn btn-outline-primary mr-1">
+                <i className="fas fa-edit text-primary"></i>
+              </button>
+              <button
+                className="btn btn-outline-danger"
+                onClick={this.deleteTag.bind(this, value.value)}>
+                <i className="fas fa-trash-alt text-danger"></i>
+              </button>
+            </td>
+            <td className="tag-name">{value.label}</td>
+          </tr>
+        )
+      })
+      tags = <table className="table">
+        <tbody>{rows}</tbody>
+      </table>
+    }
+
     return (
       <div>
         <Navbar header={'Stories settings'}/>
@@ -292,6 +349,14 @@ export default class Settings extends Component {
             <div className="settings">
               <h3>Purge</h3>
               {purge}
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="settings">
+              <h3>Tags</h3>
+              <div className="tags">
+                {tags}
+              </div>
             </div>
           </div>
         </div>
