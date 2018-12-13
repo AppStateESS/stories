@@ -16,3 +16,16 @@ div.settings h3 {
 .raw-input {
   width : 50px;
 }
+
+.tags {
+  height : 250px;
+  overflow-y : scroll;
+}
+
+.tags table td.admin {
+  width : 120px;
+}
+
+.tags table td.tag-name {
+  font-size : 20px;
+}
