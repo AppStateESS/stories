@@ -39,8 +39,25 @@ class Admin extends RoleController
     {
         $publishFactory = new PublishFactory;
         $publishedTitles = $publishFactory->featureList();
-        $featureStories = $this->factory->listing($request->pullGetInteger('featureId'), false);
-        return ['featureStories' => $featureStories ?? [], 'publishedTitles' => $publishedTitles];
+        $featureStories = $this->factory->listing($request->pullGetInteger('featureId'),
+                        false) ?? [];
+        $filteredTitles = $this->filterPublishedTitles($featureStories, $publishedTitles);
+
+        return ['featureStories' => $featureStories, 'publishedTitles' => $filteredTitles];
+    }
+    
+    private function filterPublishedTitles($featureStories, $publishedTitles) {
+        $publishIds = [];
+        foreach ($featureStories as $f) {
+            $publishIds[] = $f['publishId'];
+        }
+        $filteredTitles = [];
+        foreach ($publishedTitles as $val) {
+            if (!in_array($val['id'], $publishIds)) {
+                $filteredTitles[] = $val;
+            }
+        }
+        return $filteredTitles;
     }
 
     protected function postCommand(Request $request)
