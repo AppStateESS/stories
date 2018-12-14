@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import FeatureDisplay from './FeatureDisplay'
 import Message from '../AddOn/Message'
 import ThumbnailOverlay from '../AddOn/ThumbnailOverlay'
+import StoryList from './StoryList'
 import {maxZoom, minZoom} from './config'
 
 import './style.css'
@@ -160,6 +161,15 @@ class FeatureStory extends React.Component {
       error: () => {}
     })
   }
+  
+  removePublish(publishId) {
+    let published = this.state.publishedTitles
+    const usedKey = published.findIndex((element)=>{
+      return element.id === publishId
+    })
+    published.splice(usedKey, 1)
+    this.setState({publishedTitles: published})
+  }
 
   addStory(publishId) {
     $.ajax({
@@ -171,12 +181,14 @@ class FeatureStory extends React.Component {
       dataType: 'json',
       type: 'post',
       success: () => {
+        //this.removePublish(publishId)
         this.load()
       },
       error: () => {}
     })
   }
 
+  /*
   changeStory(featureStoryId, publishId) {
     $.ajax({
       url: 'stories/FeatureStory/' + featureStoryId,
@@ -191,13 +203,10 @@ class FeatureStory extends React.Component {
       error: () => {}
     })
   }
+  */
 
-  applyStory(key, published) {
-    if (key === -1) {
-      this.addStory(published.value)
-    } else {
-      this.changeStory(this.state.featureStories[key].id, published.value)
-    }
+  applyStory(published) {
+    this.addStory(published.value)
   }
 
   clearStory(key) {
@@ -245,7 +254,6 @@ class FeatureStory extends React.Component {
   }
 
   render() {
-
     const formatTopBottom = this.props.srcHttp + 'mod/stories/img/top-bottom.png'
     const formatLandscape = this.props.srcHttp + 'mod/stories/img/landscape.png'
     const formatLeftRight = this.props.srcHttp + 'mod/stories/img/left-right.png'
@@ -267,6 +275,7 @@ class FeatureStory extends React.Component {
           saveThumbnail={this.saveThumbnail}/>
       )
     }
+
     return (
       <div>
         {thumbnailOverlay}
@@ -321,6 +330,12 @@ class FeatureStory extends React.Component {
             savePosition={this.savePosition}
             featureStories={this.state.featureStories}
             publishedTitles={this.state.publishedTitles}/>
+        </div>
+        <hr/>
+        <div className="row justify-content-sm-center">
+          <div className="col-sm-8 col-md-6">
+            <StoryList titles={this.state.publishedTitles} applyStory={this.applyStory}/>
+          </div>
         </div>
       </div>
     )

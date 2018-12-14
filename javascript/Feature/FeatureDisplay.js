@@ -2,12 +2,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import DisplayColumn from './DisplayColumn'
-import SampleStory from './SampleStory'
+//import SampleStory from './SampleStory'
 
 const FeatureDisplay = ({
   featureStories,
   publishedTitles,
-  srcHttp,
   format,
   moveThumb,
   holdThumb,
@@ -22,9 +21,7 @@ const FeatureDisplay = ({
   let storyCount = featureStories.length
 
   let formDisplay
-  if (storyCount < 8) {
-    storyCount++
-  }
+  
   const getBsClass = (storyCount, currentCount) => {
     switch (storyCount) {
       case 1:
@@ -78,15 +75,15 @@ const FeatureDisplay = ({
         format={format}/>
     )
   })
-  if (storyCount < 8) {
-    const bsClass = getBsClass(storyCount, storyCount)
-    formDisplay = <DisplayColumn
-      bsClass={bsClass}
-      story={SampleStory(srcHttp)}
-      applyStory={applyStory.bind(null, -1)}
-      publishedTitles={publishedTitles}
-      format={format}/>
-  }
+  // if (storyCount < 8) {
+  //   const bsClass = getBsClass(storyCount, storyCount)
+  //   formDisplay = <DisplayColumn
+  //     bsClass={bsClass}
+  //     story={SampleStory(srcHttp)}
+  //     applyStory={applyStory.bind(null, -1)}
+  //     publishedTitles={publishedTitles}
+  //     format={format}/>
+  // }
   return (<div className="row">{storyList}{formDisplay}</div>)
 }
 

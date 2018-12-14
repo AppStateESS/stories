@@ -1,7 +1,6 @@
 'use strict'
 import React from 'react'
 import PropTypes from 'prop-types'
-import Select from 'react-select'
 import MoveButton from './MoveButton'
 import 'react-select/dist/react-select.min.css'
 import {maxZoom, minZoom} from './config'
@@ -117,16 +116,14 @@ class DisplayColumn extends React.Component {
   }
 
   render() {
+
     const {
       format,
       bsClass,
       story,
-      publishedTitles,
-      applyStory,
       clearStory,
-      savePosition,
-      previousEmpty,
-      updated
+      updated,
+      savePosition
     } = this.props
     const _class = 'story-feature ' + format
     const position = `${story.x}% ${story.y}%`
@@ -159,35 +156,6 @@ class DisplayColumn extends React.Component {
       }
     }
 
-    const selectCss = {
-      width: '80%'
-    }
-
-    let storyList = <em>No published stories available</em>
-    if (publishedTitles !== undefined) {
-      let storyOptions = publishedTitles.map(function (value) {
-        return {value: value.id, label: value.title}
-      })
-      if (previousEmpty) {
-        storyList = null
-      } else {
-        storyList = (
-          <div className="mb-1">
-            <div className="clearfix">
-              <div className="float-left mr-2" style={selectCss}>
-                <Select options={storyOptions} value={0} onChange={applyStory}/>
-              </div>
-              <div
-                className="badge badge-info pointer"
-                id="feature-note"
-                data-toggle="popover"
-                data-container="body">?</div>
-            </div>
-            <div className="mt-2">{saveButton}{clearButton}</div>
-          </div>
-        )
-      }
-    }
     let authorPic
     if (story.authorPic != undefined && story.authorPic.length > 0) {
       authorPic = (
@@ -221,7 +189,7 @@ class DisplayColumn extends React.Component {
             </div>
           </div>
         </div>
-        {storyList}
+        <div className="mt-2">{saveButton}{clearButton}</div>
       </div>
     )
   }
@@ -232,16 +200,13 @@ DisplayColumn.propTypes = {
   format: PropTypes.string,
   story: PropTypes.object,
   stories: PropTypes.array,
-  applyStory: PropTypes.func,
-  clearStory: PropTypes.func,
   moveThumb: PropTypes.func,
   resetThumb: PropTypes.func,
   stopMove: PropTypes.func,
   setZoom: PropTypes.func,
   holdThumb: PropTypes.func,
   thumbnailForm: PropTypes.func,
-  updated: PropTypes.bool,
-  previousEmpty: PropTypes.bool
+  clearStory: PropTypes.func
 }
 
 export default DisplayColumn
