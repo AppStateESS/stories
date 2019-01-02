@@ -14,7 +14,6 @@ const StoryList = ({titles, applyStory}) => {
   let storyOptions = titles.map(function (value) {
     return {value: value.id, label: value.title}
   })
-  // if (previousEmpty) {   return null } else {
   return (
     <div className="mb-1">
       <div className="clearfix">
@@ -29,7 +28,6 @@ const StoryList = ({titles, applyStory}) => {
       </div>
     </div>
   )
-  // }
 }
 
 StoryList.propTypes = {
