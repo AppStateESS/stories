@@ -181,29 +181,11 @@ class FeatureStory extends React.Component {
       dataType: 'json',
       type: 'post',
       success: () => {
-        //this.removePublish(publishId)
         this.load()
       },
       error: () => {}
     })
   }
-
-  /*
-  changeStory(featureStoryId, publishId) {
-    $.ajax({
-      url: 'stories/FeatureStory/' + featureStoryId,
-      data: {
-        publishId: publishId
-      },
-      dataType: 'json',
-      type: 'put',
-      success: () => {
-        this.load()
-      },
-      error: () => {}
-    })
-  }
-  */
 
   applyStory(published) {
     this.addStory(published.value)
