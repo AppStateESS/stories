@@ -39,7 +39,7 @@ export default class Settings extends Component {
   }
 
   deleteTag(tag) {
-    const ask = `Deleting this tag will remove ${tag.count} associated stor${tag.count === '1' ? 'y' : 'ies'}.\rAre you sure you want to do this?`
+    const ask = `Deleting this tag will affect ${tag.count} associated stor${tag.count === '1' ? 'y' : 'ies'}.\rAre you sure you want to do this?`
     if (confirm(ask)) {
       $.ajax({
         url: './stories/Tag/' + tag.id,
