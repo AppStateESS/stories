@@ -61,8 +61,14 @@ class Admin extends User
      */
     public function deleteCommand(Request $request)
     {
-        $this->factory->removeFromGuest($this->id);
+        try {
+            $this->factory->removeFromGuest($this->id);
+        } catch (\Exception $e) {
+            $this->factory->delete($this->id);
+            throw $e;
+        }
         $this->factory->delete($this->id);
+
         return ['success' => true];
     }
 
