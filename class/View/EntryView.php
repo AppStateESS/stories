@@ -211,6 +211,12 @@ EOF;
             $data['content'] = $this->removeSummaryTag($data['content']);
             $templateFile = 'Entry/FullListView.html';
         } else {
+            if (Settings::get('stories', 'summaryAnchor')) {
+                $data['summaryAnchor'] = '#read-more';
+            } else {
+                $data['summaryAnchor'] = '';
+            }
+                
             $templateFile = 'Entry/SummaryListView.html';
         }
         // Removed the summary break tag
@@ -229,7 +235,7 @@ EOF;
     private function removeSummaryTag($content)
     {
         $content = preg_replace('/<p( class="")?>::summary(<br\s?\/?>)?<\/p>/',
-                '', $content);
+                '<a id="read-more"></a>', $content);
         return $content;
     }
 

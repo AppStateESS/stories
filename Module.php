@@ -45,6 +45,7 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
             'showComments' => 0,
             'showAuthor' => 0,
             'featureCutOff' => 2,
+            'summaryAnchor' => 0,
             'twitterDefault' => '');
         return $settings;
     }

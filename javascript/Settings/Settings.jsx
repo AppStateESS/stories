@@ -18,6 +18,7 @@ export default class Settings extends Component {
       listStories: 0,
       listStoryAmount: 3,
       listStoryFormat: 0,
+      summaryAnchor: 0,
       purgeVerified: false,
       showComments: 0,
       featureCutOff: '0',
@@ -39,7 +40,9 @@ export default class Settings extends Component {
   }
 
   deleteTag(tag) {
-    const ask = `Deleting this tag will affect ${tag.count} associated stor${tag.count === '1' ? 'y' : 'ies'}.\rAre you sure you want to do this?`
+    const ask = `Deleting this tag will affect ${tag.count} associated stor${tag.count === '1'
+      ? 'y'
+      : 'ies'}.\rAre you sure you want to do this?`
     if (confirm(ask)) {
       $.ajax({
         url: './stories/Tag/' + tag.id,
@@ -316,6 +319,10 @@ export default class Settings extends Component {
                 handle={this.saveSetting.bind(this, 'hideDefault')}
                 checked={this.state.hideDefault}
                 label="Hide side bar when viewing stories"/>
+              <BigCheckbox
+                handle={this.saveSetting.bind(this, 'summaryAnchor')}
+                checked={this.state.summaryAnchor}
+                label="Use &quot;Read more&quot; summary anchor"/>
             </div>
           </div>
           <div className="col-md-6">

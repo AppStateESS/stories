@@ -146,7 +146,7 @@ class DisplayColumn extends React.Component {
         title="Remove story from feature list"
         className="btn btn-danger btn-sm"
         onClick={clearStory}>
-        <i className="fas fa-times"></i>
+        <i className="fas fa-times"></i> Remove
       </button>
 
       if (updated) {
@@ -155,7 +155,7 @@ class DisplayColumn extends React.Component {
             title="Save updates"
             className="btn btn-success btn-sm mr-1"
             onClick={savePosition}>
-            <i className="fas fa-save"></i>
+            <i className="fas fa-save"></i> Save thumbnail changes
           </button>
         )
       }
