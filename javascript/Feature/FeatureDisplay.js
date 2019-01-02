@@ -2,7 +2,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import DisplayColumn from './DisplayColumn'
-//import SampleStory from './SampleStory'
 
 const FeatureDisplay = ({
   featureStories,
@@ -75,15 +74,7 @@ const FeatureDisplay = ({
         format={format}/>
     )
   })
-  // if (storyCount < 8) {
-  //   const bsClass = getBsClass(storyCount, storyCount)
-  //   formDisplay = <DisplayColumn
-  //     bsClass={bsClass}
-  //     story={SampleStory(srcHttp)}
-  //     applyStory={applyStory.bind(null, -1)}
-  //     publishedTitles={publishedTitles}
-  //     format={format}/>
-  // }
+
   return (<div className="row">{storyList}{formDisplay}</div>)
 }
 
