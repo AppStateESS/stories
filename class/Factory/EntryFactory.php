@@ -263,11 +263,9 @@ class EntryFactory extends BaseFactory
         }
 
         $tagFactory = new TagFactory;
-        $address = \Canopy\Server::getSiteUrl();
         foreach ($objectList as $entry) {
             $row = $entry->getStringVars();
-
-            $row['currentUrl'] = $address . 'stories/Entry/' . $row['urlTitle'];
+            $row['currentUrl'] = $entry->getUrl(false, false);
             if ($options['showTagLinks']) {
                 $row['tagLinks'] = $tagFactory->getTagLinks($row['tags'],
                         $row['id'], $options['tag']);
