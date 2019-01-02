@@ -26,10 +26,8 @@ export default class Publish extends Component {
     this.closeOverlay = this.closeOverlay.bind(this)
   }
 
-  setPublishDate(e) {
-    const value = e.target.value
-    const publishDate = moment(value).unix()
-    this.setState({publishDate: publishDate})
+  setPublishDate(publishDate) {
+    this.setState({publishDate: publishDate.getTime() / 1000})
   }
 
   shareStory() {
@@ -143,7 +141,7 @@ export default class Publish extends Component {
     } else if (this.state.publishDate < now) {
       publishLink = 'Published'
     } else {
-      const relative = moment(this.state.publishDate * 1000).format('LLL')
+      const relative = moment.unix(this.state.publishDate).format('MMM DD, YYYY hh:mm a')
       publishLink = `Publish after ${relative}`
     }
 

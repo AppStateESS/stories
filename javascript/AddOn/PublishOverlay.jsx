@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import Overlay from '@essappstate/canopy-react-overlay'
 import ShareStory from './ShareStory'
 import moment from 'moment'
+import DatePicker from 'react-datepicker'
+import "react-datepicker/dist/react-datepicker.css"
 
 const PublishOverlay = ({
   publishDate,
@@ -19,18 +21,16 @@ const PublishOverlay = ({
   hostId,
   show
 }) => {
-  let formattedDate = moment().format('YYYY-MM-DDThh:mm')
-  if (publishDate.length !== 0) {
-    formattedDate = moment.unix(publishDate).format('YYYY-MM-DDTkk:mm')
-  }
   
+  const publishDateObj = new Date(publishDate * 1000)
+
   let publishButton
   const closeButton = (
     <button className="btn btn-danger btn-block" onClick={savePublishDate}>Close</button>
   )
 
   const now = parseInt(moment().format('X'))
-  const relative = moment(publishDate * 1000).format('LLL')
+  const relative = moment(publishDate * 1000).format('MMM DD, YYYY hh:mm a')
 
   if (isPublished == 0) {
     let publishLabel = 'Publish now!'
@@ -47,17 +47,20 @@ const PublishOverlay = ({
     shareStoryForm = (
       <div className="card mb-4 border-primary">
         <div className="card-body">
-          <ShareStory shareList={shareList} shareStory={shareStory} changeHost={changeHost} hostId={hostId}/> {shareStatus}
+          <ShareStory
+            shareList={shareList}
+            shareStory={shareStory}
+            changeHost={changeHost}
+            hostId={hostId}/> {shareStatus}
         </div>
       </div>
     )
   }
-
   return (
     <Overlay
       show={show}
       close={savePublishDate}
-      width="500px"
+      width="550px"
       title={`Publish story: ${title}`}>
       <div className="card mb-4 border-primary">
         <div className="card-body">
@@ -65,11 +68,15 @@ const PublishOverlay = ({
             <div className="input-group-prepend">
               <span className="input-group-text">Show story after:</span>
             </div>
-            <input
+            <DatePicker
+              selected={publishDateObj}
+              onChange={setPublishDate}
               className="form-control"
-              type="datetime-local"
-              value={formattedDate}
-              onChange={setPublishDate}/>
+              showTimeSelect={true}
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="MMM d, yyyy h:mm aa"
+              timeCaption="time"/>
           </div>
           <div>{publishButton}</div>
           <div className="text-center mt-2">
@@ -88,11 +95,12 @@ PublishOverlay.propTypes = {
   shareList: PropTypes.array,
   shareStatus: PropTypes.element,
   shareStory: PropTypes.func,
-  hostId: PropTypes.oneOfType([PropTypes.string,PropTypes.number,]),
+  hostId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   isPublished: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   unpublish: PropTypes.func,
   publish: PropTypes.func,
   publishDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  publishDateObj: PropTypes.object,
   setPublishDate: PropTypes.func,
   publishStory: PropTypes.func,
   changeHost: PropTypes.func,
