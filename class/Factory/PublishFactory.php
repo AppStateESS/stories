@@ -244,7 +244,7 @@ class PublishFactory extends BaseFactory
     public function featureList()
     {
         $featureCutOff = $this->getCutOffTime();
-
+        $options = [];
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addFieldConditional('publishDate', $featureCutOff, '>');
