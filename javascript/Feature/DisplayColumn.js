@@ -20,10 +20,15 @@ class DisplayColumn extends React.Component {
   }
 
   componentDidMount() {
+    this.enablePopover()
+  }
+
+  enablePopover() {
     $('#feature-note').popover({
       html: true,
-      content: '<span>To be featured, a story must be <strong>published</strong> with a title ' +
-          'and image</span>',
+      content: '<span>To be featured, a story must be ' +
+      '<strong>published</strong>, within the feature cutoff ' + 
+      'time, and have both a title and image</span>',
       trigger: 'hover'
     })
   }
