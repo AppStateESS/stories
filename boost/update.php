@@ -94,6 +94,8 @@ class StoriesUpdate
                 $this->update('1.5.4');
             case $this->compare('1.5.5'):
                 $this->update('1.5.5');
+            case $this->compare('1.5.6'):
+                $this->update('1.5.6');
         }
         return $this->content;
     }
@@ -290,6 +292,16 @@ class StoriesUpdate
         $changes[] = 'Fixed production build javascript.';
         $changes[] = 'Added tag deletion.';
         $this->addContent('1.5.5', $changes);
+    }
+    
+    private function v1_5_6()
+    {
+        $changes[] = 'Updated Feature UI.';
+        $changes[] = 'Repeat features prevented.';
+        $changes[] = 'New date ui for publish date.';
+        $changes[] = 'Permanent link uses story id.';
+        $changes[] = 'Option to show full story starting at anchor.';
+        $this->addContent('1.5.6', $changes);
     }
 
     private function addContent($version, array $changes)
