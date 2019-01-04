@@ -96,6 +96,8 @@ class StoriesUpdate
                 $this->update('1.5.5');
             case $this->compare('1.5.6'):
                 $this->update('1.5.6');
+            case $this->compare('1.5.7'):
+                $this->update('1.5.7');
         }
         return $this->content;
     }
@@ -302,6 +304,13 @@ class StoriesUpdate
         $changes[] = 'Permanent link uses story id.';
         $changes[] = 'Option to show full story starting at anchor.';
         $this->addContent('1.5.6', $changes);
+    }
+    
+    private function v1_5_7()
+    {
+        $changes[] = 'Fixed install bug.';
+        $changes[] = 'Fixed Feature Popover problem.';
+        $this->addContent('1.5.7', $changes);
     }
 
     private function addContent($version, array $changes)
