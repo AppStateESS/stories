@@ -19,20 +19,6 @@ class DisplayColumn extends React.Component {
     this.zoomIn = this.zoomIn.bind(this)
   }
 
-  componentDidMount() {
-    this.enablePopover()
-  }
-
-  enablePopover() {
-    $('#feature-note').popover({
-      html: true,
-      content: '<span>To be featured, a story must be ' +
-      '<strong>published</strong>, within the feature cutoff ' + 
-      'time, and have both a title and image</span>',
-      trigger: 'hover'
-    })
-  }
-
   setShowButtons(value) {
     this.setState({showButtons: value})
   }
