@@ -146,7 +146,6 @@ class EntryResource extends BaseResource
 
     public function __construct()
     {
-        $listStoryFormat = \phpws2\Settings::get('stories', 'listStoryFormat');
         parent::__construct();
         $this->authorEmail = new \phpws2\Variable\Email(null, 'authorEmail');
         $this->authorEmail->allowNull(true);
@@ -183,7 +182,7 @@ class EntryResource extends BaseResource
         $this->tags->allowNull(true);
         $this->tags->setIsTableColumn(false);
         $this->urlTitle = new \phpws2\Variable\TextOnly(null, 'urlTitle', 100);
-        $this->listView = new \phpws2\Variable\SmallInteger($listStoryFormat, 'listView');
+        $this->listView = new \phpws2\Variable\SmallInteger(0, 'listView');
         $this->url = new \phpws2\Variable\Url;
         $this->strippedSummary = new \phpws2\Variable\TextOnly;
 
