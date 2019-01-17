@@ -33,6 +33,7 @@ class EmbedView extends View
     {
         switch (1) {
             case preg_match('/^https?:\/\/(www\.)?youtube\.com/', $url):
+            case preg_match('/^https?:\/\/youtu\.be/', $url):
                 $json = $this->youtube($url);
                 break;
 
