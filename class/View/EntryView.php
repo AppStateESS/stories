@@ -198,7 +198,7 @@ EOF;
         $entry = $this->factory->load($id);
         $data = $this->factory->data($entry, !$this->isAdmin);
         if (empty($data)) {
-            throw new ResourceNotFound;
+            throw new ResourceNotFound($id);
         }
         $this->includeCards($entry);
 
