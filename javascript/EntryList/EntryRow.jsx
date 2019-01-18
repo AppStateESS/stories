@@ -32,18 +32,24 @@ const EntryRow = (props) => {
     urlTitle
   } = entry
 
-  const publishNowPrompt = () => {
-    return (
-      <div className="alert alert-warning">Currently unpublished but you may&nbsp;
-        <a
-          href="#"
-          className="alert-link"
-          onClick={(e) => {
-            e.preventDefault()
-            publishStory()
-          }}>publish it now.</a>
-      </div>
-    )
+  const storyPrompt = (entry) => {
+    if (entry.title === "") {
+      return (
+        <div className="alert alert-warning">This story is <a href={`./stories/Entry/${entry.id}/edit`}>missing a title</a>.</div>
+      )
+    } else if (entry.published === '0') {
+      return (
+        <div className="alert alert-warning">Currently unpublished but you may&nbsp;
+          <a
+            href="#"
+            className="alert-link"
+            onClick={(e) => {
+              e.preventDefault()
+              publishStory()
+            }}>publish it now.</a>
+        </div>
+      )
+    }
   }
 
   const mailto = 'mailto:' + authorEmail
@@ -106,11 +112,7 @@ const EntryRow = (props) => {
   )
   return (
     <div className={rowClass}>
-      {
-        published === '0'
-          ? publishNowPrompt()
-          : null
-      }
+      {storyPrompt(entry)}
       <div className="row">
         <div className="col-sm-2">
           <div className="entry-image" onClick={props.thumbnailForm}>

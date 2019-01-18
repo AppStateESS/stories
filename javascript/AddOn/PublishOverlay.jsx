@@ -19,9 +19,9 @@ const PublishOverlay = ({
   shareStory,
   changeHost,
   hostId,
+  close,
   show
 }) => {
-  
   const publishDateObj = new Date(publishDate * 1000)
 
   let publishButton
@@ -56,6 +56,7 @@ const PublishOverlay = ({
       </div>
     )
   }
+
   return (
     <Overlay
       show={show}
@@ -80,7 +81,7 @@ const PublishOverlay = ({
           </div>
           <div>{publishButton}</div>
           <div className="text-center mt-2">
-            <span className="badge badge-info">Note: stories without content will not be published.</span>
+            <span className="badge badge-info">Note: stories without title or content will not be published.</span>
           </div>
         </div>
       </div>
@@ -104,7 +105,8 @@ PublishOverlay.propTypes = {
   setPublishDate: PropTypes.func,
   publishStory: PropTypes.func,
   changeHost: PropTypes.func,
-  show: PropTypes.bool
+  show: PropTypes.bool,
+  close: PropTypes.func,
 }
 
 PublishOverlay.defaultProps = {

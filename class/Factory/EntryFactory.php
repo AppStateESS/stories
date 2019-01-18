@@ -49,7 +49,8 @@ class EntryFactory extends BaseFactory
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
-    public function load(int $id, bool $allowDeleted = false, bool $allowedUnpublished = true)
+    public function load(int $id, bool $allowDeleted = false,
+            bool $allowedUnpublished = true)
     {
         $db = Database::getDB();
         $entryTbl = $db->addTable('storiesentry');
@@ -230,7 +231,7 @@ class EntryFactory extends BaseFactory
                 }
             }
         }
-        
+
         if ($options['offset'] < 1 && (int) $options['page'] > 1) {
             $options['offset'] = ((int) $options['page'] - 1) * $options['limit'];
         }
@@ -245,7 +246,7 @@ class EntryFactory extends BaseFactory
         $query = $db->selectQuery();
         $limit = $options['limit'];
         $offset = $options['offset'];
-        
+
         if (empty($objectList)) {
             return null;
         }
@@ -547,6 +548,14 @@ class EntryFactory extends BaseFactory
         }
     }
 
+    /**
+     * Updates values in an entry. If the entry updating fails (with publishing)
+     * then the updated is halted and false is returned. Successful updating returns
+     * the entry id.
+     * @param type $entryId
+     * @param Request $request
+     * @return int|false
+     */
     public function patch($entryId, Request $request)
     {
         $param = null;
@@ -557,18 +566,34 @@ class EntryFactory extends BaseFactory
             $values = $request->pullPatchArray('values');
             foreach ($values as $val) {
                 $param = $value = null;
-                $this->patchEntry($entry, $val['param'], $val['value']);
+                $result = $this->patchEntry($entry, $val['param'], $val['value']);
+                if (!$result) {
+                    break;
+                }
             }
         } else {
             $param = $request->pullPatchString('param');
             $value = $request->pullPatchVar('value');
-            $this->patchEntry($entry, $param, $value);
+            $result = $this->patchEntry($entry, $param, $value);
+        }
+        if (!$result) {
+            return false;
         }
         $entry->stamp();
         self::saveResource($entry);
         return $entry->id;
     }
 
+    /**
+     * Updates values in an entry. Checks specifically for the published status
+     * in order to run the publish/unpublish process. An unpublish is forced and
+     * a failure condition created when a publish is attempted with an empty 
+     * story.
+     * @param Resource $entry
+     * @param type $param
+     * @param type $value
+     * @return boolean
+     */
     private function patchEntry(Resource $entry, $param, $value)
     {
         $publishFactory = new PublishFactory;
@@ -577,6 +602,10 @@ class EntryFactory extends BaseFactory
                 if ($value == '0') {
                     $publishFactory->unpublishEntry($entry->id);
                 } else {
+                    if (empty($entry->title) || empty($entry->content)) {
+                        $publishFactory->unpublishEntry($entry->id);
+                        return false;
+                    }
                     $publishFactory->publishEntry($entry->id,
                             $entry->publishDate);
                 }
@@ -584,6 +613,7 @@ class EntryFactory extends BaseFactory
             default:
                 $entry->$param = $value;
         }
+        return true;
     }
 
     /**
@@ -614,7 +644,7 @@ class EntryFactory extends BaseFactory
     {
         $publishFactory = new PublishFactory;
         $featureStoryFactory = new FeatureStoryFactory;
-        
+
         $entry = $this->load($id);
         $entry->deleted = true;
 
@@ -658,7 +688,6 @@ class EntryFactory extends BaseFactory
                 '', $content);
     }
 
-
     /**
      * The Flickr oEmbed calls a script when pulled down. This script instantly
      * creates an iframe to replace the anchor tag. The iframe is useless;
@@ -685,7 +714,6 @@ class EntryFactory extends BaseFactory
                 $content);
         return $final;
     }
-
 
     private function removeExtraParagraphs($content)
     {

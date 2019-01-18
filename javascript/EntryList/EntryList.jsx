@@ -451,6 +451,7 @@ export default class EntryList extends Component {
           setPublishDate={this.setPublishDate}
           publish={this.publish}
           shareStatus={this.state.shareStatus}
+          close={this.closeOverlay}
           unpublish={this.unpublish}/>
         <TagOverlay
           show={this.state.tagOverlay}

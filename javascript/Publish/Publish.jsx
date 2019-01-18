@@ -25,7 +25,7 @@ export default class Publish extends Component {
     this.changeHost = this.changeHost.bind(this)
     this.closeOverlay = this.closeOverlay.bind(this)
   }
-
+  
   setPublishDate(publishDate) {
     this.setState({publishDate: publishDate.getTime() / 1000})
   }
@@ -80,8 +80,12 @@ export default class Publish extends Component {
       },
       dataType: 'json',
       type: 'patch',
-      success: function () {
-        this.setState({published: value.toString(), publishOverlay: false})
+      success: function (data) {
+        if (data.entryId) {
+          this.setState({published: value.toString(), publishOverlay: false})
+        } else {
+          this.setState({published: '0', publishOverlay: false})
+        }
       }.bind(this),
       error: function () {}.bind(this)
     })
@@ -122,6 +126,7 @@ export default class Publish extends Component {
       <PublishOverlay
         show={this.state.publishOverlay}
         title={this.state.title}
+        close={this.closeOverlay}
         savePublishDate={this.savePublishDate}
         isPublished={this.state.published}
         publishDate={this.state.publishDate}
