@@ -32,7 +32,7 @@ class PublishedView extends View
     {
         $this->includeCss();
         //$this->scriptView('Caption', false);
-        $this->scriptView('Tooltip', false);
+        $this->scriptView('Tooltip', false, null, false);
 
         $listOptions = $this->pullListOptions($request);
 

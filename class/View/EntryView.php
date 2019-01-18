@@ -272,7 +272,7 @@ EOF;
             }
             // @deprecated easier to center via css
             //$this->scriptView('Caption', false);
-            $this->scriptView('Tooltip', false);
+            $this->scriptView('Tooltip', false, null, false);
             $data['imageZoom'] = $this->imageZoom();
 
             $template = new \phpws2\Template($data);
