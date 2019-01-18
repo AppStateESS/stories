@@ -98,6 +98,8 @@ class StoriesUpdate
                 $this->update('1.5.6');
             case $this->compare('1.5.7'):
                 $this->update('1.5.7');
+            case $this->compare('1.5.8'):
+                $this->update('1.5.8');
         }
         return $this->content;
     }
@@ -311,6 +313,18 @@ class StoriesUpdate
         $changes[] = 'Fixed install bug.';
         $changes[] = 'Fixed Feature Popover problem.';
         $this->addContent('1.5.7', $changes);
+    }
+    
+    private function v1_5_8()
+    {
+        $changes[] = 'Added shortened url option for YouTube insertion.';
+        $changes[] = 'Added checks to prevent empty title and content publication.';
+        $changes[] = 'Removed babel-core';
+        $changes[] = 'Fixed publish warning message.';
+        $changes[] = 'Fixed bug with Settings page concerning tags.';
+        $changes[] = 'Removed vendor package inclusion on view.';
+        $changes[] = 'Darkened insert button.';
+        $this->addContent('1.5.8', $changes);
     }
 
     private function addContent($version, array $changes)
