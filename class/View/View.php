@@ -91,10 +91,10 @@ abstract class View
      * @param array $vars
      * @return string
      */
-    public function scriptView($view_name, $add_anchor = true, $vars = null)
+    public function scriptView($view_name, $add_anchor = true, $vars = null, $need_vendor = true)
     {
         static $vendor_included = false;
-        if (!$vendor_included) {
+        if (!$vendor_included && $need_vendor) {
             $script[] = $this->getScript('vendor');
             $vendor_included = true;
         }
@@ -167,7 +167,7 @@ EOF;
 
     protected function imageZoom()
     {
-        $this->scriptView('ImageZoom', false);
+        $this->scriptView('ImageZoom', false, null, false);
         $template = new Template();
         $template->setModuleTemplate('stories', 'ImageZoom.html');
         return $template->get();
