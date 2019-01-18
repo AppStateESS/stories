@@ -37,7 +37,7 @@ const EntryRow = (props) => {
       return (
         <div className="alert alert-warning">This story is <a href={`./stories/Entry/${entry.id}/edit`}>missing a title</a>.</div>
       )
-    } else if (entry.published === '0') {
+    } else if (published == 0) {
       return (
         <div className="alert alert-warning">Currently unpublished but you may&nbsp;
           <a
