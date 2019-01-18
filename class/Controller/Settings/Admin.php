@@ -79,7 +79,9 @@ class Admin extends RoleController
     {
         $tagFactory = new TagFactory;
         $listTags = $tagFactory->listTags();
-        
+        if (empty($listTags)) {
+            $listTags = [];
+        }
         return ['tagList'=>$listTags];
     }
         
