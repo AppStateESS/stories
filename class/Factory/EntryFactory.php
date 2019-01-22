@@ -214,6 +214,11 @@ class EntryFactory extends BaseFactory
                     $options['sortBy'] === 'title' ? 'asc' : 'desc');
         }
 
+        $tbl3 = $db->addTable('storiespublish');
+        $tbl3->addField('showInList');
+        $db->joinResources($tbl, $tbl3,
+                $db->createConditional($tbl->getField('id'),
+                        $tbl3->getField('entryId')), 'left');
 
         /**
          * To get an accurate test to see if there are more entries for 
