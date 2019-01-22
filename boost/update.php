@@ -297,7 +297,7 @@ class StoriesUpdate
         $changes[] = 'Added tag deletion.';
         $this->addContent('1.5.5', $changes);
     }
-    
+
     private function v1_5_6()
     {
         $changes[] = 'Updated Feature UI.';
@@ -307,14 +307,14 @@ class StoriesUpdate
         $changes[] = 'Option to show full story starting at anchor.';
         $this->addContent('1.5.6', $changes);
     }
-    
+
     private function v1_5_7()
     {
         $changes[] = 'Fixed install bug.';
         $changes[] = 'Fixed Feature Popover problem.';
         $this->addContent('1.5.7', $changes);
     }
-    
+
     private function v1_5_8()
     {
         $changes[] = 'Added shortened url option for YouTube insertion.';
@@ -325,6 +325,18 @@ class StoriesUpdate
         $changes[] = 'Removed vendor package inclusion on view.';
         $changes[] = 'Darkened insert button.';
         $this->addContent('1.5.8', $changes);
+    }
+
+    private function v1_6_0()
+    {
+        $db = Database::getDB();
+        $publishTable = $db->addTable('storiespublish');
+        if (!$publishTable->columnExists('showInList')) {
+            $dt = new \phpws2\Database\Datatype\Smallint($publishTable,
+                    'showInList');
+            $dt->setDefault(1);
+            $dt->add();
+        }
     }
 
     private function addContent($version, array $changes)
