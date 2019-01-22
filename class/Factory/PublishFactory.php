@@ -161,6 +161,14 @@ class PublishFactory extends BaseFactory
         $tbl->addFieldConditional('entryId', $entryId);
         return $db->delete();
     }
+    
+    public function patchByEntry($entryId, $varname, $value)
+    {
+        $publish = $this->loadByEntryId($entryId);
+        $publish->$varname = $value;
+        $this->saveResource($publish);
+        return true;
+    }
 
     public function listing(array $options = null)
     {
@@ -175,6 +183,7 @@ class PublishFactory extends BaseFactory
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addOrderBy('publishDate', 'desc');
+        $tbl->addFieldConditional('showInList', 1);
 
         /**
          * To get an accurate test to see if there are more entries for 
@@ -273,6 +282,19 @@ class PublishFactory extends BaseFactory
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addFieldConditional('shareId', $shareId);
+        $row = $db->selectOneRow();
+        if (empty($row)) {
+            return null;
+        }
+        $publish = $this->build($row);
+        return $publish;
+    }
+    
+    public function loadByEntryId($entryId)
+    {
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiespublish');
+        $tbl->addFieldConditional('entryId', $entryId);
         $row = $db->selectOneRow();
         if (empty($row)) {
             return null;
