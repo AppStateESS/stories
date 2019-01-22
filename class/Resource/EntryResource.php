@@ -138,6 +138,8 @@ class EntryResource extends BaseResource
     protected $listView;
     protected $url;
     protected $strippedSummary;
+    
+    protected $showInList;
 
     /**
      * @var string
@@ -185,8 +187,10 @@ class EntryResource extends BaseResource
         $this->listView = new \phpws2\Variable\SmallInteger(0, 'listView');
         $this->url = new \phpws2\Variable\Url;
         $this->strippedSummary = new \phpws2\Variable\TextOnly;
+        $this->showInList = new \phpws2\Variable\BooleanVar;
+        $this->showInList->allowNull(true);
 
-        $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags', 'url', 'strippedSummary'));
+        $this->doNotSave(array('authorName', 'authorEmail', 'authorPic', 'tags', 'url', 'strippedSummary', 'showInList'));
     }
 
     public function setTitle($title)
@@ -270,7 +274,7 @@ class EntryResource extends BaseResource
 
     public function getUrl(bool $short = true, $relative = true)
     {
-        $prefix = $relative ? './stories/' : PHPWS_SOURCE_HTTP . 'stories/';
+        $prefix = $relative ? './stories/' : PHPWS_HOME_HTTP . 'stories/';
         return $short ?
                 $prefix . $this->urlTitle->get() :
                 $prefix . 'Entry/' . $this->getId() . '/' . $this->urlTitle->get();
