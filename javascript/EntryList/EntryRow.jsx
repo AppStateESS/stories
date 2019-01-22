@@ -14,7 +14,7 @@ const EntryRow = (props) => {
     )
   }
 
-  const {entry, deleteStory, publishStory, showTags, sortByTag} = props
+  const {entry, deleteStory, publishStory, showTags, sortByTag, flipShowInList} = props
 
   const {
     authorEmail,
@@ -29,13 +29,15 @@ const EntryRow = (props) => {
     thumbnail,
     title,
     tags,
-    urlTitle
+    urlTitle,
+    showInList
   } = entry
 
   const storyPrompt = (entry) => {
     if (entry.title === "") {
       return (
-        <div className="alert alert-warning">This story is <a href={`./stories/Entry/${entry.id}/edit`}>missing a title</a>.</div>
+        <div className="alert alert-warning">This story is
+          <a href={`./stories/Entry/${entry.id}/edit`}>missing a title</a>.</div>
       )
     } else if (published == 0) {
       return (
@@ -62,14 +64,12 @@ const EntryRow = (props) => {
   let publishLabel
   let publishInfo
   if (published == 0) {
-    publishInfo = <span className="badge badge-warning">
-      <abbr title="Stories without content will remain unpublished">Unpublished</abbr>
-    </span>
+    publishInfo = <strong><abbr title="Stories without title or content will remain unpublished">Unpublished</abbr></strong>
   } else {
     if (publishDate >= moment().format('X')) {
       publishLabel = <strong>Publish on:</strong>
     } else {
-      publishLabel = <strong>Published</strong>
+      publishLabel = <strong>Published:</strong>
     }
     publishInfo = (
       <div>
@@ -110,6 +110,15 @@ const EntryRow = (props) => {
       </div>
     </div>
   )
+
+  let showInListButton
+  
+  if (showInList === '1') {
+    showInListButton = <div className="badge badge-success pointer" onClick={flipShowInList.bind(null, '0')}>Shown in list</div>
+  } else {
+    showInListButton = <div className="badge badge-warning pointer" onClick={flipShowInList.bind(null, '1')}>Hidden from list</div>
+  }
+
   return (
     <div className={rowClass}>
       {storyPrompt(entry)}
@@ -131,6 +140,7 @@ const EntryRow = (props) => {
             <strong>Created:</strong>&nbsp;<abbr title={createDate}>{createDateRelative}</abbr>
           </div>
           <div>{publishInfo}</div>
+          <div>{showInListButton}</div>
         </div>
       </div>
       {options}
@@ -148,7 +158,8 @@ EntryRow.propTypes = {
   sortByTag: PropTypes.func,
   thumbnailForm: PropTypes.func,
   setCurrentEntry: PropTypes.func,
-  showTags: PropTypes.func
+  showTags: PropTypes.func,
+  showInList: PropTypes.string
 }
 
 export default EntryRow

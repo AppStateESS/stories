@@ -63,6 +63,7 @@ export default class EntryList extends Component {
     this.savePublishDate = this.savePublishDate.bind(this)
     this.showPublishOverlay = this.showPublishOverlay.bind(this)
     this.saveThumbnail = this.saveThumbnail.bind(this)
+    this.flipShowInList = this.flipShowInList.bind(this)
   }
 
   saveThumbnail(file, entry) {
@@ -92,6 +93,23 @@ export default class EntryList extends Component {
       return entry
     }
     return this.state.listing[this.state.currentKey]
+  }
+
+  flipShowInList(key, value) {
+    const listing = this.state.listing
+    const entry = listing[key]
+    $.ajax({
+      url: './stories/Publish/' + entry.id,
+      data: {varname: 'showInList', value},
+      dataType: 'json',
+      type: 'patch',
+      success: ()=>{
+        entry.showInList = value
+        listing[key] = entry
+        this.setState({listing})
+      },
+      error: ()=>{}
+    })
   }
 
   showMore() {
@@ -388,9 +406,11 @@ export default class EntryList extends Component {
       listing = <NoEntries/>
     } else {
       let listResult = this.state.listing.map(function (entry, key) {
+        
         return <EntryRow
           deleteStory={this.deleteStory.bind(this, key)}
           entry={entry}
+          flipShowInList={this.flipShowInList.bind(this, key)}
           sortByTag={this.sortByTag}
           showTags={this.showTags.bind(this, key)}
           setCurrentEntry={this.setCurrentEntry.bind(this, key)}
