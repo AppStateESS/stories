@@ -31,6 +31,11 @@ class PublishResource extends BaseResource
     protected $publishDate;
     
     /**
+     * @var \phpws2\Variable\BooleanVar
+     */
+    protected $showInList;
+    
+    /**
      * @var string
      */
     protected $table = 'storiespublish';
@@ -41,6 +46,7 @@ class PublishResource extends BaseResource
         $this->entryId = new \phpws2\Variable\IntegerVar(0, 'entryId');
         $this->shareId = new \phpws2\Variable\IntegerVar(0, 'shareId');
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
+        $this->showInList = new \phpws2\Variable\BooleanVar(1, 'showInList');
     }
 
     public function stamp()
