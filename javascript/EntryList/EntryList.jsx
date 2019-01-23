@@ -99,7 +99,7 @@ export default class EntryList extends Component {
     const listing = this.state.listing
     const entry = listing[key]
     $.ajax({
-      url: './stories/Publish/' + entry.id,
+      url: './stories/Publish/' + entry.id + '/entry',
       data: {varname: 'showInList', value},
       dataType: 'json',
       type: 'patch',

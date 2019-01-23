@@ -169,6 +169,14 @@ class PublishFactory extends BaseFactory
         $this->saveResource($publish);
         return true;
     }
+    
+    public function patchByShare($shareId, $varname, $value)
+    {
+        $publish = $this->loadByShareId($shareId);
+        $publish->$varname = $value;
+        $this->saveResource($publish);
+        return true;
+    }
 
     public function listing(array $options = null)
     {

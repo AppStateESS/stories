@@ -14,10 +14,28 @@ export default class GuestListing extends Component {
       guest: {},
       loading: true
     }
+    this.flipShowInList = this.flipShowInList.bind(this)
   }
 
   componentDidMount() {
     this.load()
+  }
+  
+  flipShowInList(key, value) {
+    const listing = this.state.listing
+    const share = listing[key]
+    $.ajax({
+      url: './stories/Publish/' + share.id + '/share',
+      data: {varname: 'showInList', value},
+      dataType: 'json',
+      type: 'patch',
+      success: ()=>{
+        share.showInList = value
+        listing[key] = share
+        this.setState({listing})
+      },
+      error: ()=>{}
+    })
   }
 
   load() {
@@ -75,6 +93,14 @@ export default class GuestListing extends Component {
     } else {
 
       rows = this.state.listing.map((value, key) => {
+        let showInListButton
+        
+        if (value.showInList === '1') {
+          showInListButton = <div className="badge badge-success pointer" onClick={this.flipShowInList.bind(null, key, '0')}>Shown in list</div>
+        } else {
+          showInListButton = <div className="badge badge-warning pointer" onClick={this.flipShowInList.bind(null, key, '1')}>Hidden from list</div>
+        }
+        
         let approve
         if (value.approved === false) {
           approve = <a
@@ -98,9 +124,10 @@ export default class GuestListing extends Component {
               <div className="border-top mt-2 pt-2">
                 {approve}
                 <a
-                  className="badge badge-danger text-white"
+                  className="badge badge-danger text-white mr-2"
                   onClick={this.removeShare.bind(this, key)}
                   href="./#">Remove share</a>
+                  {showInListButton}
               </div>
             </div>
           </div>

@@ -29,9 +29,16 @@ class Admin extends RoleController
         
     }
 
-    protected function patchCommand(Request $request)
+    protected function entryPatchCommand(Request $request)
     {
         return ['success' => $this->factory->patchByEntry($this->id,
+                    $request->pullPatchString('varname'),
+                    $request->pullPatchBoolean('value'))];
+    }
+
+    protected function sharePatchCommand(Request $request)
+    {
+        return ['success' => $this->factory->patchByShare($this->id,
                     $request->pullPatchString('varname'),
                     $request->pullPatchBoolean('value'))];
     }

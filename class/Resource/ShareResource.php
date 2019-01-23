@@ -32,29 +32,30 @@ class ShareResource extends BaseResource
      * @var phpws2\Variable\Url
      */
     protected $url;
-    
+
     /**
      * @var \phpws2\Variable\DateTime
      */
     protected $publishDate;
-    
+
     /**
      * @var \phpws2\Variable\BooleanVar
      */
     protected $approved;
-    
+
     /**
      * @var \phpws2\Variable\DateTime
      */
     protected $submitDate;
-    
+
     /**
      * @var \phpws2\Variable\SmallInteger
      */
     protected $inaccessible;
-    
+    protected $showInList;
+
     /**
-     * @var string
+     * @var string     * 
      */
     protected $table = 'storiesshare';
 
@@ -65,22 +66,26 @@ class ShareResource extends BaseResource
         $this->entryId = new \phpws2\Variable\IntegerVar(null, 'entryId');
         $this->publishDate = new \phpws2\Variable\DateTime(0, 'publishDate');
         $this->submitDate = new \phpws2\Variable\DateTime(0, 'submitDate');
-        $this->inaccessible = new \phpws2\Variable\SmallInteger(0, 'inaccessible');
+        $this->inaccessible = new \phpws2\Variable\SmallInteger(0,
+                'inaccessible');
         $this->url = new \phpws2\Variable\StringVar(null, 'url');
         $this->url->setLimit(200);
         $this->approved = new \phpws2\Variable\BooleanVar(false, 'approved');
+        $this->showInList = new \phpws2\Variable\BooleanVar;
+        $this->showInList->allowNull(true);
+        $this->doNotSave(array('showInList'));
     }
 
     public function stampSubmit()
     {
         $this->submitDate->stamp();
     }
-    
+
     public function stampPublish()
     {
         $this->publishDate->stamp();
     }
-    
+
     public function incrementInaccessible()
     {
         $this->inaccessible->increase();

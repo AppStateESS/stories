@@ -92,6 +92,7 @@ class ShareFactory extends BaseFactory
         if (isset($jsonObject->error)) {
             return $jsonObject;
         }
+        $jsonObject->showInList = (string)(int)$share->showInList;
         $jsonObject->approved = $share->approved;
         $jsonObject->entryId = $jsonObject->id;
         $jsonObject->id = $share->id;
@@ -274,6 +275,12 @@ EOF;
         $tbl = $db->addTable('storiesshare');
         $tbl->addOrderBy('publishDate', 'desc');
         $tbl->addFieldConditional('guestId', $guestId);
+        
+        $tbl2 = $db->addTable('storiespublish');
+        $tbl2->addField('showInList');
+        $db->joinResources($tbl, $tbl2,
+                $db->createConditional($tbl->getField('id'),
+                        $tbl2->getField('shareId')), 'left');
         $shares = $db->select();
         if (empty($shares)) {
             return;

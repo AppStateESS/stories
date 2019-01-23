@@ -159,7 +159,8 @@ EntryRow.propTypes = {
   thumbnailForm: PropTypes.func,
   setCurrentEntry: PropTypes.func,
   showTags: PropTypes.func,
-  showInList: PropTypes.string
+  showInList: PropTypes.string,
+  flipShowInList: PropTypes.func,
 }
 
 export default EntryRow
