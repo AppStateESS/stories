@@ -8,33 +8,40 @@ const ShareStoriesListing = ({listing, approve, deny}) => {
     return <p>No shared stories.</p>
   }
 
-  const style = {
-    height: '60px'
-  }
-
   let rows = listing.map((value, key) => {
-    const denyButton = (
-      <button className="btn btn-danger btn-sm" onClick={deny.bind(null, value.id)}>
-        <i className="fas fa-times fa-fw"></i>
-      </button>
+    const denyLink = (
+      <a className="d-block badge badge-danger text-white pointer" onClick={deny.bind(null, value.id)}>
+        Deny story
+      </a>
     )
-    let approveButton = null
+    let approveListLink
+    let approveNoListLink
     if (value.error == undefined) {
-      approveButton = (
-        <button
-          className="btn btn-success btn-sm mr-1"
-          onClick={approve.bind(null, value.id)}>
-          <i className="fas fa-check fa-fw"></i>
-        </button>
+      approveListLink = (
+        <a
+          className="d-block badge badge-success text-light mb-1 pointer"
+          onClick={approve.bind(null, value.id, 1)}>
+          Add to list
+        </a>
+      )
+      approveNoListLink = (
+        <a
+          className="d-block badge badge-success text-light mb-1 pointer"
+          onClick={approve.bind(null, value.id, 0)}>
+          Add, do not list
+        </a>
       )
       return (
         <tr key={key}>
-          <td>
-            {approveButton}
-            {denyButton}
+          <td className="w-30">
+            <ul className="list-unstyled">
+              <li>{approveListLink}</li>
+              <li>{approveNoListLink}</li>
+              <li>{denyLink}</li>
+            </ul>
           </td>
           <td>
-            <img src={value.thumbnail} style={style}/>
+            <img className="share-thumbnail" src={value.thumbnail}/>
           </td>
           <td>
             <a href={value.siteUrl}>{value.siteName}</a>
@@ -42,16 +49,22 @@ const ShareStoriesListing = ({listing, approve, deny}) => {
           <td>
             <a href={value.url}>{value.title}</a>
           </td>
-          <td><abbr className="summary" title={value.strippedSummary}>{value.strippedSummary.substr(0, 50)}</abbr></td>
+          <td>
+            <abbr className="summary" title={value.strippedSummary}>{value.strippedSummary.substr(0, 50)}</abbr>
+          </td>
         </tr>
       )
     } else {
       return (
         <tr key={key}>
-          <td>{denyButton}</td>
+          <td>{denyLink}</td>
           <td></td>
-          <td><a href={value.siteUrl}>{value.siteName}</a></td>
-          <td colSpan="2">Failure to communicate with guest site. Suggest denying share.<br /><a href={value.url}>{value.url}</a></td>
+          <td>
+            <a href={value.siteUrl}>{value.siteName}</a>
+          </td>
+          <td colSpan="2">Failure to communicate with guest site. Suggest denying share.<br/>
+            <a href={value.url}>{value.url}</a>
+          </td>
         </tr>
       )
     }

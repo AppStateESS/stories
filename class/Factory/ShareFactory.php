@@ -111,21 +111,21 @@ class ShareFactory extends BaseFactory
         return $jsonObject;
     }
 
-    public function pullShareData($shareId)
+    public function pullShareData(int $shareId)
     {
         $share = $this->load($shareId);
         $shareData = $this->jsonShareData($share);
         return $shareData;
     }
 
-    public function approve(int $shareId)
+    public function approve(int $shareId, int $list)
     {
         $share = $this->load($shareId);
         $share->approved = true;
         $share->stampPublish();
         self::saveResource($share);
         $publishFactory = new PublishFactory;
-        $publishFactory->publishShare($shareId, time());
+        $publishFactory->publishShare($shareId, time(), $list);
     }
 
     public function deny(int $shareId)

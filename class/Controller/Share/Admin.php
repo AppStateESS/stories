@@ -39,7 +39,7 @@ class Admin extends User
 
     protected function approvePutCommand(Request $request)
     {
-        $this->factory->approve($this->id);
+        $this->factory->approve($this->id, $request->pullPutInteger('list'));
         return ['success' => true];
     }
 

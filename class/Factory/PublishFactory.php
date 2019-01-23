@@ -61,12 +61,13 @@ class PublishFactory extends BaseFactory
         }
     }
 
-    public function publishShare(int $shareId, int $publishDate)
+    public function publishShare(int $shareId, int $publishDate, int $showInList=1)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
         $tbl->addValue('shareId', $shareId);
         $tbl->addValue('publishDate', $publishDate);
+        $tbl->addValue('showInList', $showInList);
         $db->insert();
     }
 

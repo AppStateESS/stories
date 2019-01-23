@@ -3,3 +3,11 @@ abbr.summary {
   text-decoration-style: dotted;
   text-decoration-color: rgb(129, 129, 129);
 }
+
+.approve-story {
+  font-size : 12px;
+}
+
+.share-thumbnail {
+  width : 150px;
+}

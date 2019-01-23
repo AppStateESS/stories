@@ -47,9 +47,10 @@ export default class SharedStories extends Component {
     })
   }
   
-  approve(id) {
+  approve(id, list) {
     $.ajax({
       url: './stories/Share/' + id + '/approve',
+      data: {list},
       dataType: 'json',
       type: 'put',
       success: ()=>{
