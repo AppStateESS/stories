@@ -29,6 +29,18 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
         $this->setProperName('Stories');
         spl_autoload_register('\stories\Module::autoloader', true, true);
     }
+    
+    public function needsUpdate() {
+        if (empty($this->file_version)) {
+            $this->loadFileVersion();
+        }
+        return version_compare($this->file_version, $this->version, '>');
+    }
+    
+    public function loadFileVersion() {
+        include PHPWS_SOURCE_DIR . 'mod/' . $this->title . '/boost/boost.php';
+        $this->file_version = $version;
+    }
 
     public function getSettingDefaults()
     {
@@ -99,6 +111,10 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     private function frontPage(Request $request)
     {
         if (!$request->isGet() || $request->getUrl() != '/') {
+            return;
+        }
+        if ($this->needsUpdate()) {
+            \Layout::add('<div class="alert alert-warning">Stories needs updating.</div>', 'stories', 'stories', true);
             return;
         }
         $featureView = new \stories\View\FeatureView;

@@ -100,6 +100,8 @@ class StoriesUpdate
                 $this->update('1.5.7');
             case $this->compare('1.5.8'):
                 $this->update('1.5.8');
+            case $this->compare('1.6.0'):
+                $this->update('1.6.0');
         }
         return $this->content;
     }
@@ -337,6 +339,9 @@ class StoriesUpdate
             $dt->setDefault(1);
             $dt->add();
         }
+        $changes[] = 'Added way to remove stories from listing (i.e. feature only)';
+        $changes[] = 'Fixed permanent link.';
+        $this->addContent('1.6.0', $changes);
     }
 
     private function addContent($version, array $changes)
