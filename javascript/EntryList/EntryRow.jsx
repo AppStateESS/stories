@@ -36,7 +36,7 @@ const EntryRow = (props) => {
   const storyPrompt = (entry) => {
     if (entry.title === "") {
       return (
-        <div className="alert alert-warning">This story is
+        <div className="alert alert-warning">This story is&nbsp;
           <a href={`./stories/Entry/${entry.id}/edit`}>missing a title</a>.</div>
       )
     } else if (published == 0) {
