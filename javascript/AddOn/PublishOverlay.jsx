@@ -19,7 +19,6 @@ const PublishOverlay = ({
   shareStory,
   changeHost,
   hostId,
-  close,
   show
 }) => {
   const publishDateObj = new Date(publishDate * 1000)
@@ -62,6 +61,7 @@ const PublishOverlay = ({
       show={show}
       close={savePublishDate}
       width="550px"
+      height="400px"
       title={`Publish story: ${title}`}>
       <div className="card mb-4 border-primary">
         <div className="card-body">
@@ -86,7 +86,7 @@ const PublishOverlay = ({
         </div>
       </div>
       {shareStoryForm}
-      <div>{closeButton}</div>
+      <div style={{position: 'absolute', bottom: 5, right: 5}}>{closeButton}</div>
     </Overlay>
   )
 }
