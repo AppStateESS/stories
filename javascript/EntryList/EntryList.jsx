@@ -194,10 +194,9 @@ export default class EntryList extends Component {
     }, this.load)
   }
 
-  setPublishDate(e) {
-    let entry = this.currentEntry()
-    const value = e.target.value
-    entry.publishDate = moment(value).unix()
+  setPublishDate(publishDate) {
+    const entry = this.currentEntry()
+    entry.publishDate = publishDate.getTime() / 1000
     this.updateEntry(entry)
   }
 

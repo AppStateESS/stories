@@ -61,7 +61,29 @@ class PublishFactory extends BaseFactory
         }
     }
 
-    public function publishShare(int $shareId, int $publishDate, int $showInList=1)
+    /**
+     * Changes the publish date of an entry only. Unpublished entries are
+     * ignored.
+     * @param int $entryId
+     * @param type $publishDate
+     * @return type
+     */
+    public function updatePublishDateByEntryId(int $entryId, $publishDate)
+    {
+        $publishId = $this->getPublishIdByEntryId($entryId);
+        if (empty($publishId)) {
+            return;
+        }
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiespublish');
+        $tbl->addValue('entryId', $entryId);
+        $tbl->addValue('publishDate', $publishDate);
+        $tbl->addFieldConditional('entryId', $entryId);
+        $db->update();
+    }
+
+    public function publishShare(int $shareId, int $publishDate,
+            int $showInList = 1)
     {
         $db = Database::getDB();
         $tbl = $db->addTable('storiespublish');
@@ -162,7 +184,7 @@ class PublishFactory extends BaseFactory
         $tbl->addFieldConditional('entryId', $entryId);
         return $db->delete();
     }
-    
+
     public function patchByEntry($entryId, $varname, $value)
     {
         $publish = $this->loadByEntryId($entryId);
@@ -170,7 +192,7 @@ class PublishFactory extends BaseFactory
         $this->saveResource($publish);
         return true;
     }
-    
+
     public function patchByShare($shareId, $varname, $value)
     {
         $publish = $this->loadByShareId($shareId);
@@ -193,6 +215,7 @@ class PublishFactory extends BaseFactory
         $tbl = $db->addTable('storiespublish');
         $tbl->addOrderBy('publishDate', 'desc');
         $tbl->addFieldConditional('showInList', 1);
+        $tbl->addFieldConditional('publishDate', time(), '<=');
 
         /**
          * To get an accurate test to see if there are more entries for 
@@ -298,7 +321,7 @@ class PublishFactory extends BaseFactory
         $publish = $this->build($row);
         return $publish;
     }
-    
+
     public function loadByEntryId($entryId)
     {
         $db = Database::getDB();

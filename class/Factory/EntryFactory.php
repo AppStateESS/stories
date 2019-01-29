@@ -614,6 +614,13 @@ class EntryFactory extends BaseFactory
                     $publishFactory->publishEntry($entry->id,
                             $entry->publishDate);
                 }
+                $entry->published = $value;
+                break;
+                
+            case 'publishDate':
+                $publishFactory->updatePublishDateByEntryId($entry->id, $value);
+                $entry->publishDate = $value;
+                break;
 
             default:
                 $entry->$param = $value;
