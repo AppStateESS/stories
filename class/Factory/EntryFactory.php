@@ -639,14 +639,6 @@ class EntryFactory extends BaseFactory
                         ['authorEmail', 'authorId', 'content', 'deleted', 'expirationDate', 'updateDate', 'createDateRelative', 'createDate', 'published']);
     }
 
-    public function data(Resource $entry, $publishOnly = true)
-    {
-        if ($publishOnly && (!$entry->published && $entry->publishDate < time())) {
-            return null;
-        }
-        return $entry->getStringVars(true);
-    }
-
     /**
      * Flips the deleted flag on the entry. Tags are not touched as the 
      * entry will not be pulled. Features will be purged however.

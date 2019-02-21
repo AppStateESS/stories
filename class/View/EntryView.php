@@ -73,7 +73,7 @@ class EntryView extends View
         $tagFactory = new TagFactory();
 
         $sourceHttp = PHPWS_SOURCE_HTTP;
-        $status = $new ? 'Draft' : 'Last updated ' . $entry->relativeTime($entry->updateDate);
+        $status = $new || empty($entry->updateDate) ? 'Draft' : 'Last updated ' . $entry->relativeTime($entry->updateDate);
         $entryVars = $entry->getStringVars();
         $entryVars['content'] = $this->prepareFormContent($entryVars['content']);
         $tags = $tagFactory->listTags(true);
@@ -131,7 +131,6 @@ class EntryView extends View
         \Layout::addJSHeader($this->includeFacebookCards($entry));
         \Layout::addJSHeader($this->includeTwitterCards($entry));
     }
-
 
     /**
      * Medium editor insert doesn't initialize the Twitter embed. Has to be done
@@ -196,10 +195,10 @@ EOF;
 
         \Layout::addJSHeader($this->mediumCSSOverride());
         $entry = $this->factory->load($id);
-        $data = $this->factory->data($entry, !$this->isAdmin);
-        if (empty($data)) {
-            throw new ResourceNotFound($id);
+        if (!$this->isAdmin && (!$entry->published && $entry->publishDate < time())) {
+            return null;
         }
+        $data = $entry->getStringVars(true);
         $this->includeCards($entry);
 
         if ($entry->listView == 1) {
@@ -216,7 +215,7 @@ EOF;
             } else {
                 $data['summaryAnchor'] = '';
             }
-                
+
             $templateFile = 'Entry/SummaryListView.html';
         }
         // Removed the summary break tag
@@ -248,10 +247,10 @@ EOF;
         try {
             $this->includeCss();
             $entry = $this->factory->load($id);
-            $data = $this->factory->data($entry, !$this->isAdmin);
-            if (empty($data)) {
-                throw new ResourceNotFound;
+            if (!$this->isAdmin && (!$entry->published && $entry->publishDate < time())) {
+                return null;
             }
+            $data = $entry->getStringVars(true);
             $this->includeCards($entry);
             if (stristr($entry->content, 'twitter')) {
                 $this->loadTwitterScript(true);

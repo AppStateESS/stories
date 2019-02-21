@@ -104,6 +104,8 @@ class StoriesUpdate
                 $this->update('1.6.0');
             case $this->compare('1.6.1'):
                 $this->update('1.6.1');
+            case $this->compare('1.6.2'):
+                $this->update('1.6.2');
         }
         return $this->content;
     }
@@ -350,6 +352,12 @@ class StoriesUpdate
     {
         $changes[] = 'Fixed bugs with publish date.';
         $this->addContent('1.6.1', $changes);
+    }
+    
+    private function v1_6_2()
+    {
+        $changes[] = 'Fixed bug with unpublished entry.';
+        $this->addContent('1.6.2', $changes);
     }
 
     private function addContent($version, array $changes)
