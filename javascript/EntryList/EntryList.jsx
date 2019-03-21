@@ -442,7 +442,7 @@ export default class EntryList extends Component {
 
     const header = {
       title: 'Stories list',
-      url: './stories/Listing'
+      url: './stories/Listing/admin'
     }
 
     const leftSide = (
