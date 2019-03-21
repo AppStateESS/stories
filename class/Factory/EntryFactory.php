@@ -226,7 +226,7 @@ class EntryFactory extends BaseFactory
          */
         if ($options['limit'] != 0) {
             if ($options['limit'] > STORIES_HARD_LIMIT) {
-                $limit = STORIES_HARD_LIMIT;
+                $limit = STORIES_HARD_LIMIT + 1;
             } else {
                 $limit = ((int) $options['limit']) + 1;
                 if (isset($options['offset'])) {
@@ -248,9 +248,6 @@ class EntryFactory extends BaseFactory
             return $db->select();
         }
         $objectList = $db->selectAsResources('\stories\Resource\EntryResource');
-        $query = $db->selectQuery();
-        $limit = $options['limit'];
-        $offset = $options['offset'];
 
         if (empty($objectList)) {
             return null;
