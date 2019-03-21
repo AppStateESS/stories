@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Matthew McNaney <mcnaneym@appstate.edu>.
+ * Copyright (c) 2019 Matthew McNaney <mcnaneym@appstate.edu>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
