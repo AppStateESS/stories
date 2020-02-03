@@ -456,8 +456,11 @@ class EntryFactory extends BaseFactory
     {
         $photoFactory = new EntryPhotoFactory();
         $content = $entry->content;
+        $content = str_ireplace('<blockquote>', '<p class="blockquote">',
+                $content);
+        $content = str_ireplace('</blockquote>', '</p>', $content);
 
-        $summaryFlag = preg_match('@<p>::summary</p>@', $content);
+        $blockquoteFlag = preg_match('@<p>::summary</p>@', $content);
 
         $content = str_replace('<br>', "\r\n", $content);
         libxml_use_internal_errors(true);
@@ -469,7 +472,6 @@ class EntryFactory extends BaseFactory
         $h3 = $doc->getElementsByTagName('h3');
         $h4 = $doc->getElementsByTagName('h4');
         $p = $doc->getElementsByTagName('p');
-        $blockquote = $doc->getElementsByTagName('blockquote');
         $iframe = $doc->getElementsByTagName('iframe');
 
         $pStart = 0;
@@ -525,7 +527,7 @@ class EntryFactory extends BaseFactory
 
         $summaryFound = false;
         $summaryCount = $pStart;
-        if ($summaryFlag) {
+        if ($blockquoteFlag) {
             $summaryLimit = $p->length;
         } else {
             $summaryLimit = $p->length - $pStart;
@@ -544,7 +546,7 @@ class EntryFactory extends BaseFactory
                 if (!empty($pContent)) {
                     $summary[] = $pContent;
                 }
-                if (!$summaryFlag && $totalCharacters > STORIES_SUMMARY_CHARACTER_LIMIT) {
+                if (!$blockquoteFlag && $totalCharacters > STORIES_SUMMARY_CHARACTER_LIMIT) {
                     $summaryFound = true;
                     break;
                 }
@@ -554,7 +556,19 @@ class EntryFactory extends BaseFactory
         if (empty($summary)) {
             $entry->summary = '';
         } else {
-            $entry->summary = implode('', $summary);
+            if ($blockquoteFlag) {
+                foreach ($summary as $s) {
+                    if (preg_match('/^<p class="blockquote">/', $s)) {
+                        $s = preg_replace('/^<p class="blockquote">/',
+                                '<blockquote>', $s);
+                        $s = preg_replace('/<\/p>/', '</blockquote>', $s);
+                    }
+                    $summaryList[] = $s;
+                }
+                $entry->summary = implode('', $summaryList);
+            } else {
+                $entry->summary = implode('', $summary);
+            }
         }
     }
 
