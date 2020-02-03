@@ -7,6 +7,7 @@ const FeatureDisplay = ({
   featureStories,
   publishedTitles,
   format,
+  resetThumb,
   moveThumb,
   holdThumb,
   setZoom,
@@ -20,7 +21,7 @@ const FeatureDisplay = ({
   let storyCount = featureStories.length
 
   let formDisplay
-  
+
   const getBsClass = (storyCount, currentCount) => {
     switch (storyCount) {
       case 1:
@@ -51,7 +52,6 @@ const FeatureDisplay = ({
       default:
         return 'col-sm-3'
     }
-
   }
 
   let storyList = featureStories.map((value, key) => {
@@ -69,13 +69,20 @@ const FeatureDisplay = ({
         stopMove={stopMove.bind(null, key)}
         moveThumb={moveThumb.bind(null, key)}
         holdThumb={holdThumb.bind(null, key)}
+        resetThumb={resetThumb.bind(null, key)}
         setZoom={setZoom.bind(null, key)}
         updated={updated.indexOf(key) !== -1}
-        format={format}/>
+        format={format}
+      />
     )
   })
 
-  return (<div className="row">{storyList}{formDisplay}</div>)
+  return (
+    <div className="row">
+      {storyList}
+      {formDisplay}
+    </div>
+  )
 }
 
 FeatureDisplay.propTypes = {
@@ -84,6 +91,7 @@ FeatureDisplay.propTypes = {
   srcHttp: PropTypes.string,
   format: PropTypes.string,
   moveThumb: PropTypes.func,
+  resetThumb: PropTypes.func,
   stopMove: PropTypes.func,
   holdThumb: PropTypes.func,
   applyStory: PropTypes.func,

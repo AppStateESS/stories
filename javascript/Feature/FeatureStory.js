@@ -43,13 +43,14 @@ class FeatureStory extends React.Component {
     this.load()
     this.enablePopover()
   }
-  
+
   enablePopover() {
     $('#feature-note').popover({
       html: true,
-      content: '<span>To be featured, a story must be ' +
-      '<strong>published</strong>, within the feature cutoff ' + 
-      'time, and have both a title and image</span>',
+      content:
+        '<span>To be featured, a story must be ' +
+        '<strong>published</strong>, within the feature cutoff ' +
+        'time, and have both a title and image</span>',
       trigger: 'hover'
     })
   }
@@ -62,10 +63,11 @@ class FeatureStory extends React.Component {
       },
       dataType: 'json',
       type: 'get',
-      success: (data) => {
-        this.setState(
-          {featureStories: data.featureStories, publishedTitles: data.publishedTitles}
-        )
+      success: data => {
+        this.setState({
+          featureStories: data.featureStories,
+          publishedTitles: data.publishedTitles
+        })
       },
       error: () => {}
     })
@@ -74,14 +76,20 @@ class FeatureStory extends React.Component {
   message() {
     if (this.state.message !== null) {
       const {message} = this.state
-      return <Message type={message.type} message={message.text}>{message.text}</Message>
+      return (
+        <Message type={message.type} message={message.text}>
+          {message.text}
+        </Message>
+      )
     }
   }
 
   closeOverlay() {
-    this.setState(
-      {thumbnailOverlay: false, currentStoryKey: null, currentStory: null}
-    )
+    this.setState({
+      thumbnailOverlay: false,
+      currentStoryKey: null,
+      currentStory: null
+    })
   }
 
   thumbnailForm(key) {
@@ -119,7 +127,7 @@ class FeatureStory extends React.Component {
     this.flagUpdate(key)
   }
 
-  moveThumb(key, x, y, inc,) {
+  moveThumb(key, x, y, inc) {
     const mX = parseInt(x) * parseInt(inc)
     const mY = parseInt(y) * parseInt(inc)
     const story = this.state.featureStories[key]
@@ -157,25 +165,23 @@ class FeatureStory extends React.Component {
     $.ajax({
       url: `./stories/FeatureStory/${story.id}`,
       data: {
-        params: [
-          'x', 'y', 'zoom'
-        ],
+        params: ['x', 'y', 'zoom'],
         x: story.x,
         y: story.y,
         zoom: story.zoom
       },
       dataType: 'json',
       type: 'patch',
-      success: function () {
+      success: function() {
         this.resetUpdate(key)
       }.bind(this),
       error: () => {}
     })
   }
-  
+
   removePublish(publishId) {
     let published = this.state.publishedTitles
-    const usedKey = published.findIndex((element)=>{
+    const usedKey = published.findIndex(element => {
       return element.id === publishId
     })
     published.splice(usedKey, 1)
@@ -216,10 +222,13 @@ class FeatureStory extends React.Component {
   }
 
   holdThumb(key, x, y) {
-    this.interval = setInterval(function () {
-      this.setState({moving: true})
-      this.moveThumb(key, x, y, 5, false)
-    }.bind(this), 100)
+    this.interval = setInterval(
+      function() {
+        this.setState({moving: true})
+        this.moveThumb(key, x, y, 5, false)
+      }.bind(this),
+      100
+    )
   }
 
   updateFormat(format) {
@@ -247,11 +256,13 @@ class FeatureStory extends React.Component {
   }
 
   render() {
-    const formatTopBottom = this.props.srcHttp + 'mod/stories/img/top-bottom.png'
+    const formatTopBottom =
+      this.props.srcHttp + 'mod/stories/img/top-bottom.png'
     const formatLandscape = this.props.srcHttp + 'mod/stories/img/landscape.png'
-    const formatLeftRight = this.props.srcHttp + 'mod/stories/img/left-right.png'
+    const formatLeftRight =
+      this.props.srcHttp + 'mod/stories/img/left-right.png'
 
-    const isActive = (format) => {
+    const isActive = format => {
       return this.props.feature.format === format
         ? 'btn btn-outline-dark active'
         : 'btn btn-outline-dark'
@@ -265,7 +276,8 @@ class FeatureStory extends React.Component {
           updateEntry={this.updateStory}
           entry={this.state.currentStory}
           close={this.closeOverlay}
-          saveThumbnail={this.saveThumbnail}/>
+          saveThumbnail={this.saveThumbnail}
+        />
       )
     }
 
@@ -281,7 +293,8 @@ class FeatureStory extends React.Component {
               placeholder="Feature title (not required)"
               value={this.props.feature.title}
               onBlur={save}
-              onChange={update.bind(null, 'title')}/>
+              onChange={update.bind(null, 'title')}
+            />
           </div>
           <div className="mb-1 row">
             <div className="col-sm-6">
@@ -290,19 +303,25 @@ class FeatureStory extends React.Component {
                   <button
                     className={isActive('landscape')}
                     onClick={this.updateFormat.bind(this, 'landscape')}
-                    title="Landscape image top"><img src={formatLandscape}/></button>
+                    title="Landscape image top">
+                    <img src={formatLandscape} />
+                  </button>
                 </li>
                 <li>
                   <button
                     className={isActive('topbottom')}
                     onClick={this.updateFormat.bind(this, 'topbottom')}
-                    title="Narrow w/ square image top"><img src={formatTopBottom}/></button>
+                    title="Narrow w/ square image top">
+                    <img src={formatTopBottom} />
+                  </button>
                 </li>
                 <li>
                   <button
                     className={isActive('leftright')}
                     onClick={this.updateFormat.bind(this, 'leftright')}
-                    title="Square image to left side"><img src={formatLeftRight}/></button>
+                    title="Square image to left side">
+                    <img src={formatLeftRight} />
+                  </button>
                 </li>
               </ul>
             </div>
@@ -314,6 +333,7 @@ class FeatureStory extends React.Component {
             format={this.props.feature.format}
             moveThumb={this.moveThumb}
             holdThumb={this.holdThumb}
+            resetThumb={this.resetThumb}
             thumbnailForm={this.thumbnailForm}
             setZoom={this.setZoom}
             stopMove={this.stopMove}
@@ -322,12 +342,16 @@ class FeatureStory extends React.Component {
             clearStory={this.clearStory}
             savePosition={this.savePosition}
             featureStories={this.state.featureStories}
-            publishedTitles={this.state.publishedTitles}/>
+            publishedTitles={this.state.publishedTitles}
+          />
         </div>
-        <hr/>
+        <hr />
         <div className="row justify-content-sm-center">
           <div className="col-sm-8 col-md-6">
-            <StoryList titles={this.state.publishedTitles} applyStory={this.applyStory}/>
+            <StoryList
+              titles={this.state.publishedTitles}
+              applyStory={this.applyStory}
+            />
           </div>
         </div>
       </div>
