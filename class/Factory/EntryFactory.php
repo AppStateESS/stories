@@ -3,9 +3,9 @@
 /**
  * MIT License
  * Copyright (c) 2017 Electronic Student Services @ Appalachian State University
- * 
+ *
  * See LICENSE file in root directory for copyright and distribution permissions.
- * 
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
@@ -45,7 +45,7 @@ class EntryFactory extends BaseFactory
     }
 
     /**
-     * 
+     *
      * @param type $id
      * @return \stories\Resource\EntryResource
      */
@@ -102,12 +102,12 @@ class EntryFactory extends BaseFactory
 
     /**
      * Return a list of entries based on options
-     * 
+     *
      * Options:
      * hideExpired: [true] Don't show expired entries
      * sortBy: [publishDate] Which column to order by
      * limit: [6] Total number of entries to pull
-     * includeContent: [true] Include content in the pull 
+     * includeContent: [true] Include content in the pull
      * publishedOnly: [true] Only show published entries
      * showAuthor: [false] Show the author information
      * offset: [0] Current number of offsets using limit
@@ -116,8 +116,8 @@ class EntryFactory extends BaseFactory
      * mustHaveThumbnail: [false] Only pull entries that have an associate thumbnail
      * showTagLinks: [true] Pull tags links for entries
      * page: page number of rows. Translated to offset
-     * 
-     * 
+     *
+     *
      * @param array $options
      * @return array
      */
@@ -221,7 +221,7 @@ class EntryFactory extends BaseFactory
                         $tbl3->getField('entryId')), 'left');
 
         /**
-         * To get an accurate test to see if there are more entries for 
+         * To get an accurate test to see if there are more entries for
          * a Next page button, we ask for one more row than the current limit
          */
         if ($options['limit'] != 0) {
@@ -377,7 +377,7 @@ class EntryFactory extends BaseFactory
      * 1 load a shortcut with the matching url.
      * 2 a. If it exists, update the keyword.
      *   b. Not exists, create keyword
-     * 
+     *
      * @param Resource $entry
      */
     private function saveShortcut(Resource $entry)
@@ -404,7 +404,7 @@ class EntryFactory extends BaseFactory
 
     /**
      * Checks for duplicate urlTitle entry or a shortcut with the same keyword.
-     * 
+     *
      * @param Resource $entry
      * @return boolean
      */
@@ -417,7 +417,7 @@ class EntryFactory extends BaseFactory
          * AND
          * no shortcut with matching urlTitle or shortcut url does not match the
          * entry id
-         * 
+         *
          */
         if ((empty($duplicate) || $duplicate->id === $entry->id) &&
                 (empty($shortcut) || $shortcut['url'] == "stories:{$entry->id}")) {
@@ -446,26 +446,30 @@ class EntryFactory extends BaseFactory
     }
 
     /**
-     * Tries to extract the title, first image, and summary from the entry's 
+     * Tries to extract the title, first image, and summary from the entry's
      * content variable.  If first image is not found but a youtube video is
      * used, the video thumbnail will get extracted.
-     * 
+     *
      * @param Resource $entry
      */
     public function siftContent(Resource $entry)
     {
         $photoFactory = new EntryPhotoFactory();
         $content = $entry->content;
+
+        $summaryFlag = preg_match('@<p>::summary</p>@', $content);
+
         $content = str_replace('<br>', "\r\n", $content);
         libxml_use_internal_errors(true);
         $doc = new \DomDocument;
-        $doc->loadHtml(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
+        $doc->loadHtml(\mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
         $doc->preserveWhiteSpace = false;
 
         $image = $doc->getElementsByTagName('img');
         $h3 = $doc->getElementsByTagName('h3');
         $h4 = $doc->getElementsByTagName('h4');
         $p = $doc->getElementsByTagName('p');
+        $blockquote = $doc->getElementsByTagName('blockquote');
         $iframe = $doc->getElementsByTagName('iframe');
 
         $pStart = 0;
@@ -521,7 +525,11 @@ class EntryFactory extends BaseFactory
 
         $summaryFound = false;
         $summaryCount = $pStart;
-        $summaryLimit = $p->length - $pStart;
+        if ($summaryFlag) {
+            $summaryLimit = $p->length;
+        } else {
+            $summaryLimit = $p->length - $pStart;
+        }
 
         $totalCharacters = 0;
         while (!$summaryFound && $summaryCount <= $summaryLimit) {
@@ -536,7 +544,7 @@ class EntryFactory extends BaseFactory
                 if (!empty($pContent)) {
                     $summary[] = $pContent;
                 }
-                if ($totalCharacters > STORIES_SUMMARY_CHARACTER_LIMIT) {
+                if (!$summaryFlag && $totalCharacters > STORIES_SUMMARY_CHARACTER_LIMIT) {
                     $summaryFound = true;
                     break;
                 }
@@ -589,7 +597,7 @@ class EntryFactory extends BaseFactory
     /**
      * Updates values in an entry. Checks specifically for the published status
      * in order to run the publish/unpublish process. An unpublish is forced and
-     * a failure condition created when a publish is attempted with an empty 
+     * a failure condition created when a publish is attempted with an empty
      * story.
      * @param Resource $entry
      * @param type $param
@@ -613,7 +621,7 @@ class EntryFactory extends BaseFactory
                 }
                 $entry->published = $value;
                 break;
-                
+
             case 'publishDate':
                 $publishFactory->updatePublishDateByEntryId($entry->id, $value);
                 $entry->publishDate = $value;
@@ -637,7 +645,7 @@ class EntryFactory extends BaseFactory
     }
 
     /**
-     * Flips the deleted flag on the entry. Tags are not touched as the 
+     * Flips the deleted flag on the entry. Tags are not touched as the
      * entry will not be pulled. Features will be purged however.
      * @param integer $id
      */
@@ -693,8 +701,8 @@ class EntryFactory extends BaseFactory
      * The Flickr oEmbed calls a script when pulled down. This script instantly
      * creates an iframe to replace the anchor tag. The iframe is useless;
      * the script and the anchor tag called prior are the important components.
-     * 
-     * The true code is stuck in the data-embed-code div. This script grabs the 
+     *
+     * The true code is stuck in the data-embed-code div. This script grabs the
      * embed code and saves it as content
      * before it is flushed. This only happens when Flickr is present. All other
      * oembed scripts behave.
