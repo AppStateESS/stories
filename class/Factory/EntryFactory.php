@@ -771,7 +771,7 @@ class EntryFactory extends BaseFactory
         // Removes extra medium paragraphs padded to end of content
         $content = $this->removeExtraParagraphs($content);
         // Removes extra headers sometimes padded on end
-        $content = preg_replace('/<h[34]>\s+<\/h[34]>/', '', $content);
+        $content = preg_replace('/<h[34]>((<br>)?|\s+)<\/h[34]>/', '', $content);
         // Removes the overlay left on embeds (e.g. youtube)
         $content = $this->removeMediumOverlay($content);
         // Removed http:// url from images making them relative
