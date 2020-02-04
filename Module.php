@@ -88,8 +88,6 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
             \stories\Factory\StoryMenu::listStoryLink();
             \stories\Factory\StoryMenu::addShareLink();
             \stories\Factory\StoryMenu::featureLink();
-            \stories\Factory\StoryMenu::authorLink();
-            \stories\Factory\StoryMenu::adminDisplayLink();
         }
         $this->frontPage($request);
     }
