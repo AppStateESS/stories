@@ -179,15 +179,6 @@ class FeatureStory extends React.Component {
     })
   }
 
-  removePublish(publishId) {
-    let published = this.state.publishedTitles
-    const usedKey = published.findIndex(element => {
-      return element.id === publishId
-    })
-    published.splice(usedKey, 1)
-    this.setState({publishedTitles: published})
-  }
-
   addStory(publishId) {
     $.ajax({
       url: 'stories/FeatureStory',
