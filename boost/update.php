@@ -106,6 +106,8 @@ class StoriesUpdate
                 $this->update('1.6.1');
             case $this->compare('1.6.2'):
                 $this->update('1.6.2');
+            case $this->compare('1.6.3'):
+                $this->update('1.6.3');
         }
         return $this->content;
     }
@@ -347,16 +349,23 @@ class StoriesUpdate
         $changes[] = 'Fixed permanent link.';
         $this->addContent('1.6.0', $changes);
     }
-    
+
     private function v1_6_1()
     {
         $changes[] = 'Fixed bugs with publish date.';
         $this->addContent('1.6.1', $changes);
     }
-    
+
     private function v1_6_2()
     {
         $changes[] = 'Fixed bug with unpublished entry.';
+        $this->addContent('1.6.2', $changes);
+    }
+
+    private function v1_6_3()
+    {
+        $changes[] = 'Blockquote works in summary.';
+        $changes[] = 'Late ::summary tag works.';
         $this->addContent('1.6.2', $changes);
     }
 
