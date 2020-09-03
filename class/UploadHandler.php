@@ -9,21 +9,21 @@
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/MIT
- * 
+ *
  * This script has been updated from its original version. Error suppression
  * using at (@) has been removed and the repercussions worked around. Most of the
  * suppression occurs with exif functions. Unfortunately, that is just how PHP
  * handles them. There is no way to test for failure, you have to fail and deal.
  * For us though, failure is a thrown exception, so I added new code to test prior
  * to reading.
- * 
+ *
  * Premature image dimension errors are ignored because they prevent image
  * resizing. Maybe the version control is supposed to go around this. Not sure
  * how it is supposed to work.
- * 
+ *
  * Added code to incorporate default options into the default image creation.
  * Otherwise, the resize ignores your options with which you construct the object.
- * 
+ *
  */
 
 class UploadHandler
@@ -440,7 +440,7 @@ class UploadHandler
         }
         if (!empty($img_width)) {
             // This script returns errors on the max_width and max_height. HOWEVER,
-            // it also resizes based on the max_width and max_height. So if the 
+            // it also resizes based on the max_width and max_height. So if the
             // dimension error occurs, we never get to resize code. I am
             // just commenting this all out.
             /*
@@ -452,7 +452,7 @@ class UploadHandler
               $file->error = $this->get_error_message('max_height');
               return false;
               }
-             * 
+             *
              */
             if ($min_width && $img_width < $min_width) {
                 $file->error = $this->get_error_message('min_width');
@@ -484,11 +484,13 @@ class UploadHandler
     protected function get_unique_filename($file_path, $name, $size, $type,
             $error, $index, $content_range)
     {
-        while (is_dir($this->get_upload_path($name))) {
+        $uploadPath = $this->get_upload_path($name);
+        if (is_dir($uploadPath)) {
             $name = $this->upcount_name($name);
         }
         // Keep an existing filename if this is part of a chunked upload:
-        $uploaded_bytes = $this->fix_integer_overflow(intval($content_range[1]));
+        $content_range_bytes = is_array($content_range) ? intval($content_range[1]) : 0;
+        $uploaded_bytes = $this->fix_integer_overflow($content_range_bytes);
         while (is_file($this->get_upload_path($name))) {
             if ($uploaded_bytes === $this->get_file_size(
                             $this->get_upload_path($name))) {
