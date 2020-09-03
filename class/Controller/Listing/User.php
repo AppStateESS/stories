@@ -49,4 +49,10 @@ class User extends RoleController
         \Current_User::requireLogin();
     }
 
+    protected function listHtmlCommand(Request $request)
+    {
+        $view = new \stories\View\PublishedView;
+        \Layout::add($view->listing($request), 'stories', 'stories', true);
+    }
+
 }
