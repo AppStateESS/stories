@@ -3,9 +3,9 @@
 /**
  * MIT License
  * Copyright (c) 2017 Electronic Student Services @ Appalachian State University
- * 
+ *
  * See LICENSE file in root directory for copyright and distribution permissions.
- * 
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  *
  */
@@ -95,11 +95,6 @@ class Module extends \Canopy\Module implements \Canopy\SettingDefaults
     private function frontPage(Request $request)
     {
         if (!empty($request->getModule())) {
-            return;
-        }
-        if ($this->needsUpdate()) {
-            \Layout::add('<div class="alert alert-warning">Stories needs updating.</div>',
-                    'stories', 'stories', true);
             return;
         }
         $featureView = new \stories\View\FeatureView;
