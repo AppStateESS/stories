@@ -64,11 +64,16 @@ class Admin extends User
         return $this->factory->savePhoto($request);
     }
 
+    protected function photoDeleteCommand(Request $request)
+    {
+        return ['success' => (bool) $this->factory->removePhoto($this->id)];
+    }
+
     protected function putCommand(Request $request)
     {
         return $this->factory->put($this->id, $request);
     }
-    
+
     protected function restorePatchCommand(Request $request)
     {
         return $this->factory->restore($this->id);

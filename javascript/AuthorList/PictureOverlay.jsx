@@ -13,11 +13,12 @@ export default class PictureOverlay extends Component {
     super(props)
     this.file = null
     this.state = {
-      photo: null
+      photo: null,
     }
     this.savePicture = this.savePicture.bind(this)
     this.updateImage = this.updateImage.bind(this)
     this.close = this.close.bind(this)
+    this.clearPicture = this.clearPicture.bind(this)
   }
 
   close() {
@@ -29,6 +30,23 @@ export default class PictureOverlay extends Component {
     const file = e[0]
     this.file = file
     this.props.updateImage(file.preview)
+  }
+
+  clearPicture() {
+    const {author} = this.props
+
+    $.ajax({
+      url: './stories/Author/' + this.props.author.id + '/photo',
+      type: 'delete',
+      cache: false,
+      dataType: 'json',
+      success: function (data) {
+        author.pic = null
+        this.props.updateAuthor(author)
+        this.props.updateAuthorList()
+      }.bind(this),
+      error: function () {}.bind(this),
+    })
   }
 
   savePicture() {
@@ -62,21 +80,27 @@ export default class PictureOverlay extends Component {
 
   render() {
     const {author} = this.props
-    let photo = <EmptyPhoto/>
+    let photo = <EmptyPhoto />
     if (author && author.pic != null) {
-      photo = <img
-        src={author.pic}
-        style={{
-          maxWidth: '100%',
-          maxHeight: '100%'
-        }}/>
+      photo = (
+        <img
+          src={author.pic}
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+          }}
+        />
+      )
     }
 
     const closeButton = (
-      <button className="btn btn-outline-dark btn-block" onClick={this.close}>Close</button>
+      <button className="btn btn-outline-dark btn-block" onClick={this.close}>
+        Close
+      </button>
     )
 
     const disabled = this.file == null
+    const clearDisabled = this.props.author.pic == null
 
     return (
       <Overlay
@@ -84,20 +108,34 @@ export default class PictureOverlay extends Component {
         close={this.close}
         fade={true}
         width="500px"
-        height="420px"
+        height="450px"
         title="Change thumbnail">
-        <Dropzone onDrop={this.updateImage} className="dropzone text-center pointer">
+        <Dropzone
+          onDrop={this.updateImage}
+          className="dropzone text-center pointer">
           {photo}
         </Dropzone>
         <div className="text-muted mb-1">
           <small>
-            <strong>Note:</strong>&nbsp; changing images in story may change thumbnail.</small>
+            <strong>Note:</strong>&nbsp; changing images in story may change
+            thumbnail.
+          </small>
         </div>
-        <div>
+        <div className="mb-1">
           <button
             className="btn btn-primary btn-block"
             onClick={this.savePicture}
-            disabled={disabled}>Save</button>
+            disabled={disabled}>
+            Save
+          </button>
+        </div>
+        <div className="mb-1">
+          <button
+            className="btn btn-warning btn-block"
+            onClick={this.clearPicture}
+            disabled={clearDisabled}>
+            Clear
+          </button>
         </div>
         <div>{closeButton}</div>
       </Overlay>
@@ -115,5 +153,5 @@ PictureOverlay.propTypes = {
 }
 
 PictureOverlay.defaultTypes = {
-  show: false
+  show: false,
 }

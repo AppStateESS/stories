@@ -41,7 +41,7 @@ class AuthorFactory extends BaseFactory
     public $moreRows = false;
 
     /**
-     * 
+     *
      * @param array $data
      * @return Resource
      */
@@ -194,8 +194,7 @@ class AuthorFactory extends BaseFactory
         $groupsTable->addField('user_id');
         $conditional = $db->createConditional($permissionTable->getField('group_id'),
                 $groupsTable->getField('id'));
-        $db->joinResources($groupsTable, $permissionTable,
-                $conditional, 'left');
+        $db->joinResources($groupsTable, $permissionTable, $conditional, 'left');
         $result = $db->select();
 
         $userList = array();
@@ -216,7 +215,7 @@ class AuthorFactory extends BaseFactory
                 $userList[] = $group['user_id'];
             }
         }
-        
+
         $db3 = Database::getDB();
         $users = $db3->addTable('users');
         $users->addField('id');
@@ -248,7 +247,21 @@ class AuthorFactory extends BaseFactory
         $result = $db->select();
         return $result;
     }
-    
+
+    public function removePhoto(int $authorId)
+    {
+        $author = $this->load($authorId);
+        if (is_file($author->pic)) {
+            unlink($author->pic);
+        }
+
+        $db = Database::getDB();
+        $tbl = $db->addTable('storiesauthor');
+        $tbl->addValue('pic', null);
+        $tbl->addFieldConditional('id', $authorId);
+        return $db->update();
+    }
+
     public function delete($authorId)
     {
         $db = Database::getDB();
