@@ -50,7 +50,7 @@ class EntryFactory extends BaseFactory
      * @return \stories\Resource\EntryResource
      */
     public function load(int $id, bool $allowDeleted = false,
-            bool $allowedUnpublished = true)
+        bool $allowedUnpublished = true)
     {
         $db = Database::getDB();
         $entryTbl = $db->addTable('storiesentry');
@@ -59,8 +59,8 @@ class EntryFactory extends BaseFactory
         $authorTbl->addField('pic', 'authorPic');
         $authorTbl->addField('email', 'authorEmail');
         $db->joinResources($entryTbl, $authorTbl,
-                $db->createConditional($entryTbl->getField('authorId'),
-                        $authorTbl->getField('id')), 'left');
+            $db->createConditional($entryTbl->getField('authorId'),
+                $authorTbl->getField('id')), 'left');
         $entryTbl->addFieldConditional(('id'), $id);
         if (!$allowedUnpublished) {
             $entryTbl->addFieldConditional('published', 1);
@@ -177,15 +177,15 @@ class EntryFactory extends BaseFactory
 
         if (isset($options['search']) && strlen($options['search']) >= 3) {
             $s1 = $db->createConditional($tbl->getField('title'),
-                    '%' . $options['search'] . '%', 'like');
+                '%' . $options['search'] . '%', 'like');
             $db->addConditional($s1);
         }
 
         if (!$options['hideExpired']) {
             $expire1 = $db->createConditional($tbl->getField('expirationDate'),
-                    0);
+                0);
             $expire2 = $db->createConditional($tbl->getField('expirationDate'),
-                    $now, '>');
+                $now, '>');
             $db->addConditional($db->createConditional($expire1, $expire2, 'or'));
         }
 
@@ -194,9 +194,9 @@ class EntryFactory extends BaseFactory
             $tagTable = $db->addTable('storiestag', null, false);
             $tagTable->addFieldConditional('title', $options['tag']);
             $db->addConditional($db->createConditional($tagTable->getField('id'),
-                            $tagIdTable->getField('tagId'), '='));
+                    $tagIdTable->getField('tagId'), '='));
             $db->addConditional($db->createConditional($tbl->getField('id'),
-                            $tagIdTable->getField('entryId'), '='));
+                    $tagIdTable->getField('entryId'), '='));
         }
 
         if (!$limitedVars && $options['showAuthor']) {
@@ -206,19 +206,19 @@ class EntryFactory extends BaseFactory
             $tbl2->addField('email', 'authorEmail');
             $tbl2->addField('pic', 'authorPic');
             $db->joinResources($tbl, $tbl2,
-                    $db->createConditional($tbl->getField('authorId'),
-                            $tbl2->getField('id')), 'left');
+                $db->createConditional($tbl->getField('authorId'),
+                    $tbl2->getField('id')), 'left');
         }
         if (isset($options['sortBy'])) {
             $tbl->addOrderBy($options['sortBy'],
-                    $options['sortBy'] === 'title' ? 'asc' : 'desc');
+                $options['sortBy'] === 'title' ? 'asc' : 'desc');
         }
 
         $tbl3 = $db->addTable('storiespublish');
         $tbl3->addField('showInList');
         $db->joinResources($tbl, $tbl3,
-                $db->createConditional($tbl->getField('id'),
-                        $tbl3->getField('entryId')), 'left');
+            $db->createConditional($tbl->getField('id'),
+                $tbl3->getField('entryId')), 'left');
 
         /**
          * To get an accurate test to see if there are more entries for
@@ -271,7 +271,7 @@ class EntryFactory extends BaseFactory
             $row['currentUrl'] = $entry->getUrl(false, false);
             if ($options['showTagLinks']) {
                 $row['tagLinks'] = $tagFactory->getTagLinks($row['tags'],
-                        $row['id'], $options['tag']);
+                    $row['id'], $options['tag']);
             }
             $listing[] = $row;
         }
@@ -349,7 +349,7 @@ class EntryFactory extends BaseFactory
     private function relativeImages($content)
     {
         return preg_replace('@src="https?://[\w:/]+(images/stories/\d+/[^"]+)"@',
-                'src="./$1"', $content);
+            'src="./$1"', $content);
     }
 
     private function clearOutEntry(Resource $entry)
@@ -420,7 +420,7 @@ class EntryFactory extends BaseFactory
          *
          */
         if ((empty($duplicate) || $duplicate->id === $entry->id) &&
-                (empty($shortcut) || $shortcut['url'] == "stories:{$entry->id}")) {
+            (empty($shortcut) || $shortcut['url'] == "stories:{$entry->id}")) {
             return;
         } else {
             // duplicate found, update title with timestamp
@@ -457,7 +457,7 @@ class EntryFactory extends BaseFactory
         $photoFactory = new EntryPhotoFactory();
         $content = $entry->content;
         $content = str_ireplace('<blockquote>', '<p class="blockquote">',
-                $content);
+            $content);
         $content = str_ireplace('</blockquote>', '</p>', $content);
 
         $blockquoteFlag = preg_match('@<p>::summary</p>@', $content);
@@ -484,7 +484,7 @@ class EntryFactory extends BaseFactory
             $entry->leadImage = $imageDirectory . $imageFile;
             if ($entry->leadImage) {
                 $thumbnail = $photoFactory->createThumbnail($imageDirectory,
-                        $imageFile);
+                    $imageFile);
                 if ($thumbnail !== false) {
                     $entry->thumbnail = $thumbnail;
                 }
@@ -560,7 +560,7 @@ class EntryFactory extends BaseFactory
                 foreach ($summary as $s) {
                     if (preg_match('/^<p class="blockquote">/', $s)) {
                         $s = preg_replace('/^<p class="blockquote">/',
-                                '<blockquote>', $s);
+                            '<blockquote>', $s);
                         $s = preg_replace('/<\/p>/', '</blockquote>', $s);
                     }
                     $summaryList[] = $s;
@@ -631,7 +631,7 @@ class EntryFactory extends BaseFactory
                         return false;
                     }
                     $publishFactory->publishEntry($entry->id,
-                            $entry->publishDate);
+                        $entry->publishDate);
                 }
                 $entry->published = $value;
                 break;
@@ -655,7 +655,7 @@ class EntryFactory extends BaseFactory
     public function shareData(Resource $entry)
     {
         return $entry->getStringVars(true,
-                        ['authorEmail', 'authorId', 'content', 'deleted', 'expirationDate', 'updateDate', 'createDateRelative', 'createDate', 'published']);
+                ['authorEmail', 'authorId', 'content', 'deleted', 'expirationDate', 'updateDate', 'createDateRelative', 'createDate', 'published']);
     }
 
     /**
@@ -708,7 +708,7 @@ class EntryFactory extends BaseFactory
     private function removeMediumOverlay($content)
     {
         return str_replace('<div class="medium-insert-embeds-overlay"></div>',
-                '', $content);
+            '', $content);
     }
 
     /**
@@ -733,15 +733,15 @@ class EntryFactory extends BaseFactory
         }
         $embedCode = html_entity_decode(html_entity_decode($matches[1]));
         $final = preg_replace('/<div data-embed-code=".*<\/div>/',
-                "<div class=\"medium-insert-active medium-flickr-embed\">$embedCode</div>",
-                $content);
+            "<div class=\"medium-insert-active medium-flickr-embed\">$embedCode</div>",
+            $content);
         return $final;
     }
 
     private function removeExtraParagraphs($content)
     {
         return preg_replace('/(<p class="">(<br>)?<\/p>)\n?|(<p class="medium-insert-active">(<br>)?<\/p>|<p>(<br>)?<\/p>)\n?/',
-                '', $content);
+            '', $content);
     }
 
     /**
@@ -763,8 +763,11 @@ class EntryFactory extends BaseFactory
     {
         // Removes medium buttons
         $content = trim(preg_replace('/<(div|p) class="medium-insert-buttons".*/s',
-                        '', $content));
+                '', $content));
         $content = str_replace(' class=""', '', $content);
+
+        // Remove Paste placeholder
+        $content = preg_replace('/<div class="medium-insert-embeds[^>]+>.*<\/div>/', '', $content);
 
         $content = str_replace('Type caption for image (optional)', '', $content);
         $content = str_replace('Type caption (optional)', '', $content);
