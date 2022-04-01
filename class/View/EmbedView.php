@@ -50,10 +50,16 @@ class EmbedView extends View
                 $json = $this->instagram($url);
                 break;
 
-            case preg_match('/https?:\/\/(www\.)?facebook.com/', $url):
-                $json = $this->facebook($url);
-                break;
-
+            /**
+             * Facebook's oEmbed relies on a token now so we can no longer share
+             * Ivermectin success stories. (╯°□°)╯︵ ʞooqǝɔɐℲ
+             *
+             */
+            /*
+              case preg_match('/https?:\/\/(www\.)?facebook.com/', $url):
+              $json = $this->facebook($url);
+              break;
+             */
             case preg_match('/https?:\/\/(www\.)?soundcloud.com/', $url):
                 $json = $this->soundcloud($url);
                 break;
@@ -68,6 +74,7 @@ class EmbedView extends View
         if (!is_array($json) && !is_object($json)) {
             throw new \Exception('Expected an array or object result from embed');
         }
+        $json->html = utf8_encode($json->html);
         $this->addThumbnail($json, $id);
         return $json;
     }
@@ -96,7 +103,7 @@ class EmbedView extends View
 
     public function instagram($url)
     {
-        $result = file_get_contents("https://api.instagram.com/oembed?url=$url");
+        $result = file_get_contents("https://api.instagram.com/oembed/?url=$url");
         return json_decode($result);
     }
 
@@ -110,7 +117,6 @@ class EmbedView extends View
         }
         curl_close($ch);
         $json = json_decode($result);
-        $json->html = utf8_encode($json->html);
         return $json;
     }
 
