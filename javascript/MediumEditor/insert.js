@@ -5,11 +5,11 @@ const EntryForm = new EntryFormClass($('#story-status'), entry)
 const editor = new MediumEditor('.entry-form', {
   placeholder: {
     text: 'Click here to start your story...',
-    hideOnClick: true
+    hideOnClick: true,
   },
   buttonLabels: 'fontawesome',
   paste: {
-    forcePlainTest: true
+    forcePlainTest: true,
   },
   disableDoubleReturn: false,
   autoLink: true,
@@ -26,9 +26,9 @@ const editor = new MediumEditor('.entry-form', {
       'unorderedlist',
       'indent',
       'outdent',
-      'removeFormat'
-    ]
-  }
+      'removeFormat',
+    ],
+  },
 })
 // This code defaults the cursor to the first line. The cursor ends up above the
 // content and causes problems. It is better to have them click to get started.
@@ -45,14 +45,16 @@ $('.entry-form').mediumInsert({
         url: EntryForm.uploadUrl(),
         type: 'post',
         formData: {
-          entryId: EntryForm.entry.id
+          entryId: EntryForm.entry.id,
         },
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
-      }
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+      },
     },
     embeds: {
       oembedProxy: './stories/Embed/view/' + entry.id,
       label: '<i class="fab fa-youtube"></i>',
+      placeholder:
+        'Paste a Twitter, YouTube, Vimeo, or Instagram link and press Enter',
       actions: {
         remove: {
           label: '<span class="fa fa-times"></span>',
@@ -61,11 +63,11 @@ $('.entry-form').mediumInsert({
             $event.which = 8
             $(document).trigger($event)
             EntryForm.cleanUpEmbed($(el[0]))
-          }
-        }
-      }
-    }
-  }
+          },
+        },
+      },
+    },
+  },
 })
 
 const debounce = (func) => {
@@ -87,11 +89,13 @@ const saveContent = function () {
   EntryForm.save()
 }
 
-$('.entry-form').mouseleave(debounce(function () {
-  if (contentAltered) {
-    saveContent()
-  }
-}))
+$('.entry-form').mouseleave(
+  debounce(function () {
+    if (contentAltered) {
+      saveContent()
+    }
+  })
+)
 
 window.onbeforeunload = () => {
   saveContent()
@@ -111,9 +115,12 @@ const triggerAutoSave = () => {
 }
 const throttledAutoSave = MediumEditor.util.throttle(triggerAutoSave, 3000)
 editor.subscribe('editableInput', throttledAutoSave)
-editor.subscribe('blur', debounce(function () {
-  saveContent()
-}))
+editor.subscribe(
+  'blur',
+  debounce(function () {
+    saveContent()
+  })
+)
 
 editor.subscribe('editableDrop', function (e, element) {
   if (e.dataTransfer.files.length < 1) {
@@ -124,10 +131,7 @@ editor.subscribe('editableDrop', function (e, element) {
 })
 
 var handleImageDropped = function (e, element) {
-  var data,
-    file,
-    fileUploadOptions,
-    imagePlugin
+  var data, file, fileUploadOptions, imagePlugin
   data = e.dataTransfer.files
   imagePlugin = $.data(element, 'plugin_mediumInsertImages')
   file = $(imagePlugin.templates['src/js/templates/images-fileupload.hbs']())
@@ -142,7 +146,7 @@ var handleImageDropped = function (e, element) {
     },
     done: function (e, data) {
       $.proxy(imagePlugin, 'uploadDone', e, data)()
-    }
+    },
   }
   if (new XMLHttpRequest().upload) {
     fileUploadOptions.progress = function (e, data) {
