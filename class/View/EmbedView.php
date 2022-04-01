@@ -2,10 +2,10 @@
 
 /**
  * MIT License
- * Copyright (c) 2019 Electronic Student Services @ Appalachian State University
- * 
+ * Copyright (c) 2022 Electronic Student Services @ Appalachian State University
+ *
  * See LICENSE file in root directory for copyright and distribution permissions.
- * 
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
@@ -21,6 +21,7 @@ class EmbedView extends View
 
     public function __construct()
     {
+
     }
 
     public function embed(Request $request)
@@ -85,8 +86,11 @@ class EmbedView extends View
 
     public function youtube($url)
     {
-        $result = file_get_contents("https://www.youtube.com/oembed?url=$url");
+        $result = file_get_contents("https://www.youtube.com/oembed?maxwidth=600&url=$url");
         $json = json_decode($result);
+
+        $json->html = preg_replace('/width="\d+"/', 'width="' . $json->thumbnail_width . '"', $json->html);
+        $json->html = preg_replace('/height="\d+"/', 'height="' . $json->thumbnail_height . '"', $json->html);
         return $json;
     }
 
@@ -105,7 +109,9 @@ class EmbedView extends View
             throw new \Exception('Cannot to connect to Twitter');
         }
         curl_close($ch);
-        return json_decode($result);
+        $json = json_decode($result);
+        $json->html = utf8_encode($json->html);
+        return $json;
     }
 
     public function facebook($url)
@@ -127,7 +133,7 @@ class EmbedView extends View
         $json = json_decode($result);
         return $json;
     }
-    
+
     private function addThumbnail($json, $id)
     {
         if (empty($json->thumbnail_url)) {
@@ -143,6 +149,5 @@ class EmbedView extends View
         }
         $entryFactory->save($entry);
     }
-
 
 }
