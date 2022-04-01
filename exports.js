@@ -2,13 +2,13 @@ exports.path = require('path')
 exports.APP_DIR = exports.path.resolve(__dirname, 'javascript')
 
 exports.entry = {
-  MediumEditorPack: exports.APP_DIR + '/EntryForm/MediumEditorPack.js',
+  Editor: exports.APP_DIR + '/Editor/index.js',
   EntryList: exports.APP_DIR + '/EntryList/index.jsx',
   AuthorList: exports.APP_DIR + '/AuthorList/index.jsx',
   EntryForm: exports.APP_DIR + '/EntryForm/EntryForm.js',
   Publish: exports.APP_DIR + '/Publish/index.jsx',
   TagBar: exports.APP_DIR + '/TagBar/index.jsx',
-  ListView : exports.APP_DIR + '/ListView/index.jsx',
+  ListView: exports.APP_DIR + '/ListView/index.jsx',
   Settings: exports.APP_DIR + '/Settings/index.jsx',
   Feature: exports.APP_DIR + '/Feature/index.jsx',
   Navbar: exports.APP_DIR + '/Navbar/index.jsx',
@@ -19,5 +19,5 @@ exports.entry = {
   ShareAdmin: exports.APP_DIR + '/ShareAdmin/index.jsx',
   GuestListing: exports.APP_DIR + '/GuestListing/index.jsx',
   ImageZoom: exports.APP_DIR + '/ImageZoom/index.js',
-  ImageOrientation: exports.APP_DIR + '/ImageOrientation/index.jsx'
+  ImageOrientation: exports.APP_DIR + '/ImageOrientation/index.jsx',
 }

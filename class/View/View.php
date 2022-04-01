@@ -3,9 +3,9 @@
 /**
  * MIT License
  * Copyright (c) 2019 Electronic Student Services @ Appalachian State University
- * 
+ *
  * See LICENSE file in root directory for copyright and distribution permissions.
- * 
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
@@ -38,23 +38,11 @@ abstract class View
     public function includeCss()
     {
         $this->addStoryCss();
-        $this->mediumCssOverride();
-        $this->mediumInsertCss();
     }
 
     public function addStoryCss()
     {
         \Layout::addToStyleList('mod/stories/css/story.css');
-    }
-
-    public function mediumCssOverride()
-    {
-        \Layout::addToStyleList('mod/stories/css/MediumOverrides.css');
-    }
-
-    public function mediumInsertCss()
-    {
-        \Layout::addToStyleList('mod/stories/css/medium-editor-insert-plugin.min.css');
     }
 
     protected function getScript($scriptName)
@@ -84,7 +72,7 @@ abstract class View
     }
 
     /**
-     * 
+     *
      * @staticvar boolean $vendor_included
      * @param string $view_name
      * @param boolean $add_anchor

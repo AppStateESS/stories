@@ -3,9 +3,9 @@
 /**
  * MIT License
  * Copyright (c) 2019 Electronic Student Services @ Appalachian State University
- * 
+ *
  * See LICENSE file in root directory for copyright and distribution permissions.
- * 
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
@@ -46,7 +46,6 @@ class PublishedView extends View
         $content = [];
         $shareView = new ShareView;
         $entryView = new EntryView;
-        \Layout::addJSHeader($entryView->mediumCSSOverride());
         $items = $this->factory->listing($listOptions);
         if (empty($items)) {
             return null;
@@ -94,10 +93,10 @@ class PublishedView extends View
             $tagFactory = new TagFactory;
             if (isset($data['shareId']) && $data['shareId'] > 0 && isset($data['siteUrl'])) {
                 $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
-                        $data['id'], $currentTag, $data['siteUrl']);
+                    $data['id'], $currentTag, $data['siteUrl']);
             } else {
                 $data['tagList'] = $tagFactory->getTagLinks($data['tags'],
-                        $data['id'], $currentTag);
+                    $data['id'], $currentTag);
             }
         } else {
             $data['tagList'] = null;

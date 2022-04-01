@@ -11,10 +11,10 @@
  */
 define('STORIES_FRIENDLY_ERROR', true);
 
-define('STORIES_REACT_DEV', false);
+define('STORIES_REACT_DEV', true);
 
 define('STORIES_CONTENT_TAGS',
-        'b,strong,em,i,p,img,iframe,h2,h3,h4,h5,a,style,blockquote,ul,ol,li,figure,figcaption,div,twitterwidget,twitter-widget,script,br');
+    'b,strong,em,i,p,img,iframe,h2,h3,h4,h5,a,style,blockquote,ul,ol,li,figure,figcaption,div,twitterwidget,twitter-widget,script,br');
 
 define('STORIES_SUMMARY_TAGS', 'b,strong,em,i,a,style,ul,ol,li,p,br,blockquote');
 

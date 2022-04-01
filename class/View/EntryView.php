@@ -3,9 +3,9 @@
 /**
  * MIT License
  * Copyright (c) 2019 Electronic Student Services @ Appalachian State University
- * 
+ *
  * See LICENSE file in root directory for copyright and distribution permissions.
- * 
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
@@ -36,7 +36,7 @@ class EntryView extends View
 
     /**
      * Adds publishing and share buttons to assoc. array used for view template
-     * 
+     *
      * @param array $list
      * @param string $tag
      * @return array
@@ -47,7 +47,7 @@ class EntryView extends View
         foreach ($list as $key => $value) {
             $newlist[$key] = $value;
             $newlist[$key]['publishInfo'] = $publishedView->publishBlock($value,
-                    $tag);
+                $tag);
             $newlist[$key]['shareButtons'] = $this->shareButtons($value);
         }
         return $newlist;
@@ -89,17 +89,11 @@ class EntryView extends View
 
         $vars['home'] = $sourceHttp;
         $this->loadTwitterScript(true);
-        $this->scriptView('MediumEditorPack', false);
         $this->scriptView('EntryForm', false);
         $this->scriptView('Sortable', false);
-
-        $insertSource = "{$sourceHttp}mod/stories/javascript/MediumEditor/insert.js";
-        \Layout::addJSHeader("<script src='$insertSource'></script>");
-
-        \Layout::addJSHeader('<script>editor.setContent(entry.content)</script>');
+        $this->scriptView('Editor', false);
 
         $template = new \phpws2\Template($vars);
-        $this->mediumCSSOverride();
         $template->setModuleTemplate('stories', 'Entry/Form.html');
         return $template->get();
     }
@@ -135,10 +129,11 @@ class EntryView extends View
     /**
      * Medium editor insert doesn't initialize the Twitter embed. Has to be done
      * manually. The editor includes a script call to widgets BUT that is stripped
-     * by our parser. It also showed it at different times. Just in case, 
+     * by our parser. It also showed it at different times. Just in case,
      * there is the include parameter if we get repeat includes.
      * @param boolean $include - If true, include a link to twitter's widget file.
      * @return string
+     * @deprecated
      */
     private function loadTwitterScript($include = true)
     {
@@ -167,17 +162,17 @@ EOF;
             $suffix = null;
         }
         $contentReady = preg_replace("/<\/figure>/",
-                        '</figure><div class="medium-insert-embeds-overlay"></div>',
-                        $content) . $suffix;
+                '</figure><div class="medium-insert-embeds-overlay"></div>',
+                $content) . $suffix;
         $fixCaption = str_replace('<figcaption',
-                '<figcaption contenteditable="true"', $contentReady);
+            '<figcaption contenteditable="true"', $contentReady);
         return $fixCaption;
     }
 
     private function relativeImages($content)
     {
         return preg_replace('@src="https?://[\w:/]+(images/stories/\d+/[^"]+)"@',
-                'src="./$1"', $content);
+            'src="./$1"', $content);
     }
 
     public function shareButtons($data)
@@ -234,7 +229,7 @@ EOF;
     private function removeSummaryTag($content)
     {
         $content = preg_replace('/<p( class="")?>::summary(<br\s?\/?>)?<\/p>/',
-                '<a id="read-more"></a>', $content);
+            '<a id="read-more"></a>', $content);
         return $content;
     }
 
@@ -265,7 +260,7 @@ EOF;
             $data['isAdmin'] = $this->isAdmin;
             if (\phpws2\Settings::get('stories', 'showComments')) {
                 $data['commentCode'] = \phpws2\Settings::get('stories',
-                                'commentCode');
+                        'commentCode');
             } else {
                 $data['commentCode'] = null;
             }
