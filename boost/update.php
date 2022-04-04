@@ -108,6 +108,8 @@ class StoriesUpdate
                 $this->update('1.6.2');
             case $this->compare('1.6.3'):
                 $this->update('1.6.3');
+            case $this->compare('1.6.4'):
+                $this->update('1.6.4');
         }
         return $this->content;
     }
@@ -191,7 +193,7 @@ class StoriesUpdate
         $entryTable = $db->addTable('storiesentry');
         if (!$entryTable->columnExists('imageOrientation')) {
             $dt = new \phpws2\Database\Datatype\Smallint($entryTable,
-                    'imageOrientation');
+                'imageOrientation');
             $dt->setDefault(0);
             $dt->add();
         }
@@ -205,7 +207,7 @@ class StoriesUpdate
 
         if ($db->getDatabaseType() == 'mysql') {
             $dt2 = \phpws2\Database\Datatype::factory($authorTable, 'userId',
-                            'int');
+                    'int');
             $dt2->setUnsigned(false);
             $authorTable->alter($authorTable->getDataType('userId'), $dt2);
         }
@@ -341,7 +343,7 @@ class StoriesUpdate
         $publishTable = $db->addTable('storiespublish');
         if (!$publishTable->columnExists('showInList')) {
             $dt = new \phpws2\Database\Datatype\Smallint($publishTable,
-                    'showInList');
+                'showInList');
             $dt->setDefault(1);
             $dt->add();
         }
@@ -366,7 +368,14 @@ class StoriesUpdate
     {
         $changes[] = 'Blockquote works in summary.';
         $changes[] = 'Late ::summary tag works.';
-        $this->addContent('1.6.2', $changes);
+        $this->addContent('1.6.3', $changes);
+    }
+
+    private function v1_6_4()
+    {
+        $changes[] = 'Fixed embeds';
+        $changes[] = 'Removed Facebook references';
+        $this->addContent('1.6.4', $changes);
     }
 
     private function addContent($version, array $changes)

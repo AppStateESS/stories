@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2019 Matthew McNaney <mcnaneym@appstate.edu>.
+ * Copyright (c) 2022 Matthew McNaney <mcnaneym@appstate.edu>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
  * MA 02110-1301  USA
  */
 $proper_name = 'Stories';
-$version = '1.6.3';
+$version = '1.6.4';
 $register = false;
 $unregister = false;
 $import_sql = false;
