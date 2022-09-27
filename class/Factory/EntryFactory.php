@@ -763,6 +763,10 @@ class EntryFactory extends BaseFactory
     {
         $content = str_replace(' class=""', '', $content);
 
+        // Remove button
+        $content = trim(preg_replace('#<div class="medium-insert-buttons"[^>]+>.*?</div>#ms',
+                '', $content));
+
         // Remove Paste placeholder
         $content = preg_replace('/medium-insert-embeds-selected/', '', $content);
 
