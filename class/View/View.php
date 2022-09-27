@@ -3,9 +3,9 @@
 /**
  * MIT License
  * Copyright (c) 2019 Electronic Student Services @ Appalachian State University
- * 
+ *
  * See LICENSE file in root directory for copyright and distribution permissions.
- * 
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
@@ -18,6 +18,8 @@ use phpws2\Template;
 abstract class View
 {
 
+    static $storyCss = false;
+    static $mediumOverride = false;
     protected $factory;
 
     private function addScriptVars($vars)
@@ -44,12 +46,18 @@ abstract class View
 
     public function addStoryCss()
     {
-        \Layout::addToStyleList('mod/stories/css/story.css');
+        if (!self::$storyCss) {
+            \Layout::addToStyleList('mod/stories/css/story.css');
+            self::$storyCss = true;
+        }
     }
 
     public function mediumCssOverride()
     {
-        \Layout::addToStyleList('mod/stories/css/MediumOverrides.css');
+        if (!self::$mediumOverride) {
+            \Layout::addToStyleList('mod/stories/css/MediumOverrides.css');
+            self::$mediumOverride = true;
+        }
     }
 
     public function mediumInsertCss()
@@ -84,7 +92,7 @@ abstract class View
     }
 
     /**
-     * 
+     *
      * @staticvar boolean $vendor_included
      * @param string $view_name
      * @param boolean $add_anchor
