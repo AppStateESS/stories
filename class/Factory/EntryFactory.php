@@ -767,7 +767,7 @@ class EntryFactory extends BaseFactory
         $content = str_replace(' class=""', '', $content);
 
         // Remove Paste placeholder
-        $content = preg_replace('/<div class="medium-insert-embeds[^>]+>.*<\/div>/', '', $content);
+        $content = preg_replace('/<div class="medium-insert-embeds[^>]+>.*?<\/div>/', '', $content);
 
         $content = str_replace('Type caption for image (optional)', '', $content);
         $content = str_replace('Type caption (optional)', '', $content);
